@@ -28,7 +28,7 @@ PORT = os.getenv("PORT", default="5000")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["https://arundeepchohan.herokuapp.com/"]
 
 
 # Application definition
