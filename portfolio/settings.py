@@ -30,7 +30,7 @@ PORT = os.getenv("PORT", default=5000)
 
 DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
 
-ALLOWED_HOSTS = ["arundeepchohan.herokuapp.com/","localhost:5000/"]
+ALLOWED_HOSTS = ["arundeepchohan.herokuapp.com","localhost:5000"]
 
 
 # Application definition
