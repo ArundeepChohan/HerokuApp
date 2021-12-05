@@ -24,13 +24,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 import os
 
 SECRET_KEY = os.getenv("SECRET_KEY", default="dev key")
-PORT = os.getenv("PORT", default=5000)
 # SECURITY WARNING: don't run with debug turned on in production!
 #DEBUG = True
 
 DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
 
-ALLOWED_HOSTS = ["arundeepchohan.herokuapp.com","localhost:5000"]
+ALLOWED_HOSTS = ["arundeepchohan.herokuapp.com","127.0.0.1"]
 
 
 # Application definition
