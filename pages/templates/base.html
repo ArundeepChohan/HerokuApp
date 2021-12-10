@@ -14,6 +14,37 @@
     <title>{% block title %}Base{% endblock %}</title>
 
 </head>
+<script>
+      function autorefresh() {
+
+      // auto refresh page after 1 second
+
+      setInterval('refreshPage()', 6*1000);
+
+      }
+
+
+      function refreshPage() {
+
+      $.ajax({
+
+      url: window.location.pathname,
+
+      success: function(data) {
+
+          window.location = "."
+
+      // $('#console').html(data);
+
+      }
+
+      });
+
+      }
+
+</script>
+
+<script>autorefresh()</script>
 <body>
     <main>
       {% block content %}
