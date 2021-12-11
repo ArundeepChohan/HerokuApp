@@ -13,36 +13,12 @@
     <!--Font Link-->
     <title>{% block title %}Base{% endblock %}</title>
     <script>
-      function autorefresh() {
-
-      // auto refresh page after 1 second
-
-      setInterval('refreshPage()', 6*1000);
-
+      function reload() {
+        document.location.reload();
       }
 
-
-      function refreshPage() {
-
-      $.ajax({
-
-      url: window.location.pathname,
-
-      success: function(data) {
-
-          window.location = "."
-
-      // $('#console').html(data);
-
-      }
-
-      });
-
-      }
-
-</script>
-
-<script>autorefresh()</script>
+      setTimeout(reload, 5000);
+    </script>
 </head>
 
 <body>
