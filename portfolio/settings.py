@@ -132,12 +132,18 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
 import django_heroku
 django_heroku.settings(locals())
 
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home' 
 
+
+
+
+
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 SESSION_COOKIE_AGE = 60
 SESSION_SAVE_EVERY_REQUEST = True
+SESSION_TIMEOUT_REDIRECT = 'home'
