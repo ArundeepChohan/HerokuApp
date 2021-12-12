@@ -141,6 +141,7 @@ LOGIN_URL = 'home'
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
 
+import django
 SESSION_ENGINE = django.contrib.sessions.backends.db  
 SESSION_EXPIRE_SECONDS = 10  # 900 - >15 minutes = 15 * 60
 SESSION_EXPIRE_AFTER_LAST_ACTIVITY = True
