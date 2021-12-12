@@ -138,7 +138,7 @@ import django_heroku
 django_heroku.settings(locals())
 
 LOGIN_URL = '/login/'
-LOGIN_REDIRECT_URL = '/login/'
+LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
 
 SESSION_EXPIRE_SECONDS = 10  
