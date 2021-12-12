@@ -137,13 +137,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 import django_heroku
 django_heroku.settings(locals())
 
-LOGIN_URL = 'home'
-LOGIN_REDIRECT_URL = 'home'
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/login/'
 LOGOUT_REDIRECT_URL = 'home'
 
-
-SESSION_ENGINE = 'django.contrib.sessions.backends.db'  
-SESSION_EXPIRE_SECONDS = 10  # 900 - >15 minutes = 15 * 60
+SESSION_EXPIRE_SECONDS = 10  
 SESSION_EXPIRE_AFTER_LAST_ACTIVITY = True
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_SAVE_EVERY_REQUEST = True
