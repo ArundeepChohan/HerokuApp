@@ -53,7 +53,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'portfolio.middleware.AutoLogout'
 ]
 
 ROOT_URLCONF = 'portfolio.urls'
@@ -145,12 +144,10 @@ SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 SESSION_ENGINE = (
 'django.contrib.sessions.backends.cache'
 )
-""" SESSION_COOKIE_AGE = 10  # change expired session
+SESSION_COOKIE_AGE = 10  # change expired session
 SESSION_IDLE_TIMEOUT = 10  # logout
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_SAVE_EVERY_REQUEST = True
-SESSION_TIMEOUT_REDIRECT = '/accounts/logout/' 
+SESSION_TIMEOUT_REDIRECT = '/accounts/login/' 
 
- """
-AUTO_LOGOUT_DELAY = 1
