@@ -4,7 +4,6 @@ import datetime
 from django.shortcuts import redirect
 from django.conf import settings
 
-
 class SessionIdleTimeout:
     def process_request(self, request):
         if request.user.is_authenticated():
