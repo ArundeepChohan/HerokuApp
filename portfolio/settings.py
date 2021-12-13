@@ -53,7 +53,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'portfolio.middleware.SessionTimeoutMiddleware'
 ]
 
 ROOT_URLCONF = 'portfolio.urls'
@@ -147,7 +146,7 @@ SESSION_ENGINE = (
 )
 SESSION_COOKIE_AGE = 10  # change expired session
 SESSION_IDLE_TIMEOUT = 10  # logout
-SESSION_EXPIRE_AFTER_LAST_ACTIVITY = True
+
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_SAVE_EVERY_REQUEST = True
-
+SESSION_TIMEOUT_REDIRECT = '/accounts/logout/'
