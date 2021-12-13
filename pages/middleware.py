@@ -1,8 +1,8 @@
 from datetime import datetime, timedelta
 from django.conf import settings
 from django.contrib import auth
-
-class AutoLogout:
+from django.utils.deprecation import MiddlewareMixin
+class AutoLogout(MiddlewareMixin):
     def process_request(self, request):
         if not request.user.is_authenticated() :
             #Can't log out if not logged in
