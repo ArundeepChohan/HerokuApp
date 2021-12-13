@@ -53,7 +53,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'pages.middleware.middleware.SessionTimeoutMiddleware'
+    'portfolio.pages.middleware.middleware.SessionTimeoutMiddleware'
 ]
 
 ROOT_URLCONF = 'portfolio.urls'
