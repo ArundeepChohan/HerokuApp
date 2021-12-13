@@ -7,7 +7,7 @@ class AutoLogout(object):
 
     def __call__(self, request):
 
-        if not request.user.is_authenticated():
+        if not request.user.is_authenticated:
             # Can't log out if not logged in
             return None
 
