@@ -145,8 +145,9 @@ SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 SESSION_ENGINE = (
 'django.contrib.sessions.backends.cache'
 )
-SESSION_EXPIRE_SECONDS = 10  
+SESSION_COOKIE_AGE = 10  # change expired session
+SESSION_IDLE_TIMEOUT = 10  # logout
 SESSION_EXPIRE_AFTER_LAST_ACTIVITY = True
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_SAVE_EVERY_REQUEST = True
-SESSION_TIMEOUT_REDIRECT ='home'
+

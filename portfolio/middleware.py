@@ -1,7 +1,7 @@
 from django.contrib.auth import logout
 import datetime
 
-from settings import SESSION_IDLE_TIMEOUT
+from django.conf import settings
 
 
 class SessionIdleTimeout(object):
