@@ -140,7 +140,7 @@ django_heroku.settings(locals())
 # LOGIN_URL = 'home'
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
-
+SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 SESSION_ENGINE = (
 'django.contrib.sessions.backends.cache'
 )
