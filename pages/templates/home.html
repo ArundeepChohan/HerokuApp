@@ -7,9 +7,7 @@
   {% if user.is_authenticated %}
     <div class="col-xs-12 col-md-3">
       {% block sidebar %}
-      <nav id="sidebar">
-        {% include 'sidebar.html' %}
-      </nav>
+      {% include 'sidebar.html' %}
       {% endblock %}
     </div>
     <div class="col-xs-12 col-md-9">
