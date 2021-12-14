@@ -5,6 +5,11 @@
 {% block content %}
 {% if user.is_authenticated %}
   Hi {{ user.username }}!
+  <div class="sidenav">
+		<a href="/">Home</a>
+		<a href="/create">Create</a>
+		<a href="/2">View</a>
+	</div>
   <p><a href="{% url 'logout' %}">Log Out</a></p>
 {% else %}
   <p>You are not logged in</p>
