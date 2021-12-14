@@ -6,10 +6,10 @@
 {% if user.is_authenticated %}
   <div class="sidenav">
     Hi {{ user.username }}!
-		<a href="/">Home</a>
-		<a href="/create">Create</a>
-		<a href="/2">View</a>
-    <p><a href="{% url 'logout' %}">Log Out</a></p>
+		<a href="/">Dashboard</a>
+		<a href="/">Messages</a>
+		<a href="/">Documents</a>
+    <a href="{% url 'logout' %}">Log Out</a>
 	</div>
   
 {% else %}
