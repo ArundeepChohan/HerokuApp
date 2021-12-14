@@ -1,3 +1,5 @@
+{% extends 'base.html' %}
+{% block content %}
 <nav id="sidebar">
     Hi {{ user.username }}!
     <ul>
@@ -7,5 +9,5 @@
         <li><a href="{% url 'logout' %}">Log Out</a></li>
     </ul>
 </nav>
-    
+{% endblock %} 
 
