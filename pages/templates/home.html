@@ -4,13 +4,12 @@
 
 {% block content %}
 {% if user.is_authenticated %}
-  <div class="sidenav">
-    Hi {{ user.username }}!
-		<a href="/">Dashboard</a>
-		<a href="/">Messages</a>
-		<a href="/">Documents</a>
-    <a href="{% url 'logout' %}">Log Out</a>
-	</div>
+  {% block sidebar %}
+    <nav id="sidebar">
+        {% include 'sidebar.html' %}
+    </nav>
+  {% endblock %}
+
   
 {% else %}
   <p>You are not logged in</p>
