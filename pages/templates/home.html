@@ -3,19 +3,23 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-<div id="content" name="content" class="main">
+
   {% if user.is_authenticated %}
-    <div class="col-xs-12 col-md-3">
-      {% block sidebar %}
-      {% include 'sidebar.html' %}
-      {% endblock %}
+  <div class="container">
+    <div class='row'>
+      <div class="col-xs-12 col-md-3">
+        {% block sidebar %}
+        {% include 'sidebar.html' %}
+        {% endblock %}
+      </div>
+      <div class="col-xs-12 col-md-9">
+        Some page
+      </div>
     </div>
-    <div class="col-xs-12 col-md-9">
-      Some page
-    </div>
+  </div> 
   {% else %}
     <p>You are not logged in</p>
     <a href="{% url 'login' %}">Log In</a>
   {% endif %}
-</div>
+
 {% endblock %}
