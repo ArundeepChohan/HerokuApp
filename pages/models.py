@@ -1,14 +1,16 @@
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
-from django.contrib.auth.models import User
+from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
-# Create your models here.
-class Patient(models.Model):
-	user = models.OneToOneField(User, null=True, blank=True, on_delete=models.CASCADE)
-	name = models.CharField(max_length=200, null=True)
-	phone = models.CharField(max_length=200, null=True)
-	email = models.CharField(max_length=200, null=True)
-	profile_pic = models.ImageField(default="", null=True, blank=True)
-	date_created = models.DateTimeField(auto_now_add=True, null=True)
+class CustomUser(AbstractBaseUser, PermissionsMixin):
+    #is_staff = models.BooleanField(default=False)
+    #is_active = models.BooleanField(default=True)
+    date_created = models.DateTimeField(default=timezone.now)
+    #profile_pic = models.
 
-	def __str__(self):
-		return self.name
+    REQUIRED_FIELDS = []
+
+
+    def __str__(self):
+        return self.user
