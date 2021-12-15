@@ -1,7 +1,7 @@
 {% block content %}
 <nav id="sidebar">
-    Hi {{ user.customer.username }}!
-    <img class="profile-pic" src="{{request.user.customer.profile_pic.url}}" >
+    Hi {{ user.username }}!
+    <img class="profile-pic" src="{{request.user.profile_pic.url}}" >
     <ul>
         <li><a href="/">Dashboard</a></li>
         <li><a href="/">Messages</a></li>
