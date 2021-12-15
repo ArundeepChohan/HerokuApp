@@ -4,9 +4,9 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
-    date_created = models.DateTimeField(default=timezone.now)
-    is_admin = models.BooleanField(default=False)
+    is_admin = models.BooleanField(default=False )
     is_superuser = models.BooleanField(default=False)
-    #profile_pic = models.
-    #phone = 
+    profile_pic = models.CharField(max_length=40, unique=True)
+    phone = models.CharField(max_length=40, unique=True)
+    date_created = models.DateTimeField(default=timezone.now, unique=True)
     REQUIRED_FIELDS = []
