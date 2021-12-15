@@ -139,6 +139,8 @@ AWS_S3_OBJECT_PARAMETERS = {
 }
 AWS_LOCATION = 'static'
 
+AWS_S3_SIGNATURE_VERSION = "s3v4"
+
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'pages/static'),
 ]
