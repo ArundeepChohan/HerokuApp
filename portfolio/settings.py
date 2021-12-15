@@ -27,7 +27,7 @@ SECRET_KEY = os.getenv("SECRET_KEY", default="dev key")
 # SECURITY WARNING: don't run with debug turned on in production!
 #DEBUG = True
 
-DEBUG = os.environ.get('DJANGO_DEBUG', '') 
+DEBUG = os.environ.get('DJANGO_DEBUG') 
 
 ALLOWED_HOSTS = ["arundeepchohan.herokuapp.com"]
 
@@ -142,6 +142,7 @@ if DEBUG == 'False':
     AWS_LOCATION = 'static'
     AWS_S3_SIGNATURE_VERSION = 's3v4'
     AWS_S3_REGION_NAME = 'us-east-2'
+    AWS_DEFAULT_ACL = 'public-read'
     STATIC_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
     STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 else:
