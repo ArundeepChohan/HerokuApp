@@ -164,8 +164,6 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'pages/static'),
 ]
 
-MEDIA_URL = '/images/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'static/images')
 #Todo: Add settings for not prod
 
 # Default primary key field type
