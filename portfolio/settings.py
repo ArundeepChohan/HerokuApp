@@ -20,7 +20,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# SECRET_KEY = '6aj9il2xu2vqwvnitsg@!+4-8t3%zwr@$agm7x%o%yb2t9ivt%'
 import os
 
 SECRET_KEY = os.getenv("SECRET_KEY", default="dev key")
@@ -80,7 +79,7 @@ WSGI_APPLICATION = 'portfolio.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-# Todo:Add a postgresql for prod settings
+# Todo:Add a postgresql for prod settings using Amazon RDS Management Console
 """ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -168,6 +167,7 @@ STATICFILES_DIRS = [
 
 MEDIA_URL = '/images/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'static/images')
+#Todo: Add settings for not prod
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
