@@ -22,11 +22,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 import os
 
-SECRET_KEY = os.getenv("SECRET_KEY", default="dev key")
+from decouple import config
+
+
+SECRET_KEY = config("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 #DEBUG = True
 
-DEBUG = os.environ.get('DJANGO_DEBUG') 
+DEBUG = config('DJANGO_DEBUG',default=True, cast=bool)
 
 ALLOWED_HOSTS = ["arundeepchohan.herokuapp.com"]
 
@@ -141,10 +144,10 @@ USE_TZ = True
 # If I am in prod
 # IAM Management Console
 
-AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID') 
-AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY') 
+AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID') 
+AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY') 
 # Amazon S3 Buckets
-AWS_STORAGE_BUCKET_NAME =  os.environ.get('AWS_STORAGE_BUCKET_NAME').decode('utf-8') 
+AWS_STORAGE_BUCKET_NAME =  config('AWS_STORAGE_BUCKET_NAME')
 AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
 AWS_S3_OBJECT_PARAMETERS = {
     'CacheControl': 'max-age=86400',
