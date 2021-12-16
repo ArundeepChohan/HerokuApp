@@ -150,9 +150,9 @@ AWS_S3_OBJECT_PARAMETERS = {
     'CacheControl': 'max-age=86400',
 }
 
-AWS_S3_SIGNATURE_VERSION = 's3v4'
+""" AWS_S3_SIGNATURE_VERSION = 's3v4'
 AWS_S3_REGION_NAME = 'us-east-2'
-AWS_DEFAULT_ACL = None
+AWS_DEFAULT_ACL = None """
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'pages/static'),

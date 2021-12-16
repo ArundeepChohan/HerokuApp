@@ -4,11 +4,9 @@ from django.contrib.auth.models import User
 
 from portfolio.storage_backends import PrivateMediaStorage
 
-
 class Document(models.Model):
     uploaded_at = models.DateTimeField(auto_now_add=True)
     upload = models.FileField()
-
 
 class PrivateDocument(models.Model):
     uploaded_at = models.DateTimeField(auto_now_add=True)
