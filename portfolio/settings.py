@@ -187,8 +187,10 @@ SESSION_COOKIE_AGE = 60  # change expired session
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_SAVE_EVERY_REQUEST = True 
 
-# Changed users model schema even in /admin
-# AUTH_USER_MODEL = 'pages.CustomUser'
-
+# Fixes Found another file with the destination path 
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    #'django.contrib.staticfiles.finders.AppDirectoriesFinder',    #causes verbose duplicate notifications in django 1.9
+)
 import django_heroku
 django_heroku.settings(locals(), staticfiles=False)
