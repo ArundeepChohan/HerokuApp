@@ -187,7 +187,7 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_SAVE_EVERY_REQUEST = True  """
 
 # Changed users model schema even in /admin
-AUTH_USER_MODEL = 'pages.CustomUser'
+# AUTH_USER_MODEL = 'pages.CustomUser'
 
 import django_heroku
 django_heroku.settings(locals(), staticfiles=False)
