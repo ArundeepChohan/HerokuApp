@@ -1,5 +1,6 @@
-from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
+
+""" from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
@@ -11,7 +12,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     #Are you a patient or doctor
     is_doctor = models.BooleanField(default=False)
     #Value for AWS S3 bucket 
-    profile_pic = models.ImageField(default="profile1.png", null=True, blank=True)
+    profile_pic = models.ImageField(upload_to="profile1.png")
     phone = models.CharField(max_length=40, unique=True)
     date_created = models.DateTimeField(default=timezone.now, unique=True)
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = [] """
