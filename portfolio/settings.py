@@ -161,11 +161,14 @@ if DEBUG:
     STATIC_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, AWS_STATIC_LOCATION)
     STATICFILES_STORAGE = 'portfolio.storage_backends.StaticStorage'
 
-    AWS_PUBLIC_MEDIA_LOCATION = 'media/public'
+    MEDIAFILES_LOCATION = 'media'
+    DEFAULT_FILE_STORAGE = 'portfolio.storage_backends.MediaStorage'
+
+    """ AWS_PUBLIC_MEDIA_LOCATION = 'media/public'
     DEFAULT_FILE_STORAGE = 'portfolio.storage_backends.PublicMediaStorage'
 
     AWS_PRIVATE_MEDIA_LOCATION = 'media/private'
-    PRIVATE_FILE_STORAGE = 'portfolio.storage_backends.PrivateMediaStorage'
+    PRIVATE_FILE_STORAGE = 'portfolio.storage_backends.PrivateMediaStorage' """
 else:
     STATIC_ROOT = os.path.join(BASE_DIR, 'static')
     STATIC_URL= 'static'
