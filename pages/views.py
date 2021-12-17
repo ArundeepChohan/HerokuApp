@@ -22,13 +22,13 @@ class DocumentCreateView(CreateView):
 class PrivateDocumentCreateView(CreateView):
     model = PrivateDocument
     fields = ['upload', ]
-    success_url = reverse_lazy('profile')
+    success_url = reverse_lazy('home')
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
         self.object.user = self.request.user
         self.object.save()
         return super().form_valid(form)  
-             
+
 def index(request):
     return render(request,'home.html')
