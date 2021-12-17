@@ -144,7 +144,7 @@ USE_TZ = True
 # All of this is in my console.aws.amazon to configure aws s3 static files only
 # If I am in prod
 # IAM Management Console
-if DEBUG==False:
+if DEBUG:
     AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID') 
     AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY') 
     # Amazon S3 Buckets
@@ -167,7 +167,7 @@ if DEBUG==False:
     AWS_PRIVATE_MEDIA_LOCATION = 'media/private'
     PRIVATE_FILE_STORAGE = 'portfolio.storage_backends.PrivateMediaStorage'
 else:
-    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+    STATIC_ROOT = os.path.join(BASE_DIR, 'static')
     STATIC_URL= 'static'
     MEDIA_ROOT = os.path.join(BASE_DIR, 'media') 
     MEDIA_URL = '/media/'
