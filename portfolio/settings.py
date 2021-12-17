@@ -164,16 +164,16 @@ STATICFILES_STORAGE = 'portfolio.storage_backends.StaticStorage'
 MEDIAFILES_LOCATION = 'media'
 DEFAULT_FILE_STORAGE = 'portfolio.storage_backends.MediaStorage'
 
-""" AWS_PUBLIC_MEDIA_LOCATION = 'media/public'
-    DEFAULT_FILE_STORAGE = 'portfolio.storage_backends.PublicMediaStorage'
+AWS_PUBLIC_MEDIA_LOCATION = 'media/public'
+DEFAULT_FILE_STORAGE = 'portfolio.storage_backends.PublicMediaStorage'
 
-    AWS_PRIVATE_MEDIA_LOCATION = 'media/private'
-    PRIVATE_FILE_STORAGE = 'portfolio.storage_backends.PrivateMediaStorage' """
+AWS_PRIVATE_MEDIA_LOCATION = 'media/private'
+PRIVATE_FILE_STORAGE = 'portfolio.storage_backends.PrivateMediaStorage' 
 """ else:
     STATIC_ROOT = os.path.join(BASE_DIR, 'static')
     STATIC_URL= 'static'
     MEDIA_ROOT = os.path.join(BASE_DIR, 'media') 
-    MEDIA_URL = '/media/' """
+    MEDIA_URL = '/media/'  """
 
 
 STATICFILES_DIRS = [
