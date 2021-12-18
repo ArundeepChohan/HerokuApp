@@ -1,6 +1,11 @@
 from django.contrib import admin
 
-#Extends user with a model with additional fields
+from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
+
 from .models import Profile
 
-admin.site.register(Profile)
+class CustomUserAdmin(UserAdmin):
+    pass
+
+admin.site.register(Profile, CustomUserAdmin)

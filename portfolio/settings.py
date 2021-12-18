@@ -85,6 +85,7 @@ WSGI_APPLICATION = 'portfolio.wsgi.application'
 
 # Extends default user with additional fields 
 AUTH_USER_MODEL = 'pages.Profile' 
+
 # Todo:Add a postgresql for prod settings using Amazon RDS Management Console
 """ DATABASES = {
     'default': {
