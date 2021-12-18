@@ -87,7 +87,7 @@ WSGI_APPLICATION = 'portfolio.wsgi.application'
 AUTH_USER_MODEL = 'pages.Profile' 
 
 # Todo:Add a postgresql for prod settings using Amazon RDS Management Console
- DATABASES = {
+""" DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'mydatabase',
@@ -96,13 +96,13 @@ AUTH_USER_MODEL = 'pages.Profile'
         'HOST': '127.0.0.1',
         'PORT': '5432',
     }
-} 
-""" DATABASES = {
+} """ 
+DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
-} """
+} 
 
 import dj_database_url
 db_from_env = dj_database_url.config(conn_max_age=600)
