@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'pages.apps.PagesConfig',
+    # 'pages.apps.PagesConfig',
     'storages',
 ]
 
@@ -84,7 +84,7 @@ WSGI_APPLICATION = 'portfolio.wsgi.application'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 # Extends default user with additional fields 
-AUTH_USER_MODEL = 'pages.Profile' 
+# AUTH_USER_MODEL = 'pages.Profile' 
 
 # Todo:Add a postgresql for prod settings using Amazon RDS Management Console
 """ DATABASES = {
