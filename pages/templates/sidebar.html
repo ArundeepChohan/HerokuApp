@@ -2,6 +2,7 @@
 {% load static %}
 <nav id="sidebar">
     Hi {{ user.username }}!
+    {{user.avatar}}
     <img class="profile-pic" src="{% static 'img/profile1.png' %}" >
     <!-- {% include 'document_form.html' %} -->
     <ul class='no-bullets'>
