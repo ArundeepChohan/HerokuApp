@@ -84,7 +84,7 @@ WSGI_APPLICATION = 'portfolio.wsgi.application'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 # Extends default user with additional fields 
-AUTH_USER_MODEL = 'portfolio.Profile' 
+AUTH_USER_MODEL = 'pages.Profile' 
 # Todo:Add a postgresql for prod settings using Amazon RDS Management Console
 """ DATABASES = {
     'default': {
