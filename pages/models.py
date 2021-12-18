@@ -12,7 +12,7 @@ class Profile(models.Model):
     birth_date = models.DateField(null=True, blank=True) """
     avatar = models.ImageField(default='default.png', upload_to='users/', null=True, blank=True)
     REQUIRED_FIELDS = ('user',)
-    USERNAME_FIELD = 'name'
+    USERNAME_FIELD = 'user'
     def __str__(self):
         return '%s %s' % (self.user.first_name, self.user.last_name)
 
