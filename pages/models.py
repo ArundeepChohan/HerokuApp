@@ -5,13 +5,14 @@ from django.dispatch import receiver
 
 
 class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    REQUIRED_FIELDS = ('user',)
+
+    user = models.OneToOneField(User,related_name='profile', unique=True, on_delete=models.CASCADE)
     """ bio = models.TextField(max_length=500, blank=True)
     phone_number = models.CharField(max_length=12, blank=True)
     birth_date = models.DateField(null=True, blank=True) """
     avatar = models.ImageField(default='default.png', upload_to='users/', null=True, blank=True)
-    REQUIRED_FIELDS=[]
-    USERNAME_FIELD="None"
+    
     def __str__(self):
         return '%s %s' % (self.user.first_name, self.user.last_name)
 
