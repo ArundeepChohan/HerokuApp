@@ -10,6 +10,7 @@ class Profile(models.Model):
     phone_number = models.CharField(max_length=12, blank=True)
     birth_date = models.DateField(null=True, blank=True) """
     avatar = models.ImageField(default='default.png', upload_to='users/', null=True, blank=True)
+    REQUIRED_FIELDS=[]
 
     def __str__(self):
         return '%s %s' % (self.user.first_name, self.user.last_name)
