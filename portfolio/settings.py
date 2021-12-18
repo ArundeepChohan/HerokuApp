@@ -83,6 +83,8 @@ WSGI_APPLICATION = 'portfolio.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
+# Extends default user with additional fields 
+AUTH_USER_MODEL = 'porfolio.Profile' 
 # Todo:Add a postgresql for prod settings using Amazon RDS Management Console
 """ DATABASES = {
     'default': {
@@ -164,11 +166,6 @@ STATICFILES_STORAGE = 'portfolio.storage_backends.StaticStorage'
 MEDIAFILES_LOCATION = 'media'
 DEFAULT_FILE_STORAGE = 'portfolio.storage_backends.MediaStorage'
 
-AWS_PUBLIC_MEDIA_LOCATION = 'media/public'
-DEFAULT_FILE_STORAGE = 'portfolio.storage_backends.PublicMediaStorage'
-
-AWS_PRIVATE_MEDIA_LOCATION = 'media/private'
-PRIVATE_FILE_STORAGE = 'portfolio.storage_backends.PrivateMediaStorage' 
 """ else:
     STATIC_ROOT = os.path.join(BASE_DIR, 'static')
     STATIC_URL= 'static'
@@ -202,6 +199,8 @@ SESSION_COOKIE_AGE = 60  # change expired session
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_SAVE_EVERY_REQUEST = True 
+
+
 
 
 import django_heroku

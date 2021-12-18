@@ -1,14 +1,26 @@
 from django.db import models
-from django.conf import settings
 from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
-from portfolio.storage_backends import PrivateMediaStorage
 
-class Document(models.Model):
-    uploaded_at = models.DateTimeField(auto_now_add=True)
-    upload = models.FileField()
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    """ bio = models.TextField(max_length=500, blank=True)
+    phone_number = models.CharField(max_length=12, blank=True)
+    birth_date = models.DateField(null=True, blank=True) """
+    image = models.ImageField(default='default.png', upload_to='private', null=True, blank=True)
 
-class PrivateDocument(models.Model):
-    uploaded_at = models.DateTimeField(auto_now_add=True)
-    upload = models.FileField(storage=PrivateMediaStorage())
-    user = models.ForeignKey(User, related_name='documents',on_delete = models.CASCADE)
+    def __str__(self):
+        return '%s %s' % (self.user.first_name, self.user.last_name)
+
+
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance)
+
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    instance.profile.save()
