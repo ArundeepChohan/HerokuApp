@@ -13,8 +13,6 @@ class Profile(models.Model):
     avatar = models.ImageField(default='default.png', upload_to='users/', null=True, blank=True)
     REQUIRED_FIELDS = ('user',)
     USERNAME_FIELD = 'user'
-    def __str__(self):
-        return '%s %s' % (self.user.first_name, self.user.last_name)
 
 
 @receiver(post_save, sender=User)
