@@ -4,6 +4,11 @@
     Hi {{ user.username }}!
     {{user.avatar}}
     <img class="profile-pic" src="{% static 'img/profile1.png' %}" >
+    <form method = "post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Upload</button>
+    </form>
     <ul class='no-bullets'>
         <li><a href="/">Dashboard</a></li>
         <li><a href="/">Messages</a></li>
