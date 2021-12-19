@@ -32,7 +32,7 @@ DEBUG = True
 
 # DEBUG = config('DJANGO_DEBUG',default=True, cast=bool)
 
-ALLOWED_HOSTS = ["arundeepchohan.herokuapp.com"]
+ALLOWED_HOSTS = ["arundeepchohan.herokuapp.com",'127.0.0.1', '0.0.0.0','localhost']
 
 
 # Application definition
