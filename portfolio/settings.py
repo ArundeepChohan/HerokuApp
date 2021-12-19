@@ -147,32 +147,32 @@ USE_TZ = True
 # All of this is in my console.aws.amazon to configure aws s3 static files only
 # If I am in prod
 # IAM Management Console
-# if DEBUG:
-AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID') 
-AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY') 
-# Amazon S3 Buckets
-AWS_STORAGE_BUCKET_NAME =  config('AWS_STORAGE_BUCKET_NAME')
-AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
-AWS_S3_OBJECT_PARAMETERS = {
-    'CacheControl': 'max-age=86400',
-}
-AWS_DEFAULT_ACL = None
-AWS_S3_SIGNATURE_VERSION = 's3v4'
-AWS_S3_REGION_NAME = 'us-east-2'
+if DEBUG:
+    AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID') 
+    AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY') 
+    # Amazon S3 Buckets
+    AWS_STORAGE_BUCKET_NAME =  config('AWS_STORAGE_BUCKET_NAME')
+    AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+    AWS_S3_OBJECT_PARAMETERS = {
+        'CacheControl': 'max-age=86400',
+    }
+    AWS_DEFAULT_ACL = None
+    AWS_S3_SIGNATURE_VERSION = 's3v4'
+    AWS_S3_REGION_NAME = 'us-east-2'
 
-AWS_STATIC_LOCATION = 'static'
-STATIC_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, AWS_STATIC_LOCATION)
-STATICFILES_STORAGE = 'portfolio.storage_backends.StaticStorage'
+    AWS_STATIC_LOCATION = 'static'
+    STATIC_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, AWS_STATIC_LOCATION)
+    STATICFILES_STORAGE = 'portfolio.storage_backends.StaticStorage'
 
-MEDIAFILES_LOCATION = 'media'
-MEDIA_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, MEDIAFILES_LOCATION )
-DEFAULT_FILE_STORAGE = 'portfolio.storage_backends.MediaStorage'
+    MEDIAFILES_LOCATION = 'media'
+    MEDIA_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, MEDIAFILES_LOCATION )
+    DEFAULT_FILE_STORAGE = 'portfolio.storage_backends.MediaStorage'
 
-""" else:
+else:
     STATIC_ROOT = os.path.join(BASE_DIR, 'static')
     STATIC_URL= 'static'
     MEDIA_ROOT = os.path.join(BASE_DIR, 'media') 
-    MEDIA_URL = '/media/'  """
+    MEDIA_URL = '/media/'  
 
 
 STATICFILES_DIRS = [
