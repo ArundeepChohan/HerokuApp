@@ -22,7 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 import os
 
-#Gets rid of 
+# Gets rid of 
 from decouple import config
 
 
@@ -87,22 +87,17 @@ WSGI_APPLICATION = 'portfolio.wsgi.application'
 AUTH_USER_MODEL = 'pages.Profile' 
 
 # Todo:Add a postgresql for prod settings using Amazon RDS Management Console
-""" DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'mydatabase',
-        'USER': 'mydatabaseuser',
-        'PASSWORD': 'mypassword',
-        'HOST': '127.0.0.1',
-        'PORT': '5432',
-    }
-} """ 
 DATABASES = {
+    'default': dj_database_url.config(
+        default=config('DATABASE_URL')
+    )
+}
+""" DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
-} 
+}  """
 
 import dj_database_url
 db_from_env = dj_database_url.config(conn_max_age=600)
@@ -150,12 +145,12 @@ USE_TZ = True
 # if DEBUG:
 AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID') 
 AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY') 
-    # Amazon S3 Buckets
+# Amazon S3 Buckets
 AWS_STORAGE_BUCKET_NAME =  config('AWS_STORAGE_BUCKET_NAME')
 AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
 AWS_S3_OBJECT_PARAMETERS = {
     'CacheControl': 'max-age=86400',
-    }
+}
 AWS_DEFAULT_ACL = None
 AWS_S3_SIGNATURE_VERSION = 's3v4'
 AWS_S3_REGION_NAME = 'us-east-2'
