@@ -1,16 +1,10 @@
 {% block content %}
-{% load static %}
 <nav id="sidebar">
     Hi {{ user.username }}!
     {{user.avatar.url}}
 
     <img class="profile-pic" src="{{user.avatar.url}}" >
-
-    <form method = "post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Upload</button>
-    </form>
+    {% include 'form.html' %}
 
     <ul class='no-bullets'>
         <li><a href="/">Dashboard</a></li>

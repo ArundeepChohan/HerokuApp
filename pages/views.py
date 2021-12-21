@@ -1,15 +1,21 @@
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from .forms import UserProfileForm
+from .models import Profile
 
 def index(request):
-    return render(request,'home.html')
-    if request.method == 'POST':
+    context = {}
+    if request.method == "POST":
         form = UserProfileForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
-            # Get the current instance object to display in the template
-            img_obj = form.instance
-            return render(request, 'home.html', {'form': form, 'img_obj': img_obj})
+            img = form.cleaned_data.get("avatar")
+            obj = Profile.objects.create(
+                                 avatar = img
+                                 )
+            obj.save(commit=False)
+            print(obj)
+            return redirect(request, "home.html", obj)
+
     else:
         form = UserProfileForm()
-    return render(request, 'home.html', {'form': form})
+    context['form']= form
+    return render(request, "home.html", context)

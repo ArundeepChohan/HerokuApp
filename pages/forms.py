@@ -1,4 +1,3 @@
-
 from django import forms
 from django.core.files.images import get_image_dimensions
 
@@ -7,6 +6,7 @@ from pages.models import Profile
 class UserProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
+        fields = ('avatar',)
 
     def clean_avatar(self):
         avatar = self.cleaned_data['avatar']
@@ -15,7 +15,7 @@ class UserProfileForm(forms.ModelForm):
             w, h = get_image_dimensions(avatar)
 
             #validate dimensions
-            max_width = max_height = 100
+            max_width = max_height = 1000
             if w > max_width or h > max_height:
                 raise forms.ValidationError(
                     u'Please use an image that is '
