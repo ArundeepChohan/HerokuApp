@@ -1,6 +1,24 @@
 from django.shortcuts import redirect, render
-from .forms import UserProfileForm
+from .forms import SignUpForm, UserProfileForm
 from .models import Profile
+from django.contrib.auth import login, authenticate
+from django.contrib.auth.forms import UserCreationForm
+from django.shortcuts import render, redirect
+
+
+def signup(request):
+    if request.method == 'POST':
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            form.save()
+            username = form.cleaned_data.get('username')
+            raw_password = form.cleaned_data.get('password1')
+            user = authenticate(username=username, password=raw_password)
+            login(request, user)
+            return redirect('home')
+    else:
+        form = SignUpForm()
+    return render(request, 'registration/signup.html', {'form': form})
 
 def index(request):
     context = {}
@@ -8,18 +26,6 @@ def index(request):
         print(request.POST)
         form = UserProfileForm(request.POST or None, request.FILES or None,instance=request.user)
         if form.is_valid():
-            """ 
-            img = form.cleaned_data.get("avatar")
-            print(img)
-            print(form.cleaned_data.get('username'))
-            print(request.user)
-            obj, created = Profile.objects.update_or_create(
-                username=form.cleaned_data.get('username'),
-                defaults={'avatar': img},
-            )
-            obj.save()
-            print(obj)
-            """
             form.save()
             return redirect('home') 
     else:
