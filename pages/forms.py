@@ -3,7 +3,6 @@ from django.core.files.images import get_image_dimensions
 from pages.models import Profile
 
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
 
 class SignUpForm(UserCreationForm):
     first_name = forms.CharField(max_length=30, required=False, help_text='Optional.')
