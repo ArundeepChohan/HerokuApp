@@ -1,9 +1,3 @@
-
-ul.no-bullets {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-  }
 .avatar{
   object-fit: contain; 
   border-radius:50%; 
