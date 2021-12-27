@@ -27,5 +27,4 @@ def index(request):
     else:
         form = UserProfileForm()
     context['form']= form
-    context['active_tab']='tab1'
     return render(request, "home.html", context)
