@@ -1,10 +1,6 @@
 from django.shortcuts import redirect, render
 from .forms import SignUpForm, UserProfileForm
-from .models import Profile
 from django.contrib.auth import login, authenticate
-from django.contrib.auth.forms import UserCreationForm
-from django.shortcuts import render, redirect
-
 
 def signup(request):
     if request.method == 'POST':
@@ -31,4 +27,5 @@ def index(request):
     else:
         form = UserProfileForm()
     context['form']= form
+    context['active_tab']='tab1'
     return render(request, "home.html", context)

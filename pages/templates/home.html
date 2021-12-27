@@ -3,19 +3,12 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-
   {% if user.is_authenticated %}
-  <div class="container">
-    <div class='row'>
-      <div class="col-xs-12 col-md-3">
-        {% block sidebar %}
+  <div class="container"> 
+    <div class='row'>   
         {% include 'sidebar.html' %}
-        {% endblock %}
-      </div>
-      <div class="col-xs-12 col-md-9">
-        Some page
-      </div>
-    </div>
+        
+    </div> 
   </div> 
   {% else %}
     <p>You are not logged in</p>
