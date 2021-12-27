@@ -4,3 +4,8 @@ ul.no-bullets {
     margin: 0;
     padding: 0;
   }
+.avatar{
+  object-fit: contain; 
+  border-radius:50%; 
+  width:100%
+}

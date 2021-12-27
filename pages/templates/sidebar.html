@@ -1,12 +1,10 @@
-
 {% block content %}
 
-    
     <div class="col-md-3" style='float:left'>
         <h1>Hi {{ user.username }}!</h1>
         <!-- {{user.avatar.url}} -->
 
-        <img class="profile-pic" src="{{user.avatar.url}}"  style='object-fit: cover; border-radius:50%;'>
+        <img class="avatar" src="{{user.avatar.url}}"  >
         {% include 'form.html' %}
         <ul class="nav nav-tabs flex-column" id="myTab" role="tablist">
           <li class="nav-item" role="presentation">
@@ -31,6 +29,5 @@
           <div class="tab-pane fade" id="documents" role="tabpanel" aria-labelledby="documents-tab">Documents</div>
         </div>
     </div>
-
 
 {% endblock %} 
