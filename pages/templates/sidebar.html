@@ -1,34 +1,36 @@
 
 {% block content %}
 
-<div class="col-md-3">
-    <h1>Hi {{ user.username }}!</h1>
-    <!-- {{user.avatar.url}} -->
+    
+    <div class="col-md-3" style='float:left'>
+        <h1>Hi {{ user.username }}!</h1>
+        <!-- {{user.avatar.url}} -->
 
-    <img class="profile-pic" src="{{user.avatar.url}}"  style='object-fit: cover; border-radius:50%;'>
-    {% include 'form.html' %}
-    <div class="nav nav-tab flex-column" id="nav-tab" role="tablist">
-        <li class="nav-item">
-            <a class="nav-link active" id="home" data-bs-toggle="tab" data-bs-target="#home" role="tab" aria-controls="home" aria-selected="true">Dashboard</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" id="messages" data-bs-toggle="tab" data-bs-target="#messages" role="tab" aria-controls="messages" aria-selected="false">Messages</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" id="documents" data-bs-toggle="tab" data-bs-target="#documents" role="tab" aria-controls="documents" aria-selected="false">Documents</a>  
-        </li>
-        <li class="nav-item">
+        <img class="profile-pic" src="{{user.avatar.url}}"  style='object-fit: cover; border-radius:50%;'>
+        {% include 'form.html' %}
+        <ul class="nav nav-tabs flex-column" id="myTab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <a class="nav-link active" id="home-tab" data-bs-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Dashboard</a>
+          </li>
+          <li class="nav-item" role="presentation">
+            <a class="nav-link" id="messages-tab" data-bs-toggle="tab" href="#messages" role="tab" aria-controls="messages" aria-selected="false">Messages</a>
+          </li>
+          <li class="nav-item" role="presentation">
+            <a class="nav-link" id="documents-tab" data-bs-toggle="tab" href="#documents" role="tab" aria-controls="documents" aria-selected="false">Documents</a>
+          </li>
+          <li class="nav-item" role="presentation">
             <a class="nav-link" id="logout" href="{% url 'logout' %}" role="tab" aria-controls="logout" aria-selected="false">Log out</a>
-        </li>
+            </li>
+ 
+        </ul>
     </div>
-</div>
-<div class="col-md-9">
-    <div class="tab-content" id="nav-tabContent">
-      <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home">Dashboard</div>
-      <div class="tab-pane fade" id="messages" role="tabpanel" aria-labelledby="messages" >Messages</div>
-      <div class="tab-pane fade" id="documents" role="tabpanel" aria-labelledby="documents">Documents</div>
+    <div class="col-md-9"style='float:right'>
+        <div class="tab-content" id="myTabContent">
+          <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">Dashboard</div>
+          <div class="tab-pane fade" id="messages" role="tabpanel" aria-labelledby="messages-tab">Message</div>
+          <div class="tab-pane fade" id="documents" role="tabpanel" aria-labelledby="documents-tab">Documents</div>
+        </div>
     </div>
-</div>
 
 
 {% endblock %} 
