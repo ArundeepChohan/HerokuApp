@@ -4,7 +4,7 @@ from phonenumber_field.modelfields import PhoneNumberField
 class Profile(AbstractUser):
     
     bio = models.TextField(max_length=500, blank=True)
-    phone_number = PhoneNumberField(max_length=25, required=False, region="US")
+    phone_number = PhoneNumberField(max_length=25, region="US")
     birth_date = models.DateField(blank = True, null = True) 
     is_doctor = models.BooleanField(default=False)
     date_created = models.DateTimeField(auto_now_add=True)
