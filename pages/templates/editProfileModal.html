@@ -13,5 +13,13 @@
             </div>
         </div>
     </div>
-
+     <!-- Do this after jQuery loaded -->
+     <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+     {% if is_post %}
+     <script type="text/javascript">
+         $(window).on('load', function() {
+             $('#editProfile').modal('show');
+         });
+     </script>
+     {% endif %}
 {% endblock %} 

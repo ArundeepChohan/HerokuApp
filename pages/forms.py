@@ -1,8 +1,9 @@
 from django import forms
 from django.core.files.images import get_image_dimensions
+from django.forms.widgets import DateInput
 from pages.models import Profile
 from django.contrib.auth.forms import UserCreationForm
-from datetime import date
+from datetime import date, timedelta
 
 class SignUpForm(UserCreationForm):
     first_name = forms.CharField(max_length=30, required=False, help_text='Optional.')
@@ -14,13 +15,29 @@ class SignUpForm(UserCreationForm):
         fields = ('username', 'first_name', 'last_name', 'email', 'password1', 'password2', )
         
 class UserProfileForm(forms.ModelForm):
-    date_range = 100    
     this_year = date.today().year
-    birth_date= forms.DateField(label='What is your birth date?', widget=forms.SelectDateWidget(years=range(this_year - date_range, this_year+1)))
-    
+    year_range = [x for x in range(this_year - 100, this_year + 1)]
+    bio = forms.CharField(
+        widget = forms.Textarea(attrs={'rows': 2,}),
+    )
+    birth_date = forms.DateField(
+        label="What is your birth date?",
+        widget=forms.SelectDateWidget(years=year_range),
+    )
     class Meta:
         model = Profile
         fields = ('bio','phone_number','birth_date','avatar',)
+
+    def clean_birth_date(self):
+        birth_date = self.cleaned_data['birth_date']
+
+        today = date.today()
+        first_date = today - timedelta(days=100 * 365)
+
+        if not (first_date < birth_date <today):
+            raise forms.ValidationError(u'Please select a date within the last 100 years')
+
+        return birth_date
 
     def clean_avatar(self):
         avatar = self.cleaned_data['avatar']
