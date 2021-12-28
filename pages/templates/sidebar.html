@@ -1,6 +1,10 @@
 {% block content %}
   <div class="col-md-3" style='float:left'>
     <h1>Hi {{ user.username }}!</h1>
+    <h1>Bio: {{ user.bio }}</h1>
+    <h1>Phone: {{ user.phone_number }}</h1>
+    <h1>Birthday: {{ user.birth_date}}</h1>
+    <h1>isDoctor?: {{ user.is_doctor }}</h1>
     <img class="avatar" src="{{user.avatar.url}}" >
     <!-- Button trigger modal -->
     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editProfile">

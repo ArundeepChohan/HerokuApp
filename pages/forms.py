@@ -1,8 +1,8 @@
 from django import forms
 from django.core.files.images import get_image_dimensions
 from pages.models import Profile
-
 from django.contrib.auth.forms import UserCreationForm
+from datetime import date
 
 class SignUpForm(UserCreationForm):
     first_name = forms.CharField(max_length=30, required=False, help_text='Optional.')
@@ -14,9 +14,13 @@ class SignUpForm(UserCreationForm):
         fields = ('username', 'first_name', 'last_name', 'email', 'password1', 'password2', )
         
 class UserProfileForm(forms.ModelForm):
+    date_range = 100    
+    this_year = date.today().year
+    birth_date= forms.DateField(label='What is your birth date?', widget=forms.SelectDateWidget(years=range(this_year - date_range, this_year+1)))
+    
     class Meta:
         model = Profile
-        fields = ('avatar',)
+        fields = ('bio','phone_number','birth_date','avatar',)
 
     def clean_avatar(self):
         avatar = self.cleaned_data['avatar']
