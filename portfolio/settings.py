@@ -34,6 +34,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["arundeepchohan.herokuapp.com",'127.0.0.1', '0.0.0.0','localhost']
 
+PHONENUMBER_DB_FORMAT = 'NATIONAL'
+PHONENUMBER_DEFAULT_REGION = "US"
 
 # Application definition
 
