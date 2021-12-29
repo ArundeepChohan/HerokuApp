@@ -1,4 +1,3 @@
-from django.http.response import HttpResponse
 from django.shortcuts import redirect, render
 from .forms import SignUpForm, UserProfileForm
 from django.contrib.auth import login, authenticate
@@ -26,6 +25,11 @@ def index(request):
             form.save()
             return redirect('home') 
     else:
-        form = UserProfileForm(instance=request.user)
+        # Checks if user is logged out or in and passes to form
+        if request.user.is_anonymous:
+            form = UserProfileForm()
+        else:
+            form = UserProfileForm(instance=request.user)
+
     context['form']= form
     return render(request, "home.html", context)

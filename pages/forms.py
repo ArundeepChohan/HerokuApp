@@ -1,6 +1,5 @@
 from django import forms
 from django.core.files.images import get_image_dimensions
-from django.forms.widgets import DateInput
 from pages.models import Profile
 from django.contrib.auth.forms import UserCreationForm
 from datetime import date, timedelta
