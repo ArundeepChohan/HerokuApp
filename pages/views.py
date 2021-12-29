@@ -26,10 +26,10 @@ def index(request):
             return redirect('home') 
     else:
         # Checks if user is logged out or in and passes to form
-        if request.user.is_anonymous:
-            form = UserProfileForm()
-        else:
+        if request.user.is_authenticated:
             form = UserProfileForm(instance=request.user)
+        else:
+            form = UserProfileForm()
 
     context['form']= form
     return render(request, "home.html", context)
