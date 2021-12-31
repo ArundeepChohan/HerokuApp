@@ -4,6 +4,9 @@ from pages.models import Profile
 from django.contrib.auth.forms import UserCreationForm
 from datetime import date, timedelta
 
+class PickUserType(forms.Form):
+    is_doctor = forms.BooleanField(required=True)
+
 class SignUpForm(UserCreationForm):
     first_name = forms.CharField(max_length=30, required=False, help_text='Optional.')
     last_name = forms.CharField(max_length=30, required=False, help_text='Optional.')
