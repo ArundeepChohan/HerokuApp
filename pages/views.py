@@ -1,8 +1,24 @@
+
 from django.shortcuts import redirect, render
 from .forms import SignUpForm, UserProfileForm
 from django.contrib.auth import login, authenticate
 
-def signup(request):
+from formtools.wizard.views import SessionWizardView
+
+def show_message_form_condition(wizard):
+    # try to get the cleaned data of step 1
+    cleaned_data = wizard.get_cleaned_data_for_step('0') or {}
+    # check if the field isDoctor was checked.
+    return cleaned_data.get('is_doctor', True)
+
+class ContactWizard(SessionWizardView):
+
+    def done(self, form_list,form_dict, **kwargs):
+        print(form_list)
+        print(form_dict)
+        print(kwargs)
+        return redirect('home')
+""" def signup(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
         if form.is_valid():
@@ -14,7 +30,7 @@ def signup(request):
             return redirect('home')
     else:
         form = SignUpForm()
-    return render(request, 'registration/signup.html', {'form': form})
+    return render(request, 'registration/signup.html', {'form': form}) """
 
 def index(request):
     context = {'is_post': False}

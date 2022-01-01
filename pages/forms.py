@@ -5,7 +5,10 @@ from django.contrib.auth.forms import UserCreationForm
 from datetime import date, timedelta
 
 class PickUserType(forms.Form):
-    is_doctor = forms.BooleanField(required=True)
+    is_doctor = forms.BooleanField(required=False)
+
+# verified = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'doctor'))
+# from django.core.files.storage import FileSystemStorage
 
 class SignUpForm(UserCreationForm):
     first_name = forms.CharField(max_length=30, required=False, help_text='Optional.')
