@@ -9,15 +9,20 @@ def show_message_form_condition(wizard):
     # try to get the cleaned data of step 1
     cleaned_data = wizard.get_cleaned_data_for_step('0') or {}
     # check if the field isDoctor was checked.
-    return cleaned_data.get('is_doctor', True)
+    #print(cleaned_data.get('is_doctor')== False)
+    return cleaned_data.get('is_doctor')== False
+
+def process_data(form_list):
+    form_data = [form.cleaned_data for form in form_list]
+    print(form_data)
+    return form_data
 
 class ContactWizard(SessionWizardView):
 
-    def done(self, form_list,form_dict, **kwargs):
-        print(form_list)
-        print(form_dict)
-        print(kwargs)
+    def done(self, form_list, **kwargs):
+        process_data(form_list)
         return redirect('home')
+
 """ def signup(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
