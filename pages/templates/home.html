@@ -4,16 +4,15 @@
 
 {% block content %}
   {% if user.is_authenticated %}
-  <div class="container"> 
     {% include 'editProfileModal.html' %} 
     <div class='row'>  
       {% include 'sidebar.html' %}
     </div> 
-  </div> 
+  
   {% else %}
     <p>You are not logged in</p>
-    <a href="{% url 'login' %}">Log In</a>
-    <a href="{% url 'signup' %}">Sign up</a>
+    <button><a href="{% url 'login' %}">Log In</a></button>
+    <button><a href="{% url 'signup' %}">Sign up</a></button>
     
   {% endif %}
 

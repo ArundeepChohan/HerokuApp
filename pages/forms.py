@@ -1,17 +1,9 @@
 from django import forms
 from django.core.files.images import get_image_dimensions
-from django.forms.widgets import RadioSelect
+
 from pages.models import Profile
 from django.contrib.auth.forms import UserCreationForm
 from datetime import date, timedelta
-
-class PickUserType(forms.Form):
-    #template_name = 'templates/pickUserType.html'
-    is_doctor = forms.BooleanField(required=False,widget=RadioSelect(choices=[(True, 'Yes'), 
-                                                            (False, 'No')]))
-
-# verified = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'doctor'))
-# from django.core.files.storage import FileSystemStorage
 
 class SignUpForm(UserCreationForm):
     first_name = forms.CharField(max_length=30, required=False, help_text='Optional.')
@@ -21,6 +13,11 @@ class SignUpForm(UserCreationForm):
     class Meta:
         model = Profile
         fields = ('username', 'first_name', 'last_name', 'email', 'password1', 'password2', )
+
+class verify(UserCreationForm):
+    class Meta:
+        model = Profile
+        fields = ('verified',)
         
 class UserProfileForm(forms.ModelForm):
     this_year = date.today().year

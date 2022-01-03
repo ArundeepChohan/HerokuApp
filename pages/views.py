@@ -1,27 +1,48 @@
 
 from django.shortcuts import redirect, render
-from .forms import SignUpForm, UserProfileForm
+from .forms import SignUpForm, UserProfileForm, verify
 from django.contrib.auth import login, authenticate
 
 from formtools.wizard.views import SessionWizardView
 
-def show_message_form_condition(wizard):
-    # try to get the cleaned data of step 1
-    cleaned_data = wizard.get_cleaned_data_for_step('0') or {}
-    # check if the field isDoctor was checked.
-    #print(cleaned_data.get('is_doctor')== False)
-    return cleaned_data.get('is_doctor')== False
+def buttonSelection(request):
+    return render(request,'pickUserType.html')
 
 def process_data(form_list):
     form_data = [form.cleaned_data for form in form_list]
     print(form_data)
     return form_data
-
-class ContactWizard(SessionWizardView):
-
+    
+## Issue using createUser view
+""" WIZARD_FORMS = [("0" , SignUpForm),]
+TEMPLATES = {"0": "createUser.html"} """
+from django.core.files.storage import FileSystemStorage
+import os
+from django.conf import settings
+class DoctorWizard(SessionWizardView):
+    verified = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'doctor'))
+    template_name = "registration/signup.html"
+    form_list=[SignUpForm,verify]
+    
     def done(self, form_list, **kwargs):
         process_data(form_list)
         return redirect('home')
+        
+class UserWizard(SessionWizardView):
+    template_name = "registration/signup.html"
+    form_list=[SignUpForm]
+    def done(self, form_list, **kwargs):
+        process_data(form_list)
+        return redirect('home')
+""" 
+    def get_template_names(self):
+        return [TEMPLATES[self.steps.current]]
+ """
+def userForm(request):
+    return render(request,'createUser.html')
+
+def doctorForm(request):
+    return render(request,'createUser.html')
 
 """ def signup(request):
     if request.method == 'POST':
