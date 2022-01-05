@@ -5,28 +5,9 @@
 
     <form method = "POST" action='.' enctype="multipart/form-data">
         {% csrf_token %}
-        <button >
-            <a href="{% url 'doctor' %}">Doctor</a>
-        </button>
-        <button >
-            <a href="{% url 'user' %}">User</a>
-        </button>
-        <!-- A formwizard needs this form -->
-        <!-- {{ wizard.management_form }} -->
-        <!-- {{form_as_p}} -->
-        <!-- <button type="submit" value="Doctor" name="0-is_doctor">Doctor</button>
-        <button type="submit" value="User" name="0-is_user">User</button>  -->
-        <!-- {% for field in form.visible_fields %}
-            {{ field.errors }}
-            {% for radio in field %}
-                <div class="form-check form-check-inline">
-                    {{ radio }}
-                </div>
-            {% endfor %}
-        {% endfor %}
-        <input type="submit" value="submit"> -->
-
+        <button><a href="{% url 'doctor' %}">Doctor</a></button>
+        <button><a href="{% url 'user' %}">User</a></button>
     </form>
-    <button><a href="{% url 'login' %}">Log In</a> </button>
+    <button><a href="{% url 'login' %}">Log In</a></button>
 
 {% endblock %}

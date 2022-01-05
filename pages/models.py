@@ -11,3 +11,4 @@ class Profile(AbstractUser):
     verified = models.ImageField(upload_to='media/doctor')
     date_created = models.DateTimeField(auto_now_add=True)
     avatar = models.ImageField(default='default.png', upload_to='')
+    #status = models.BooleanField(default=False)

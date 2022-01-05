@@ -14,10 +14,12 @@ class SignUpForm(UserCreationForm):
         model = Profile
         fields = ('username', 'first_name', 'last_name', 'email', 'password1', 'password2', )
 
-class verify(UserCreationForm):
+class verify(forms.Form):
+    verified = forms.ImageField(required=True)
     class Meta:
         model = Profile
         fields = ('verified',)
+        
         
 class UserProfileForm(forms.ModelForm):
     this_year = date.today().year

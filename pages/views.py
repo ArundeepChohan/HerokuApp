@@ -1,9 +1,11 @@
 
 from django.shortcuts import redirect, render
 from .forms import SignUpForm, UserProfileForm, verify
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login as auth_login, authenticate
 
 from formtools.wizard.views import SessionWizardView
+
+from django.contrib.auth.forms import AuthenticationForm
 
 def buttonSelection(request):
     return render(request,'pickUserType.html')
@@ -13,50 +15,39 @@ def process_data(form_list):
     print(form_data)
     return form_data
     
-## Issue using createUser view
-""" WIZARD_FORMS = [("0" , SignUpForm),]
-TEMPLATES = {"0": "createUser.html"} """
 from django.core.files.storage import FileSystemStorage
 import os
 from django.conf import settings
 class DoctorWizard(SessionWizardView):
-    verified = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'doctor'))
+    file_storage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'doctor'))
     template_name = "registration/signup.html"
-    form_list=[SignUpForm,verify]
+    form_list = [SignUpForm,verify]
     
     def done(self, form_list, **kwargs):
         process_data(form_list)
+        userCreate = form_list[0]
+        userCreate.verified=form_list[1].cleaned_data.get('verified')
+        userCreate.save()
+        username = userCreate.cleaned_data.get('username')
+        raw_password = userCreate.cleaned_data.get('password1')
+        user = authenticate(username=username, password=raw_password)
+        if user:
+            auth_login(self.request, user)
         return redirect('home')
-        
+    
 class UserWizard(SessionWizardView):
     template_name = "registration/signup.html"
-    form_list=[SignUpForm]
+    form_list = [SignUpForm]
     def done(self, form_list, **kwargs):
         process_data(form_list)
+        form_list[0].save()
+        userCreate = form_list[0]
+        username = userCreate.cleaned_data.get('username')
+        raw_password = userCreate.cleaned_data.get('password1')
+        user = authenticate(username=username, password=raw_password)
+        if user:
+            auth_login(self.request, user)
         return redirect('home')
-""" 
-    def get_template_names(self):
-        return [TEMPLATES[self.steps.current]]
- """
-def userForm(request):
-    return render(request,'createUser.html')
-
-def doctorForm(request):
-    return render(request,'createUser.html')
-
-""" def signup(request):
-    if request.method == 'POST':
-        form = SignUpForm(request.POST)
-        if form.is_valid():
-            form.save()
-            username = form.cleaned_data.get('username')
-            raw_password = form.cleaned_data.get('password1')
-            user = authenticate(username=username, password=raw_password)
-            login(request, user)
-            return redirect('home')
-    else:
-        form = SignUpForm()
-    return render(request, 'registration/signup.html', {'form': form}) """
 
 def index(request):
     context = {'is_post': False}
@@ -75,3 +66,19 @@ def index(request):
 
     context['form']= form
     return render(request, "home.html", context)
+
+
+""" def login(request):
+    if request.method == 'POST':
+        form = AuthenticationForm(request.POST)
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request,username=username,password=password)
+        if user:
+            auth_login(request,user)
+            return redirect('home')
+        else:
+            return render(request,'registration/login.html',{'form':form})
+    else:
+        form = AuthenticationForm()
+    return render(request,'registration/login.html',{'form':form}) """

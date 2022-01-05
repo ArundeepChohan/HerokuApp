@@ -10,7 +10,7 @@
 {% block content %}
   <h2>Sign up</h2>
   <p>Step {{ wizard.steps.step1 }} of {{ wizard.steps.count }}</p>
-  <form action="" method="POST" enctype="multipart/form-data">
+  <form action="." method="POST" enctype="multipart/form-data">
     {% csrf_token %}
   <table>
   {{ wizard.management_form }}
@@ -24,8 +24,10 @@
   {% endif %}
   </table>
   {% if wizard.steps.prev %}
-  <button name="wizard_goto_step" type="submit" value="{{ wizard.steps.prev }}">{% trans "prev step" %}</button>
+  <button name="wizard_goto_step" type="submit" value="{{ wizard.steps.prev }}" formnovalidate>{% trans "prev step" %}</button>
   {% endif %}
-  <input type="submit" value="{% trans 'submit' %}"/>
+  <button type="submit">Submit</button>
+  <button><a href="{% url 'signup' %}">Sign up</a></button>
+  <button><a href="{% url 'login' %}">Log In</a></button>
   </form>
 {% endblock %}

@@ -3,12 +3,13 @@
 {% block title %}Login{% endblock %}
 
 {% block content %}
-  <h2>Log In</h2>
 
-  <form method="post">
+  <h2>Log In</h2>
+  <form method="POST" action="."enctype="multipart/form-data">
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit">Log In</button>
+    <button><a href="{% url 'signup' %}">Sign up</a></button>
   </form>
-  <button><a href="{% url 'signup' %}">Sign up</a></button>
+  
 {% endblock %}
