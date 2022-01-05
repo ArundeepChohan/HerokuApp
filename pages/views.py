@@ -19,15 +19,19 @@ from django.core.files.storage import FileSystemStorage
 import os
 from django.conf import settings
 class DoctorWizard(SessionWizardView):
-    file_storage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'doctor'))
+    file_storage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, '/doctor/'))
     template_name = "registration/signup.html"
     form_list = [SignUpForm,verify]
     
     def done(self, form_list, **kwargs):
         process_data(form_list)
         userCreate = form_list[0]
-        userCreate.verified=form_list[1].cleaned_data.get('verified')
-        userCreate.save()
+
+        addFields=userCreate.save(commit=False)
+        addFields.verified=form_list[1].cleaned_data.get('verified')
+        addFields.is_doctor=True
+
+        addFields.save()
         username = userCreate.cleaned_data.get('username')
         raw_password = userCreate.cleaned_data.get('password1')
         user = authenticate(username=username, password=raw_password)
