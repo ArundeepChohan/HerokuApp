@@ -5,8 +5,6 @@ from django.contrib.auth import login as auth_login, authenticate
 
 from formtools.wizard.views import SessionWizardView
 
-from django.contrib.auth.forms import AuthenticationForm
-
 def buttonSelection(request):
     return render(request,'pickUserType.html')
 
@@ -26,16 +24,14 @@ class DoctorWizard(SessionWizardView):
     def done(self, form_list, **kwargs):
         process_data(form_list)
         userCreate = form_list[0]
-
-        addFields=userCreate.save(commit=False)
-        addFields.verified=form_list[1].cleaned_data.get('verified')
-        addFields.is_doctor=True
-
-        addFields.save()
+        userCreate.save()
         username = userCreate.cleaned_data.get('username')
         raw_password = userCreate.cleaned_data.get('password1')
         user = authenticate(username=username, password=raw_password)
         if user:
+            user.verified=form_list[1].cleaned_data.get('verified')
+            user.is_doctor=True
+            user.save()
             auth_login(self.request, user)
         return redirect('home')
     
@@ -70,19 +66,3 @@ def index(request):
 
     context['form']= form
     return render(request, "home.html", context)
-
-
-""" def login(request):
-    if request.method == 'POST':
-        form = AuthenticationForm(request.POST)
-        username = request.POST['username']
-        password = request.POST['password']
-        user = authenticate(request,username=username,password=password)
-        if user:
-            auth_login(request,user)
-            return redirect('home')
-        else:
-            return render(request,'registration/login.html',{'form':form})
-    else:
-        form = AuthenticationForm()
-    return render(request,'registration/login.html',{'form':form}) """
