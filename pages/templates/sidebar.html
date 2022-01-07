@@ -14,7 +14,7 @@
         <a class="nav-link dropdown-toggle" id="messages-tab" data-bs-toggle="dropdown" aria-expanded="false">Messages</a>
         <ul class="dropdown-menu">
           <li><a class="dropdown-item" id="messages-send-tab" data-bs-toggle="tab" href="#messagesSend" role="tab" aria-controls="messagesSend" aria-selected="false">Send</a></li>
-          <li><a class="dropdown-item" href="/">Another action</a></li>
+          <li><a class="dropdown-item" id="messages-inbox-tab" data-bs-toggle="tab" href="#messagesInbox" role="tab" aria-controls="messagesInbox" aria-selected="false">Inbox</a></li>
         </ul>
       </li>
 
@@ -32,7 +32,9 @@
       <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">Dashboard</div>
       <div class="tab-pane fade" id="messagesSend" role="tabpanel" aria-labelledby="messages-send-tab">
         {% include 'sendMessageForm.html' %}
-
+      </div>
+      <div class="tab-pane fade" id="messagesInbox" role="tabpanel" aria-labelledby="messages-inbox-tab">
+        {% include 'Inbox.html' %}
       </div>
       <div class="tab-pane fade" id="documents" role="tabpanel" aria-labelledby="documents-tab">Documents</div>
     </div>

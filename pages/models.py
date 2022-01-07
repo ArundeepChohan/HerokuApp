@@ -16,6 +16,7 @@ class Messages(models.Model):
     receiver = models.ForeignKey(Profile,related_name='receiver',on_delete=models.CASCADE)
     text = models.CharField(max_length=4096)
     time = models.DateTimeField(auto_now_add=True)
+    read = models.BooleanField(default=False)
 
     def __str__(self):
         return '{} to {} :{}'.format(self.sender,self.receiver,self.text)
