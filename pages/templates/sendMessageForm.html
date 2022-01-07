@@ -2,7 +2,7 @@
 
     <form method = "POST" action='.' enctype="multipart/form-data">
         {% csrf_token %}
-        {{ sendForm.as_p }}
+        {{ sendMessageForm.as_p }}
         <button type="submit" name="sendMessage" >Submit</button>
     </form>
 

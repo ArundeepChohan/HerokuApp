@@ -74,7 +74,7 @@ class UserWizard(SessionWizardView):
 
 def index(request):
     context = {'is_post': False}
-    sendForm = MessageForm()
+    sendMessageForm = MessageForm()
     editProfileForm = UserProfileForm()
     if request.method == "POST":
         if 'editProfileForm' in request.POST:
@@ -84,9 +84,9 @@ def index(request):
                 editProfileForm.save()
                 return redirect('home') 
         elif 'sendMessage' in request.POST:
-            sendForm = MessageForm(request.POST or None,)
-            if sendForm.is_valid():
-                sendForm.save()
+            sendMessageForm = MessageForm(request.POST or None,)
+            if sendMessageForm.is_valid():
+                sendMessageForm.save()
                 return redirect('home')
     else:
         # Checks if user is logged out or in and passes to form
@@ -96,5 +96,5 @@ def index(request):
             editProfileForm = UserProfileForm()
 
     context['editProfileForm'] = editProfileForm
-    context['sendForm'] = sendForm
+    context['sendMessageForm'] = sendMessageForm
     return render(request, "home.html", context)
