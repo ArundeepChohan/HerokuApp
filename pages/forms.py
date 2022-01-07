@@ -8,7 +8,7 @@ from datetime import date, timedelta
 class MessageForm(forms.ModelForm):
     class Meta:
         model = Messages
-        fields = "__all__"
+        fields = ('receiver','text',)
 
 class SignUpForm(UserCreationForm):
     first_name = forms.CharField(max_length=30, required=False, help_text='Optional.')
