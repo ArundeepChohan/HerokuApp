@@ -12,7 +12,7 @@ class Profile(AbstractUser):
     avatar = models.ImageField(default='default.png', upload_to='')
 
 class Messages(models.Model):
-    sender= models.ForeignKey(Profile,related_name='sender',on_delete=models.CASCADE)
+    sender = models.ForeignKey(Profile,related_name='sender',on_delete=models.CASCADE)
     receiver = models.ForeignKey(Profile,related_name='receiver',on_delete=models.CASCADE)
     text = models.CharField(max_length=4096)
     time = models.DateTimeField(auto_now_add=True)

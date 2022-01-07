@@ -85,8 +85,10 @@ def index(request):
                 return redirect('home') 
         elif 'sendMessage' in request.POST:
             sendMessageForm = MessageForm(request.POST or None,)
-            if sendMessageForm.is_valid():
-                sendMessageForm.save()
+            if sendMessageForm.is_valid(): 
+                addUser =  sendMessageForm.save(commit=False)
+                addUser.sender = request.user
+                addUser.save()
                 return redirect('home')
     else:
         # Checks if user is logged out or in and passes to form
