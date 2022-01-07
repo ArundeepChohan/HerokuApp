@@ -1,9 +1,14 @@
 from django import forms
 from django.core.files.images import get_image_dimensions
 
-from pages.models import Profile
+from pages.models import Messages, Profile
 from django.contrib.auth.forms import UserCreationForm
 from datetime import date, timedelta
+
+class MessageForm(forms.ModelForm):
+    class Meta:
+        model = Messages
+        fields = "__all__"
 
 class SignUpForm(UserCreationForm):
     first_name = forms.CharField(max_length=30, required=False, help_text='Optional.')
@@ -19,8 +24,7 @@ class verify(forms.Form):
     class Meta:
         model = Profile
         fields = ('verified',)
-        
-        
+         
 class UserProfileForm(forms.ModelForm):
     this_year = date.today().year
     year_range = [x for x in range(this_year - 100, this_year + 1)]

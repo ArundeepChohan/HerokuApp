@@ -8,7 +8,7 @@ from .models import Profile
 class CustomUserAdmin(UserAdmin):
     add_form = SignUpForm
     model = Profile
-    list_display=['username','email','is_superuser','bio','phone_number','birth_date','is_doctor','verified','date_created','avatar']
+    list_display=['username','email','is_staff','is_superuser','is_active','bio','phone_number','birth_date','is_doctor','verified','date_created','avatar']
     pass
 
 admin.site.register(Profile, CustomUserAdmin)

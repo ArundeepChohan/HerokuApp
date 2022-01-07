@@ -30,7 +30,10 @@
   <div class="col-md-9"style='float:right'>
     <div class="tab-content" id="myTabContent">
       <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">Dashboard</div>
-      <div class="tab-pane fade" id="messagesSend" role="tabpanel" aria-labelledby="messages-send-tab">Message Send Message</div>
+      <div class="tab-pane fade" id="messagesSend" role="tabpanel" aria-labelledby="messages-send-tab">
+        {% include 'sendMessage.html' %}
+
+      </div>
       <div class="tab-pane fade" id="documents" role="tabpanel" aria-labelledby="documents-tab">Documents</div>
     </div>
   </div>

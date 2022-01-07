@@ -1,9 +1,32 @@
 
 from django.shortcuts import redirect, render
-from .forms import SignUpForm, UserProfileForm, verify
+from .forms import MessageForm, SignUpForm, UserProfileForm, verify
 from django.contrib.auth import login as auth_login, authenticate
 
 from formtools.wizard.views import SessionWizardView
+
+from django.contrib import messages
+from django.contrib.auth.forms import AuthenticationForm
+def login(request):
+    if request.method == 'POST':
+        form = AuthenticationForm(request.POST)
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(username=username, password=password)
+        if user:
+            if user.is_active:
+                auth_login(request, user)
+                return redirect('home')
+            else:
+                messages.error(request,'User blocked')
+                return redirect('login')
+        else:
+            messages.error(request,'username or password not correct')
+            return redirect('login')
+
+    else:
+        form = AuthenticationForm()
+    return render(request, 'registration/login.html',{'form':form})
 
 def buttonSelection(request):
     return render(request,'pickUserType.html')
@@ -17,7 +40,7 @@ from django.core.files.storage import FileSystemStorage
 import os
 from django.conf import settings
 class DoctorWizard(SessionWizardView):
-    file_storage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, '/doctor/'))
+    file_storage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'doctor'))
     template_name = "registration/signup.html"
     form_list = [SignUpForm,verify]
     
@@ -31,8 +54,8 @@ class DoctorWizard(SessionWizardView):
         if user:
             user.verified=form_list[1].cleaned_data.get('verified')
             user.is_doctor=True
+            user.is_active=False
             user.save()
-            auth_login(self.request, user)
         return redirect('home')
     
 class UserWizard(SessionWizardView):
@@ -51,18 +74,27 @@ class UserWizard(SessionWizardView):
 
 def index(request):
     context = {'is_post': False}
+    sendForm = MessageForm()
+    editProfileForm = UserProfileForm()
     if request.method == "POST":
-        context['is_post'] = True
-        form = UserProfileForm(request.POST or None, request.FILES or None,instance=request.user)
-        if form.is_valid():
-            form.save()
-            return redirect('home') 
+        if 'editProfileForm' in request.POST:
+            context['is_post'] = True
+            editProfileForm = UserProfileForm(request.POST or None, request.FILES or None,instance=request.user)
+            if editProfileForm.is_valid():
+                editProfileForm.save()
+                return redirect('home') 
+        elif 'sendMessage' in request.POST:
+            sendForm = MessageForm(request.POST or None,)
+            if sendForm.is_valid():
+                sendForm.save()
+                return redirect('home')
     else:
         # Checks if user is logged out or in and passes to form
         if request.user.is_authenticated:
-            form = UserProfileForm(instance=request.user)
+            editProfileForm= UserProfileForm(instance=request.user)       
         else:
-            form = UserProfileForm()
+            editProfileForm = UserProfileForm()
 
-    context['form']= form
+    context['editProfileForm'] = editProfileForm
+    context['sendForm'] = sendForm
     return render(request, "home.html", context)

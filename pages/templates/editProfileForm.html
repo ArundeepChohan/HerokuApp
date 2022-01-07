@@ -1,0 +1,9 @@
+{% block content %}
+
+    <form method = "POST" action='.' enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ editProfileForm.as_p }}
+        <button type="submit" name='editProfileForm'>Upload</button>
+    </form>
+
+{% endblock %}

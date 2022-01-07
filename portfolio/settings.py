@@ -207,5 +207,8 @@ SESSION_ENGINE = (
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_SAVE_EVERY_REQUEST = True 
  """
+
+AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.AllowAllUsersModelBackend',)
+
 import django_heroku
 django_heroku.settings(locals(), staticfiles=False)
