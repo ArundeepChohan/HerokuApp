@@ -1,9 +1,10 @@
 {% block content %}
+
 <table>
-    {% for abc in Inbox %}
-        {{ abc.sender }} <br/>
-        {{ abc.text}} <br/>
-        {{ abc.time }} <br/>
+    {% for message in Inbox %}
+        {{ message.sender }} <br/>
+        {{ message.text}} <br/>
+        {{ message.time }} <br/>
     {% endfor %}
 
 </table>

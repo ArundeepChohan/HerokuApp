@@ -24,12 +24,16 @@
       <li class="nav-item" role="presentation">
         <a class="nav-link" id="logout" href="{% url 'logout' %}" role="tab" aria-controls="logout" aria-selected="false">Log out</a>
       </li>
+
+      
     </ul>
   </div>
 
   <div class="col-md-9"style='float:right'>
     <div class="tab-content" id="myTabContent">
-      <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">Dashboard</div>
+      <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+        {% include 'dashboard.html' %}
+      </div>
       <div class="tab-pane fade" id="messagesSend" role="tabpanel" aria-labelledby="messages-send-tab">
         {% include 'sendMessageForm.html' %}
       </div>

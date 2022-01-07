@@ -1,0 +1,25 @@
+{% block content %}
+
+    <div class="col-md-6">
+        {% if Inbox %}
+        <div class="col-md-6">
+            
+            {% if unreadMessagesCount %}
+                {{unreadMessagesCount}}
+            {% endif %}
+
+        </div>
+        
+        <p>{{Inbox.last.sender}}</p>
+        <div>
+            <div>
+                <p></p>
+            </div>
+        </div>
+            {{Inbox.last.text}}
+            {{Inbox.last.time}}
+         
+        {% endif %}
+    </div>
+
+{% endblock %}
