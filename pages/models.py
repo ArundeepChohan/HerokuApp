@@ -18,6 +18,11 @@ class Messages(models.Model):
     text = models.CharField(default='',max_length=4096)
     time = models.DateTimeField(auto_now_add=True)
     read = models.BooleanField(default=False)
+    parent =models.ForeignKey('self', on_delete=models.CASCADE,
+                            null=True, blank=True, related_name='contact_parent')
+
+    def get_children(self):
+        return Messages.objects.filter(parent=self)
 
     def __str__(self):
         return '{} to {} :{}'.format(self.sender,self.receiver,self.text)

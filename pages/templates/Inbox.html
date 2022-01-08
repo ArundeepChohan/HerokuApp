@@ -2,8 +2,9 @@
 
     <div class="col-md-12">
         <!-- Find a way to make a index range -->
-        {% for message in Inbox %}
+        
         <div class="accordion" id="accordionExample">
+            {% for message in Inbox %}
             <div class="card">
               <div class="card-header" id="heading{{ forloop.counter }}">
                 <h5 class="mb-{{ forloop.counter }}">
@@ -16,13 +17,24 @@
               <div id="collapse{{ forloop.counter }}" class="collapse" aria-labelledby="heading{{ forloop.counter }}" data-parent="#accordionExample">
                 <div class="card-body">
                     {{ message.text}} 
+                    <div>
+                        {% if message.contact_parent.count %}
+                        <ul>
+                            {% for child in message.contact_parent.all %}
+                                <li>{{ child.name }}</li>
+                            {% endfor %}    
+                        </ul>
+                        {% endif %}
+
+                    </div>
+                        
                 </div>
               </div>
             </div>
-        
+            {% endfor %}
           </div>
              
-        {% endfor %}
+        
     </div>
 
 {% endblock %}
