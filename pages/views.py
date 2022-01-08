@@ -73,6 +73,7 @@ class UserWizard(SessionWizardView):
             auth_login(self.request, user)
         return redirect('home')
 
+##Rework this to only show forms on log in and post method
 from .models import Messages
 from django.db.models.query_utils import Q
 def index(request):
@@ -80,9 +81,9 @@ def index(request):
     sendMessageForm = MessageForm()
     editProfileForm = UserProfileForm()
     if request.method == "POST":
-        Inbox = Messages.objects.filter(Q(sender=request.user) | Q(receiver=request.user))
+        Inbox = Messages.objects.filter(Q(sender=request.user) | Q(receiver=request.user)).order_by("-time", "read")
         context['Inbox'] = Inbox
-        unreadMessagesCount=Messages.objects.filter(Q(read=False)).count()
+        unreadMessagesCount = Messages.objects.filter(Q(receiver=request.user) & Q(read=False)).count()
         context['unreadMessagesCount'] = unreadMessagesCount
         if 'editProfileForm' in request.POST:          
             context['is_post'] = True
@@ -96,14 +97,16 @@ def index(request):
                 sendMessageFormUser =  sendMessageForm.save(commit=False)
                 sendMessageFormUser.sender = request.user
                 sendMessageFormUser.save()
+                unreadMessagesCount = Messages.objects.filter(Q(receiver=request.user) & Q(read=False)).count()
+                context['unreadMessagesCount'] = unreadMessagesCount
                 return redirect('home')
     else:
         # Checks if user is logged out or in and passes to form
         if request.user.is_authenticated:
             editProfileForm= UserProfileForm(instance=request.user)
-            Inbox = Messages.objects.filter(Q(sender=request.user) | Q(receiver=request.user))
+            Inbox = Messages.objects.filter(Q(sender=request.user) | Q(receiver=request.user)).order_by("-time", "read")
             context['Inbox'] = Inbox
-            unreadMessagesCount=Messages.objects.filter(Q(read=False)).count()
+            unreadMessagesCount=Messages.objects.filter(Q(receiver=request.user) & Q(read=False)).count()
             context['unreadMessagesCount'] = unreadMessagesCount    
         else:
             editProfileForm = UserProfileForm()

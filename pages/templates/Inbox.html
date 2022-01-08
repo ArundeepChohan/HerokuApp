@@ -1,12 +1,28 @@
 {% block content %}
 
-<table>
-    {% for message in Inbox %}
-        {{ message.sender }} <br/>
-        {{ message.text}} <br/>
-        {{ message.time }} <br/>
-    {% endfor %}
-
-</table>
+    <div class="col-md-12">
+        <!-- Find a way to make a index range -->
+        {% for message in Inbox %}
+        <div class="accordion" id="accordionExample">
+            <div class="card">
+              <div class="card-header" id="heading{{ forloop.counter }}">
+                <h5 class="mb-{{ forloop.counter }}">
+                  <button class="btn" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ forloop.counter }}" aria-expanded="false" aria-controls="collapse{{ forloop.counter }}">
+                    {{ message.sender }} {{ message.subject}} {{ message.time }}
+                  </button>
+                </h5>
+              </div>
+          
+              <div id="collapse{{ forloop.counter }}" class="collapse" aria-labelledby="heading{{ forloop.counter }}" data-parent="#accordionExample">
+                <div class="card-body">
+                    {{ message.text}} 
+                </div>
+              </div>
+            </div>
+        
+          </div>
+             
+        {% endfor %}
+    </div>
 
 {% endblock %}

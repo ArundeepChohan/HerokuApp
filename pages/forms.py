@@ -6,6 +6,8 @@ from django.contrib.auth.forms import UserCreationForm
 from datetime import date, timedelta
 
 class MessageForm(forms.ModelForm):
+    subject = forms.CharField(max_length=100, required=False, help_text='Optional.')
+    text = forms.CharField(max_length=4096, required=True, help_text='Required.')
     class Meta:
         model = Messages
         fields = ('receiver','subject','text',)
