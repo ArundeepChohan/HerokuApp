@@ -1,0 +1,8 @@
+{% block content %}
+    <h1>Calendar</h1>
+    <ul>
+    {% for result in results %}
+    <li>{{result.start.date}}{% if result.end.date %}-{% endif%}{{result.end.date}}: {{result.summary}}</li>
+    {% endfor %}
+    </ul>
+{% endblock %}

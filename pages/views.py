@@ -1,4 +1,6 @@
 from django.shortcuts import redirect, render
+
+
 from .forms import MessageForm, SignUpForm, UserProfileForm, verify
 from django.contrib.auth import login as auth_login, authenticate
 
@@ -101,10 +103,13 @@ def delete(request,messageID):
 ##Rework this to only show forms while logged in and post method
 from .models import Messages, Profile
 from django.db.models.query_utils import Q
+from pages.googleCalendarAPI import test_calendar
 def index(request):
     context = {'is_post': False}
     sendMessageForm = MessageForm()
     editProfileForm = UserProfileForm()
+    results = test_calendar()
+    context = {"results": results}
     if request.method == "POST":
         Inbox = Messages.objects.filter(Q(sender=request.user) | Q(receiver=request.user)).order_by("-time", "read")
         context['Inbox'] = Inbox

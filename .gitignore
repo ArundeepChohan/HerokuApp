@@ -234,3 +234,6 @@ cython_debug/
 !.vscode/*.code-snippets
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,django,python
+
+# this token contains your sensitive google service account info
+google-credentials.json
