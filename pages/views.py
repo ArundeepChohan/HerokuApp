@@ -1,5 +1,3 @@
-
-
 from django.shortcuts import redirect, render
 from .forms import MessageForm, SignUpForm, UserProfileForm, verify
 from django.contrib.auth import login as auth_login, authenticate
@@ -73,8 +71,35 @@ class UserWizard(SessionWizardView):
             auth_login(self.request, user)
         return redirect('home')
 
-##Rework this to only show forms on log in and post method
-from .models import Messages
+from django.views.decorators.http import require_http_methods
+@require_http_methods(["POST"])
+def reply(request,messageID):
+    print(messageID)
+    parent = Messages.objects.get(id=messageID)
+    #Not sure how the receiver is found
+    reply = Messages.objects.create(text=request.POST['text'], receiver=parent.sender, sender=request.user, parent=parent)
+    print(parent)
+    print(reply)
+    print(request.POST)
+    return redirect('home')
+
+@require_http_methods(["POST"])
+def send(request):
+    sendMessageForm = MessageForm(request.POST or None,)
+    if sendMessageForm.is_valid(): 
+        sendMessageFormUser =  sendMessageForm.save(commit=False)
+        sendMessageFormUser.sender = request.user
+        sendMessageFormUser.save()
+    return redirect('home')
+
+@require_http_methods(["POST"])
+def delete(request,messageID):
+    data_to_be_deleted = Messages.objects.get(id = messageID)
+    data_to_be_deleted.delete()
+    return redirect('home')
+
+##Rework this to only show forms while logged in and post method
+from .models import Messages, Profile
 from django.db.models.query_utils import Q
 def index(request):
     context = {'is_post': False}
@@ -91,15 +116,6 @@ def index(request):
             if editProfileForm.is_valid():
                 editProfileForm.save()
                 return redirect('home') 
-        elif 'sendMessage' in request.POST:
-            sendMessageForm = MessageForm(request.POST or None,)
-            if sendMessageForm.is_valid(): 
-                sendMessageFormUser =  sendMessageForm.save(commit=False)
-                sendMessageFormUser.sender = request.user
-                sendMessageFormUser.save()
-                unreadMessagesCount = Messages.objects.filter(Q(receiver=request.user) & Q(read=False)).count()
-                context['unreadMessagesCount'] = unreadMessagesCount
-                return redirect('home')
     else:
         # Checks if user is logged out or in and passes to form
         if request.user.is_authenticated:
@@ -108,9 +124,9 @@ def index(request):
             context['Inbox'] = Inbox
             unreadMessagesCount=Messages.objects.filter(Q(receiver=request.user) & Q(read=False)).count()
             context['unreadMessagesCount'] = unreadMessagesCount    
-        else:
-            editProfileForm = UserProfileForm()
+
 
     context['editProfileForm'] = editProfileForm
     context['sendMessageForm'] = sendMessageForm
     return render(request, "home.html", context)
+

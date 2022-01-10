@@ -1,9 +1,9 @@
 {% block content %}
 
-    <form method = "POST" action='.' enctype="multipart/form-data">
+    <form method ="POST" action="/send" enctype="multipart/form-data">
         {% csrf_token %}
         {{ sendMessageForm.as_p }}
-        <button type="submit" name="sendMessage" >Submit</button>
+        <button type="submit" name="sendMessage">Submit</button>
     </form>
 
 {% endblock %}

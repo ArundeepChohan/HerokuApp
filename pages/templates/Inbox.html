@@ -1,8 +1,6 @@
 {% block content %}
 
     <div class="col-md-12">
-        <!-- Find a way to make a index range -->
-        
         <div class="accordion" id="accordionExample">
             {% for message in Inbox %}
             <div class="card">
@@ -15,19 +13,46 @@
               </div>
           
               <div id="collapse{{ forloop.counter }}" class="collapse" aria-labelledby="heading{{ forloop.counter }}" data-parent="#accordionExample">
+                <form class="delete-form" method="POST" action="delete/{{message.id}}/">
+                    {% csrf_token %}
+                    <input type="submit" value="X" >
+                </form>
+                
                 <div class="card-body">
                     {{ message.text}} 
+                    {% if message.contact_parent.count %}
                     <div>
-                        {% if message.contact_parent.count %}
-                        <ul>
-                            {% for child in message.contact_parent.all %}
-                                <li>{{ child.name }}</li>
-                            {% endfor %}    
-                        </ul>
-                        {% endif %}
-
+                        {% for reply in message.get_children %}
+                            <form class="delete-form" method="POST" action="delete/{{reply.id}}/">
+                                {% csrf_token %}
+                                <input type="submit" value="X" >
+                            </form>
+                            <div>{{ reply.sender }}</div>
+                            <div>{{ reply.text }}</div>
+                            <div>{{ reply.time }}</div>
+                            <div class="form-group row">
+                                <form class="reply-form" method="POST" action="reply/{{reply.id}}/">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="{{ reply.id }}" value="{{ reply.id }}">
+                                    <div class="form-group">
+                                        <textarea name="text" cols="60" rows="2" maxlength="4096" required="" id="id_text"></textarea>
+                                    </div>
+                                    <input type="submit" value="Submit" >
+                                </form>
+                            </div>
+                        {% endfor %}    
                     </div>
-                        
+                    {% endif %}
+                    <div class="form-group row">
+                        <form class="reply-form" method="POST" action="reply/{{message.id}}/">
+                            {% csrf_token %}
+                            <input type="hidden" name="{{ message.id }}" value="{{ message.id }}">
+                            <div class="form-group">
+                                <textarea name="text" cols="60" rows="2" maxlength="4096" required="" id="id_text"></textarea>
+                            </div>
+                            <input type="submit" value="Submit" >
+                        </form>
+                    </div>
                 </div>
               </div>
             </div>
