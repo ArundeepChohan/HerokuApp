@@ -1,20 +1,24 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from phonenumber_field.modelfields import PhoneNumberField
+from django.templatetags.static import static
 
 class Profile(AbstractUser):
     bio = models.TextField(max_length=100, blank=True)
     phone_number = PhoneNumberField(max_length=25, region="US")
     birth_date = models.DateField(blank = True, null = True) 
-    GENDER_CHOICES = (
-        ('M', 'Male'),
-        ('F', 'Female'),
-    )
-    gender = models.CharField(max_length=10, choices=GENDER_CHOICES,default='M')
+    gender_choices = (('others', 'Others'),('male', 'Male'),('female' ,'Female'))
+    gender = models.CharField(max_length=10, choices=gender_choices,default='others')
     is_doctor = models.BooleanField(default=False)
     verified = models.ImageField(default='',upload_to='doctor')
     date_created = models.DateTimeField(auto_now_add=True)
-    avatar = models.ImageField(default='default.png', upload_to='')
+    avatar = models.ImageField(upload_to='')
+    default_pic_mapping = { 'others': 'default.png', 'male': 'default.png', 'female': 'default.png'}
+
+    def get_profile_pic_url(self):
+        if not self.avatar:
+            return static('img/{}'.format(self.default_pic_mapping[self.gender]))
+        return self.avatar
 
 class Messages(models.Model):
     sender = models.ForeignKey(Profile,related_name='sender',on_delete=models.CASCADE)
