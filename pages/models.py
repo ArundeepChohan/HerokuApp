@@ -10,7 +10,7 @@ class Profile(AbstractUser):
         ('M', 'Male'),
         ('F', 'Female'),
     )
-    gender = models.CharField(max_length=1, choices=GENDER_CHOICES,default='M')
+    gender = models.CharField(max_length=10, choices=GENDER_CHOICES,default='M')
     is_doctor = models.BooleanField(default=False)
     verified = models.ImageField(default='',upload_to='doctor')
     date_created = models.DateTimeField(auto_now_add=True)
