@@ -13,9 +13,10 @@ def test_calendar():
 
     credentials = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
     service = googleapiclient.discovery.build('calendar', 'v3', credentials=credentials)
-
+    
+    
     # CREATE A NEW EVENT
-    new_event = {
+    """ new_event = {
     'summary': "Ben Hammond Tech's Super Awesome Event",
     'location': 'Denver, CO USA',
     'description': 'https://benhammond.tech',
@@ -28,10 +29,11 @@ def test_calendar():
         'timeZone': 'America/New_York',
     },
     }
-    service.events().insert(calendarId=CAL_ID, body=new_event).execute()
-    print('Event created')
+    service.events().insert(calendarId=CAL_ID, body=new_event).execute() 
+    print('Event created') """
+    
 
- # GET ALL EXISTING EVENTS
+    # GET ALL EXISTING EVENTS
     events_result = service.events().list(calendarId=CAL_ID, maxResults=2500).execute()
     events = events_result.get('items', [])
 

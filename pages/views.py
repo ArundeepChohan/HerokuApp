@@ -1,7 +1,6 @@
 from django.shortcuts import redirect, render
 
-
-from .forms import MessageForm, SignUpForm, UserProfileForm, verify
+from .forms import MessageForm, SignUpForm, UserProfileForm, Verify
 from django.contrib.auth import login as auth_login, authenticate
 
 from formtools.wizard.views import SessionWizardView
@@ -43,7 +42,7 @@ from django.conf import settings
 class DoctorWizard(SessionWizardView):
     file_storage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'doctor'))
     template_name = "registration/signup.html"
-    form_list = [SignUpForm,verify]
+    form_list = [SignUpForm,Verify]
     
     def done(self, form_list, **kwargs):
         process_data(form_list)
@@ -78,7 +77,6 @@ from django.views.decorators.http import require_http_methods
 def reply(request,messageID):
     print(messageID)
     parent = Messages.objects.get(id=messageID)
-    #Not sure how the receiver is found
     reply = Messages.objects.create(text=request.POST['text'], receiver=parent.sender, sender=request.user, parent=parent)
     print(parent)
     print(reply)
@@ -88,8 +86,9 @@ def reply(request,messageID):
 @require_http_methods(["POST"])
 def send(request):
     sendMessageForm = MessageForm(request.POST or None,)
+    print(sendMessageForm)
     if sendMessageForm.is_valid(): 
-        sendMessageFormUser =  sendMessageForm.save(commit=False)
+        sendMessageFormUser = sendMessageForm.save(commit=False)
         sendMessageFormUser.sender = request.user
         sendMessageFormUser.save()
     return redirect('home')
@@ -124,14 +123,20 @@ def index(request):
     else:
         # Checks if user is logged out or in and passes to form
         if request.user.is_authenticated:
-            editProfileForm= UserProfileForm(instance=request.user)
+            editProfileForm = UserProfileForm(instance=request.user)
             Inbox = Messages.objects.filter(Q(sender=request.user) | Q(receiver=request.user)).order_by("-time", "read")
             context['Inbox'] = Inbox
-            unreadMessagesCount=Messages.objects.filter(Q(receiver=request.user) & Q(read=False)).count()
-            context['unreadMessagesCount'] = unreadMessagesCount    
-
+            unreadMessagesCount = Messages.objects.filter(Q(receiver=request.user) & Q(read=False)).count()
+            context['unreadMessagesCount'] = unreadMessagesCount
+            if request.user.is_staff:
+                sendMessageForm.fields["receiver"].queryset = Profile.objects.filter(Q(is_active=True))
+            elif request.user.verified !='':
+                sendMessageForm.fields["receiver"].queryset = Profile.objects.filter(Q(is_active=True))           
+            else:
+                sendMessageForm.fields["receiver"].queryset = Profile.objects.filter(Q(is_active=True)|Q(is_doctor=True)|Q(is_staff=True))
+        
+            
 
     context['editProfileForm'] = editProfileForm
     context['sendMessageForm'] = sendMessageForm
     return render(request, "home.html", context)
-
