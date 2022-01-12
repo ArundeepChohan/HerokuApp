@@ -12,22 +12,22 @@
   <p>Step {{ wizard.steps.step1 }} of {{ wizard.steps.count }}</p>
   <form action="." method="POST" enctype="multipart/form-data">
     {% csrf_token %}
-  <table>
-  {{ wizard.management_form }}
-  {% if wizard.form.forms %}
-      {{ wizard.form.management_form }}
-      {% for form in wizard.form.forms %}
-          {{ form }}
-      {% endfor %}
-  {% else %}
-      {{ wizard.form }}
-  {% endif %}
-  </table>
-  {% if wizard.steps.prev %}
-  <button name="wizard_goto_step" type="submit" value="{{ wizard.steps.prev }}" formnovalidate>{% trans "prev step" %}</button>
-  {% endif %}
-  <button type="submit">Submit</button>
-  <button><a href="{% url 'signup' %}">Sign up</a></button>
-  <button><a href="{% url 'login' %}">Log In</a></button>
+    <table>
+      {{ wizard.management_form }}
+      {% if wizard.form.forms %}
+          {{ wizard.form.management_form }}
+          {% for form in wizard.form.forms %}
+              {{ form }}
+          {% endfor %}
+      {% else %}
+          {{ wizard.form }}
+      {% endif %}
+    </table>
+    {% if wizard.steps.prev %}
+    <button name="wizard_goto_step" type="submit" value="{{ wizard.steps.prev }}" formnovalidate>{% trans "prev step" %}</button>
+    {% endif %}
+    <button type="submit">Submit</button>
+    <button><a href="{% url 'signup' %}">Sign up</a></button>
+    <button><a href="{% url 'login' %}">Log In</a></button>
   </form>
 {% endblock %}

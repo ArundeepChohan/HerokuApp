@@ -6,6 +6,11 @@ class Profile(AbstractUser):
     bio = models.TextField(max_length=100, blank=True)
     phone_number = PhoneNumberField(max_length=25, region="US")
     birth_date = models.DateField(blank = True, null = True) 
+    GENDER_CHOICES = (
+        ('M', 'Male'),
+        ('F', 'Female'),
+    )
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES)
     is_doctor = models.BooleanField(default=False)
     verified = models.ImageField(default='',upload_to='doctor')
     date_created = models.DateTimeField(auto_now_add=True)

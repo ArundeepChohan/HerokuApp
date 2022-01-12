@@ -1,10 +1,7 @@
 from django.shortcuts import redirect, render
-
 from .forms import MessageForm, SignUpForm, UserProfileForm, Verify
 from django.contrib.auth import login as auth_login, authenticate
-
 from formtools.wizard.views import SessionWizardView
-
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
 def login(request):
@@ -52,9 +49,9 @@ class DoctorWizard(SessionWizardView):
         raw_password = userCreate.cleaned_data.get('password1')
         user = authenticate(username=username, password=raw_password)
         if user:
-            user.verified=form_list[1].cleaned_data.get('verified')
-            user.is_doctor=True
-            user.is_active=False
+            user.verified = form_list[1].cleaned_data.get('verified')
+            user.is_doctor= True
+            user.is_active = False
             user.save()
         return redirect('home')
     
@@ -99,6 +96,15 @@ def delete(request,messageID):
     data_to_be_deleted.delete()
     return redirect('home')
 
+@require_http_methods(["POST"])
+def activate(request,username):
+    user = Profile.objects.get(username=username)
+    print(user)
+    user.is_active = True
+    user.save()
+
+    return redirect('home')
+
 ##Rework this to only show forms while logged in and post method
 from .models import Messages, Profile
 from django.db.models.query_utils import Q
@@ -110,10 +116,6 @@ def index(request):
     results = test_calendar()
     context = {"results": results}
     if request.method == "POST":
-        Inbox = Messages.objects.filter(Q(sender=request.user) | Q(receiver=request.user)).order_by("-time", "read")
-        context['Inbox'] = Inbox
-        unreadMessagesCount = Messages.objects.filter(Q(receiver=request.user) & Q(read=False)).count()
-        context['unreadMessagesCount'] = unreadMessagesCount
         if 'editProfileForm' in request.POST:          
             context['is_post'] = True
             editProfileForm = UserProfileForm(request.POST or None, request.FILES or None,instance=request.user)
@@ -123,6 +125,7 @@ def index(request):
     else:
         # Checks if user is logged out or in and passes to form
         if request.user.is_authenticated:
+            context['allInactiveDoctors'] = Profile.objects.filter(Q(is_active=False)&Q(is_doctor=True))
             editProfileForm = UserProfileForm(instance=request.user)
             Inbox = Messages.objects.filter(Q(sender=request.user) | Q(receiver=request.user)).order_by("-time", "read")
             context['Inbox'] = Inbox
@@ -133,9 +136,7 @@ def index(request):
             elif request.user.verified !='':
                 sendMessageForm.fields["receiver"].queryset = Profile.objects.filter(Q(is_active=True))           
             else:
-                sendMessageForm.fields["receiver"].queryset = Profile.objects.filter(Q(is_active=True)|Q(is_doctor=True)|Q(is_staff=True))
-        
-            
+                sendMessageForm.fields["receiver"].queryset = Profile.objects.filter(Q(is_active=True)&Q(is_doctor=True)|Q(is_staff=True))
 
     context['editProfileForm'] = editProfileForm
     context['sendMessageForm'] = sendMessageForm

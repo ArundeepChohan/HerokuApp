@@ -3,8 +3,6 @@ from django.core.files.images import get_image_dimensions
 from pages.models import Messages, Profile
 from django.contrib.auth.forms import UserCreationForm
 from datetime import date, timedelta
-
-from django.db.models.query_utils import Q
 class MessageForm(forms.ModelForm):
     subject = forms.CharField(max_length=100, required=False, help_text='Optional.')
     text = forms.CharField(max_length=4096, required=True, help_text='Required.')
@@ -19,7 +17,7 @@ class SignUpForm(UserCreationForm):
 
     class Meta:
         model = Profile
-        fields = ('username', 'first_name', 'last_name', 'email', 'password1', 'password2', )
+        fields = ('username', 'first_name', 'last_name', 'email', 'password1', 'password2', 'gender')
 
 class Verify(forms.Form):
     verified = forms.ImageField(required=True)

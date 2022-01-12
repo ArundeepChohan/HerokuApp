@@ -3,17 +3,17 @@
 {% block title %}Login{% endblock %}
 
 {% block content %}
-{% for message in messages %}
+  {% for message in messages %}
 
-<div class="alert alert-success">
-    <a class="close" href="" data-bs-dismiss="alert">×</a>
-    {{ message }}
-</div>
+    <div class="alert alert-success">
+        <a class="close" href="" data-bs-dismiss="alert">×</a>
+        {{ message }}
+    </div>
 
-{% endfor %}
+  {% endfor %}
 
   <h2>Log In</h2>
-  <form method="POST" action="."enctype="multipart/form-data">
+  <form method="POST" action="." enctype="multipart/form-data">
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit" name="login">Log In</button>

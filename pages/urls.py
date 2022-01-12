@@ -1,5 +1,5 @@
 from django.urls import path
-from pages.views import index, buttonSelection, UserWizard, DoctorWizard, login, reply, delete, send
+from pages.views import index, buttonSelection, UserWizard, DoctorWizard, login, reply, delete, send, activate
 from django.contrib.auth import views as auth_views
 urlpatterns = [
     path('', index, name='home'),
@@ -10,4 +10,5 @@ urlpatterns = [
     path('send', send, name='send'),
     path('reply/<int:messageID>/', reply, name='reply'),
     path('delete/<int:messageID>/', delete, name='delete'),
+    path('activate/<str:username>/', activate, name='activate'),
 ]

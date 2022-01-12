@@ -1,8 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-
 from pages.forms import SignUpForm
-
 from .models import Profile
 
 class CustomUserAdmin(UserAdmin):
@@ -12,7 +10,6 @@ class CustomUserAdmin(UserAdmin):
     pass
 
 admin.site.register(Profile, CustomUserAdmin)
-
 
 ##Maybe rework this later for better inclusion of all models.
 from django.apps import apps

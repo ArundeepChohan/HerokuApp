@@ -1,5 +1,5 @@
 {% block content %}
-  <div class="col-md-3" style='float:left'>
+  <div class="col-md-3" style="float:left">
     <h1>Hi {{ user.username }}!</h1>
     <img class="avatar" src="{{user.avatar.url}}" >
     
@@ -23,13 +23,19 @@
       <li class="nav-item" role="presentation">
         <a class="nav-link" id="documents-tab" data-bs-toggle="tab" href="#documents" role="tab" aria-controls="documents" aria-selected="false">Documents</a>
       </li>
+      {% if request.user.is_staff %}
+        <li class="nav-item" role="presentation">
+          <a class="nav-link" id="admin-tab" data-bs-toggle="tab" href="#admin" role="tab" aria-controls="admin" aria-selected="false">Admin</a>
+        </li>
+      {% endif %}
       <li class="nav-item" role="presentation">
         <a class="nav-link" id="logout" href="{% url 'logout' %}" role="tab" aria-controls="logout" aria-selected="false">Log out</a>
       </li>
+      
     </ul>
   </div>
 
-  <div class="col-md-9"style='float:right'>
+  <div class="col-md-9" style="float:right">
     <div class="tab-content" id="myTabContent">
       <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
         {% include 'dashboard.html' %}
@@ -46,7 +52,11 @@
       <div class="tab-pane fade" id="documents" role="tabpanel" aria-labelledby="documents-tab">
         {% include 'documents.html' %}
       </div>
+      {% if request.user.is_staff %}
+        <div class="tab-pane fade" id="admin" role="tabpanel" aria-labelledby="admin-tab">
+          {% include 'admin.html' %}
+        </div>
+      {% endif %}
     </div>
   </div>
-
 {% endblock %} 

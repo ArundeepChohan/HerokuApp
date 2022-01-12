@@ -1,0 +1,13 @@
+{% block content %}
+    <h1>Inactive Doctors</h1>
+    <ul>
+        {% for doctor in allInactiveDoctors %}
+            <li>{{doctor.username}}</li>
+            <img class="verified" src="{{doctor.verified.url}}" >
+            <form action="activate/{{doctor.username}}/" method="POST">
+                {% csrf_token %}
+                <input type="submit" value="Activate">
+            </form>
+        {% endfor %}
+    </ul>
+{% endblock %}
