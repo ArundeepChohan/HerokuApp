@@ -1,8 +1,14 @@
 from django import forms
 from django.core.files.images import get_image_dimensions
-from pages.models import Messages, Profile
+from pages.models import Messages, Profile, Calendar
 from django.contrib.auth.forms import UserCreationForm
 from datetime import date, timedelta
+
+class BookAppointmentForm(forms.ModelForm):
+    class Meta:
+        model = Calendar
+        fields = ('doctors',)
+
 class MessageForm(forms.ModelForm):
     subject = forms.CharField(max_length=100, required=False, help_text='Optional.')
     text = forms.CharField(max_length=4096, required=True, help_text='Required.')

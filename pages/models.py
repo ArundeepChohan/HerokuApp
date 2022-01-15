@@ -5,13 +5,13 @@ from django.templatetags.static import static
 
 class Profile(AbstractUser):
     bio = models.TextField(max_length=100, blank=True)
-    phone_number = PhoneNumberField(max_length=25, region="US")
+    phone_number = PhoneNumberField(max_length=25, region='US')
     birth_date = models.DateField(blank = True, null = True) 
     is_doctor = models.BooleanField(default=False)
     verified = models.ImageField(default='',upload_to='doctor')
     date_created = models.DateTimeField(auto_now_add=True)
-    avatar = models.ImageField(upload_to='')
-    
+    avatar = models.ImageField(upload_to='',null=True)
+
     gender_choices = (('others', 'Others'),('male', 'Male'),('female' ,'Female'))
     gender = models.CharField(max_length=10, choices=gender_choices,default='others')
     default_pic_mapping = { 'others': 'default.png', 'male': 'default.png', 'female': 'default.png'}
@@ -19,8 +19,8 @@ class Profile(AbstractUser):
     def get_profile_pic_url(self):
         if not self.avatar:
             return static('img/{}'.format(self.default_pic_mapping[self.gender]))
-        return self.avatar
-
+        return self.avatar.url
+        
 class Messages(models.Model):
     sender = models.ForeignKey(Profile,related_name='sender',on_delete=models.CASCADE)
     receiver = models.ForeignKey(Profile,related_name='receiver',on_delete=models.CASCADE)
@@ -35,3 +35,6 @@ class Messages(models.Model):
 
     def __str__(self):
         return '{} to {} :{}'.format(self.sender,self.receiver,self.text)
+
+class Calendar(models.Model):
+    doctors = models.ForeignKey(Profile,related_name='doctors',on_delete=models.CASCADE)

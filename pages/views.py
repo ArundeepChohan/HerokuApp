@@ -1,9 +1,21 @@
 from django.shortcuts import redirect, render
-from .forms import MessageForm, SignUpForm, UserProfileForm, Verify
+from pages.calendar import Calendar
+from .forms import BookAppointmentForm, MessageForm, SignUpForm, UserProfileForm, Verify
 from django.contrib.auth import login as auth_login, authenticate
 from formtools.wizard.views import SessionWizardView
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.decorators import login_required
+from .models import Messages, Profile
+from django.db.models.query_utils import Q
+from pages.googleCalendarAPI import test_calendar
+from django.utils.safestring import mark_safe
+from django.core.files.storage import FileSystemStorage
+import os
+from django.conf import settings
+from datetime import date
+from django.views.decorators.http import require_http_methods
+
 def login(request):
     if request.method == 'POST':
         form = AuthenticationForm(request.POST)
@@ -20,22 +32,19 @@ def login(request):
         else:
             messages.error(request,'username or password not correct')
             return redirect('login')
-
     else:
         form = AuthenticationForm()
     return render(request, 'registration/login.html',{'form':form})
 
-def buttonSelection(request):
+def pickUserType(request):
     return render(request,'pickUserType.html')
 
+@login_required
 def process_data(form_list):
     form_data = [form.cleaned_data for form in form_list]
     print(form_data)
     return form_data
     
-from django.core.files.storage import FileSystemStorage
-import os
-from django.conf import settings
 class DoctorWizard(SessionWizardView):
     file_storage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'doctor'))
     template_name = "registration/signup.html"
@@ -69,7 +78,7 @@ class UserWizard(SessionWizardView):
             auth_login(self.request, user)
         return redirect('home')
 
-from django.views.decorators.http import require_http_methods
+@login_required
 @require_http_methods(["POST"])
 def reply(request,messageID):
     print(messageID)
@@ -78,8 +87,9 @@ def reply(request,messageID):
     print(parent)
     print(reply)
     print(request.POST)
-    return redirect('home')
+    return redirect('messagesInbox')
 
+@login_required
 @require_http_methods(["POST"])
 def send(request):
     sendMessageForm = MessageForm(request.POST or None,)
@@ -88,56 +98,151 @@ def send(request):
         sendMessageFormUser = sendMessageForm.save(commit=False)
         sendMessageFormUser.sender = request.user
         sendMessageFormUser.save()
-    return redirect('home')
+    return redirect('messagesSend')
 
+@login_required
 @require_http_methods(["POST"])
 def delete(request,messageID):
     data_to_be_deleted = Messages.objects.get(id = messageID)
     data_to_be_deleted.delete()
-    return redirect('home')
+    return redirect('messagesInbox')
 
+@login_required
 @require_http_methods(["POST"])
 def activate(request,username):
     user = Profile.objects.get(username=username)
     print(user)
-    user.is_active = True
-    user.save()
+    if user:
+        user.is_active = True
+        user.save()
+    return redirect('admin')
 
-    return redirect('home')
-
-##Rework this to only show forms while logged in and post method
-from .models import Messages, Profile
-from django.db.models.query_utils import Q
-from pages.googleCalendarAPI import test_calendar
-def index(request):
-    context = {'is_post': False}
-    sendMessageForm = MessageForm()
-    editProfileForm = UserProfileForm()
-    results = test_calendar()
-    context = {"results": results}
-    if request.method == "POST":
-        if 'editProfileForm' in request.POST:          
-            context['is_post'] = True
-            editProfileForm = UserProfileForm(request.POST or None, request.FILES or None,instance=request.user)
-            if editProfileForm.is_valid():
-                editProfileForm.save()
-                return redirect('home') 
-    else:
-        # Checks if user is logged out or in and passes to form
-        if request.user.is_authenticated:
-            context['allInactiveDoctors'] = Profile.objects.filter(Q(is_active=False)&Q(is_doctor=True))
-            editProfileForm = UserProfileForm(instance=request.user)
-            Inbox = Messages.objects.filter(Q(sender=request.user) | Q(receiver=request.user)).order_by("-time", "read")
-            context['Inbox'] = Inbox
-            unreadMessagesCount = Messages.objects.filter(Q(receiver=request.user) & Q(read=False)).count()
-            context['unreadMessagesCount'] = unreadMessagesCount
-            if request.user.is_staff:
-                sendMessageForm.fields["receiver"].queryset = Profile.objects.filter(Q(is_active=True))
-            elif request.user.verified !='':
-                sendMessageForm.fields["receiver"].queryset = Profile.objects.filter(Q(is_active=True))           
-            else:
-                sendMessageForm.fields["receiver"].queryset = Profile.objects.filter(Q(is_active=True)&Q(is_doctor=True)|Q(is_staff=True))
-
+## This needs to be made
+@login_required
+@require_http_methods(["POST"])
+def displayCalendar(request):
+    context={}
+    editProfileForm = UserProfileForm(instance=request.user)
     context['editProfileForm'] = editProfileForm
+    bookAppointment = BookAppointmentForm()
+    bookAppointment.fields['doctors'].queryset = Profile.objects.filter(Q(is_active=True)&Q(is_doctor=True))
+    context['bookAppointment'] = bookAppointment 
+    context['nmenu'] = 'bookAppointment'
+    d = get_date(request.GET.get('day', None))
+    print(d)
+    # Instantiate our calendar class with today's year and date
+    cal = Calendar(d.year, d.month)
+    html_cal = cal.formatmonth(withyear=True)
+    # Figure how to pass this back to the render
+    context['calendar'] = mark_safe(html_cal)
+    return render(request, 'home.html', context)
+
+@login_required
+@require_http_methods(["POST"])
+def editProfile(request,page):
+    context={}
+    editProfileForm = UserProfileForm(request.POST or None, request.FILES or None,instance=request.user)
+    print(page)
+    if page =='':
+        context['nmenu']='home'
+    else:
+        context['nmenu']=page
+    
+    if editProfileForm.is_valid():
+        editProfileForm.save()
+        editProfileForm = UserProfileForm(instance=request.user)
+        context['editProfileForm'] = editProfileForm
+        context['is_post'] = False
+        return render(request, "home.html", context)
+    else:
+        context['is_post'] = True
+        context['editProfileForm'] = editProfileForm
+        return render(request, "home.html", context)
+
+# Rework this to only show forms while logged in 
+def index(request):
+    context={}
+    if request.user.is_authenticated:
+        Inbox = Messages.objects.filter(Q(sender=request.user) | Q(receiver=request.user)).order_by("-time", "read")
+        context['Inbox'] = Inbox
+        unreadMessagesCount = Messages.objects.filter(Q(receiver=request.user) & Q(read=False)).count()
+        context['unreadMessagesCount'] = unreadMessagesCount
+        editProfileForm = UserProfileForm(instance=request.user)
+        context['editProfileForm'] = editProfileForm
+        context['is_post'] = False
+        context['nmenu'] = 'home'
+    return render(request, 'home.html', context)
+    
+@login_required
+def get_date(req_day):
+    if req_day:
+        year, month = (int(x) for x in req_day.split('-'))
+        return date(year, month, day=1)
+    return date.today()
+
+@login_required
+def calendar(request):
+    context={}  
+    editProfileForm = UserProfileForm(instance=request.user)
+    context['editProfileForm'] = editProfileForm
+    results = test_calendar()
+    context['results'] = results
+    context['nmenu'] = 'calendar'
+    return render(request, 'home.html', context)
+
+@login_required
+def messagesSend(request):
+    context={}
+    editProfileForm = UserProfileForm(instance=request.user)
+    context['editProfileForm'] = editProfileForm
+    sendMessageForm = MessageForm()
+    if request.user.is_staff:
+        sendMessageForm.fields['receiver'].queryset = Profile.objects.filter(Q(is_active=True))
+    elif request.user.verified !='':
+        sendMessageForm.fields['receiver'].queryset = Profile.objects.filter(Q(is_active=True))           
+    else:
+        # Not getting self need to rework remove when fixed maybe username=request.user
+        sendMessageForm.fields['receiver'].queryset = Profile.objects.filter(Q(is_active=True)&Q(is_doctor=True)|Q(is_staff=True)|Q(username=request.user))
     context['sendMessageForm'] = sendMessageForm
-    return render(request, "home.html", context)
+    context['nmenu'] = 'messagesSend'
+    return render(request, 'home.html', context)
+
+@login_required
+def messagesInbox(request):
+    context={}
+    editProfileForm = UserProfileForm(instance=request.user)
+    context['editProfileForm'] = editProfileForm
+    Inbox = Messages.objects.filter(Q(sender=request.user) | Q(receiver=request.user)).order_by("-time", "read")
+    context['Inbox'] = Inbox
+    context['nmenu'] = 'messagesInbox'
+    return render(request, 'home.html', context)
+
+@login_required
+def documents(request):
+    context={}
+    editProfileForm = UserProfileForm(instance=request.user)
+    context['editProfileForm'] = editProfileForm
+    context['nmenu'] = 'documents'
+    return render(request, 'home.html', context)
+
+@login_required
+def adminControls(request):
+    context={}
+    editProfileForm = UserProfileForm(instance=request.user)
+    context['editProfileForm'] = editProfileForm
+     # Only admins needs to know inactive users
+    context['allInactiveDoctors'] = Profile.objects.filter(Q(is_active=False)&Q(is_doctor=True))
+    context['nmenu'] = 'adminControls'
+    return render(request, 'home.html', context)
+
+@login_required
+def bookAppointment(request):
+    context={}
+    editProfileForm = UserProfileForm(instance=request.user)
+    context['editProfileForm'] = editProfileForm
+    # Only bookAppointment if it's a user check is unnecessary if I check from the front end.
+    bookAppointment = BookAppointmentForm()
+    bookAppointment.fields['doctors'].queryset = Profile.objects.filter(Q(is_active=True)&Q(is_doctor=True))
+    context['bookAppointment'] = bookAppointment 
+    context['nmenu'] = 'bookAppointment'
+    return render(request, 'home.html', context)

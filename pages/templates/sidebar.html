@@ -1,62 +1,79 @@
 {% block content %}
   <div class="col-md-3" style="float:left">
     <h1>Hi {{ user.username }}!</h1>
-    <img class="avatar" src="{{user.avatar.url}}" >
+    <img class="avatar" src="{{user.get_profile_pic_url}}" >
     
     <!-- Button trigger modal -->
     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editProfile">+</button>
-        
+
     <ul class="nav nav-tabs flex-column" id="myTab" role="tablist">
       <li class="nav-item" role="presentation">
-        <a class="nav-link active" id="home-tab" data-bs-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Dashboard</a>
+        <a class="nav-link" id="home"  href="/" >Dashboard</a>
       </li>
       <li class="nav-item" role="presentation">
-        <a class="nav-link" id="calendar-tab" data-bs-toggle="tab" href="#calendar" role="tab" aria-controls="calendar" aria-selected="false">Calendar</a>
+        <a class="nav-link" id="calendar" href="calendar">Calendar</a>
       </li>
       <li class="nav-item dropdown" role="presentation">
-        <a class="nav-link dropdown-toggle" id="messages-tab" data-bs-toggle="dropdown" aria-expanded="false">Messages</a>
+        <a class="nav-link dropdown-toggle" id="messages-tab" data-bs-toggle="dropdown" >Messages</a>
         <ul class="dropdown-menu">
-          <li><a class="dropdown-item" id="messages-send-tab" data-bs-toggle="tab" href="#messagesSend" role="tab" aria-controls="messagesSend" aria-selected="false">Send</a></li>
-          <li><a class="dropdown-item" id="messages-inbox-tab" data-bs-toggle="tab" href="#messagesInbox" role="tab" aria-controls="messagesInbox" aria-selected="false">Inbox</a></li>
+          <li><a class="dropdown-item" id="messagesSend" href="messagesSend" >Send</a></li>
+          <li><a class="dropdown-item" id="messagesInbox" href="messagesInbox" >Inbox</a></li>
         </ul>
       </li>
       <li class="nav-item" role="presentation">
-        <a class="nav-link" id="documents-tab" data-bs-toggle="tab" href="#documents" role="tab" aria-controls="documents" aria-selected="false">Documents</a>
+        <a class="nav-link" id="documents"  href="documents" >Documents</a>
       </li>
       {% if request.user.is_staff %}
         <li class="nav-item" role="presentation">
-          <a class="nav-link" id="admin-tab" data-bs-toggle="tab" href="#admin" role="tab" aria-controls="admin" aria-selected="false">Admin</a>
+          <a class="nav-link" id="adminControls" href="adminControls" >Admin</a>
+        </li>
+      {% endif %}
+      {% if request.user.is_staff is not True  and request.user.is_doctor is not True %}
+        <li class="nav-item" role="presentation">
+          <a class="nav-link" id="bookAppointment"  href="bookAppointment" >Book Appointment</a>
         </li>
       {% endif %}
       <li class="nav-item" role="presentation">
-        <a class="nav-link" id="logout" href="{% url 'logout' %}" role="tab" aria-controls="logout" aria-selected="false">Log out</a>
+        <a class="nav-link" id="logout" href="{% url 'logout' %}" >Log out</a>
       </li>
-      
     </ul>
   </div>
 
   <div class="col-md-9" style="float:right">
     <div class="tab-content" id="myTabContent">
-      <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+      <div class="tab-pane" id="home" >
         {% include 'dashboard.html' %}
       </div>
-      <div class="tab-pane fade" id="calendar" role="tabpanel" aria-labelledby="calendar-tab">
+      <div class="tab-pane" id="calendar" >
         {% include 'googleCalendar.html' %}
       </div>
-      <div class="tab-pane fade" id="messagesSend" role="tabpanel" aria-labelledby="messages-send-tab">
+      <div class="tab-pane" id="messagesSend" >
         {% include 'sendMessageForm.html' %}
       </div>
-      <div class="tab-pane fade" id="messagesInbox" role="tabpanel" aria-labelledby="messages-inbox-tab">
+      <div class="tab-pane" id="messagesInbox" >
         {% include 'inbox.html' %}
       </div>
-      <div class="tab-pane fade" id="documents" role="tabpanel" aria-labelledby="documents-tab">
+      <div class="tab-pane" id="documents" >
         {% include 'documents.html' %}
       </div>
+      {% if request.user.is_staff is not True  and request.user.is_doctor is not True  %}
+        <div class="tab-pane" id="bookAppointment" >
+          {% include 'bookAppointment.html' %}
+        </div>
+      {% endif %}
       {% if request.user.is_staff %}
-        <div class="tab-pane fade" id="admin" role="tabpanel" aria-labelledby="admin-tab">
-          {% include 'admin.html' %}
+        <div class="tab-pane" id="adminControls" >
+          {% include 'adminControls.html' %}
         </div>
       {% endif %}
     </div>
   </div>
+
+  {% if nmenu %} 
+  <script type="text/javascript">
+    $("a#{{nmenu}}").addClass("active");
+    $("div#{{nmenu}}").addClass("active");
+  </script>
+  {% endif %}
+
 {% endblock %} 

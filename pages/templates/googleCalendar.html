@@ -1,8 +1,7 @@
 {% block content %}
     <h1>Calendar</h1>
     <button>+</button>
-    <iframe src="https://calendar.google.com/calendar/embed?src=uvmd3k8d3ih207b9qa80na74i8%40group.calendar.google.com&ctz=America%2FVancouver" style="border: 0" width="800" height="600" frameborder="0" scrolling="no">
-    </iframe>
+   
     <ul>
         {% for result in results %}
             <li>{{result.start.date}}{% if result.end.date %}-{% endif%}{{result.end.date}}: {{result.summary}}</li>

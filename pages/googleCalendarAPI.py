@@ -10,7 +10,7 @@ SERVICE_ACCOUNT_FILE = './google-credentials.json'
 def test_calendar():
 
     print("RUNNING TEST_CALENDAR()")
-      
+    
     credentials = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
     service = googleapiclient.discovery.build('calendar', 'v3', credentials=credentials)
     """     
@@ -39,7 +39,6 @@ def test_calendar():
     # LOG THEM ALL OUT IN DEV TOOLS CONSOLE
     for e in events:
         print(e)
-
     #uncomment the following lines to delete each existing item in the calendar
     #event_id = e['id']
         # service.events().delete(calendarId=CAL_ID, eventId=event_id).execute() 
