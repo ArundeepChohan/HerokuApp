@@ -1,3 +1,4 @@
+from django.http.response import HttpResponseRedirect
 from django.shortcuts import redirect, render
 from pages.calendar import Calendar
 from .forms import BookAppointmentForm, MessageForm, SignUpForm, UserProfileForm, Verify
@@ -116,78 +117,64 @@ def activate(request,username):
         user.is_active = True
         user.save()
     return redirect('admin')
-
-## This needs to be made
-@login_required
-@require_http_methods(["POST"])
-def displayCalendar(request):
-    context={}
-    editProfileForm = UserProfileForm(instance=request.user)
-    context['editProfileForm'] = editProfileForm
-    bookAppointment = BookAppointmentForm()
-    bookAppointment.fields['doctors'].queryset = Profile.objects.filter(Q(is_active=True)&Q(is_doctor=True))
-    context['bookAppointment'] = bookAppointment 
-    context['nmenu'] = 'bookAppointment'
-    d = get_date(request.GET.get('day', None))
-    print(d)
-    # Instantiate our calendar class with today's year and date
-    cal = Calendar(d.year, d.month)
-    html_cal = cal.formatmonth(withyear=True)
-    # Figure how to pass this back to the render
-    context['calendar'] = mark_safe(html_cal)
-    return render(request, 'home.html', context)
-
-@login_required
-@require_http_methods(["POST"])
-def editProfile(request,page):
-    context={}
-    editProfileForm = UserProfileForm(request.POST or None, request.FILES or None,instance=request.user)
-    print(page)
-    if page =='':
-        context['nmenu']='home'
-    else:
-        context['nmenu']=page
     
-    if editProfileForm.is_valid():
-        editProfileForm.save()
-        editProfileForm = UserProfileForm(instance=request.user)
-        context['editProfileForm'] = editProfileForm
-        context['is_post'] = False
-        return render(request, "home.html", context)
-    else:
-        context['is_post'] = True
-        context['editProfileForm'] = editProfileForm
-        return render(request, "home.html", context)
+from urllib.parse import urlparse
 
-# Rework this to only show forms while logged in 
 def index(request):
     context={}
-    if request.user.is_authenticated:
+    context['nmenu']='home'
+    if request.method=="POST":
         Inbox = Messages.objects.filter(Q(sender=request.user) | Q(receiver=request.user)).order_by("-time", "read")
         context['Inbox'] = Inbox
         unreadMessagesCount = Messages.objects.filter(Q(receiver=request.user) & Q(read=False)).count()
         context['unreadMessagesCount'] = unreadMessagesCount
         editProfileForm = UserProfileForm(instance=request.user)
-        context['editProfileForm'] = editProfileForm
-        context['is_post'] = False
-        context['nmenu'] = 'home'
+        if 'editProfileForm' in request.POST:
+            editProfileForm = UserProfileForm(request.POST or None, request.FILES or None,instance=request.user)
+            if editProfileForm.is_valid():
+                editProfileForm.save()
+                editProfileForm = UserProfileForm(instance=request.user)
+                context['editProfileForm'] = editProfileForm
+                context['is_post'] = False
+                return render(request, "home.html", context)
+            else:
+                context['is_post'] = True
+                context['editProfileForm'] = editProfileForm
+                return render(request, "home.html", context)
+    else:
+        if request.user.is_authenticated:
+            Inbox = Messages.objects.filter(Q(sender=request.user) | Q(receiver=request.user)).order_by("-time", "read")
+            context['Inbox'] = Inbox
+            unreadMessagesCount = Messages.objects.filter(Q(receiver=request.user) & Q(read=False)).count()
+            context['unreadMessagesCount'] = unreadMessagesCount
+            editProfileForm = UserProfileForm(instance=request.user)
+            context['editProfileForm'] = editProfileForm
+            context['is_post'] = False
     return render(request, 'home.html', context)
     
 @login_required
-def get_date(req_day):
-    if req_day:
-        year, month = (int(x) for x in req_day.split('-'))
-        return date(year, month, day=1)
-    return date.today()
-
-@login_required
 def calendar(request):
     context={}  
-    editProfileForm = UserProfileForm(instance=request.user)
-    context['editProfileForm'] = editProfileForm
     results = test_calendar()
     context['results'] = results
     context['nmenu'] = 'calendar'
+    if request.method=="POST":
+        if 'editProfileForm' in request.POST:
+            editProfileForm = UserProfileForm(request.POST or None, request.FILES or None,instance=request.user)
+            if editProfileForm.is_valid():
+                editProfileForm.save()
+                editProfileForm = UserProfileForm(instance=request.user)
+                context['editProfileForm'] = editProfileForm
+                context['is_post'] = False
+                return render(request, "home.html", context)
+            else:
+                context['is_post'] = True
+                context['editProfileForm'] = editProfileForm
+                return render(request, "home.html", context)
+    else:
+        editProfileForm = UserProfileForm(instance=request.user)
+        context['editProfileForm'] = editProfileForm
+      
     return render(request, 'home.html', context)
 
 @login_required
@@ -205,6 +192,23 @@ def messagesSend(request):
         sendMessageForm.fields['receiver'].queryset = Profile.objects.filter(Q(is_active=True)&Q(is_doctor=True)|Q(is_staff=True)|Q(username=request.user))
     context['sendMessageForm'] = sendMessageForm
     context['nmenu'] = 'messagesSend'
+    if request.method=="POST":
+        if 'editProfileForm' in request.POST:
+            editProfileForm = UserProfileForm(request.POST or None, request.FILES or None,instance=request.user)
+            if editProfileForm.is_valid():
+                editProfileForm.save()
+                editProfileForm = UserProfileForm(instance=request.user)
+                context['editProfileForm'] = editProfileForm
+                context['is_post'] = False
+                return render(request, "home.html", context)
+            else:
+                context['is_post'] = True
+                context['editProfileForm'] = editProfileForm
+                return render(request, "home.html", context)
+    else:
+        editProfileForm = UserProfileForm(instance=request.user)
+        context['editProfileForm'] = editProfileForm
+
     return render(request, 'home.html', context)
 
 @login_required
@@ -215,6 +219,22 @@ def messagesInbox(request):
     Inbox = Messages.objects.filter(Q(sender=request.user) | Q(receiver=request.user)).order_by("-time", "read")
     context['Inbox'] = Inbox
     context['nmenu'] = 'messagesInbox'
+    if request.method=="POST":
+        if 'editProfileForm' in request.POST:
+            editProfileForm = UserProfileForm(request.POST or None, request.FILES or None,instance=request.user)
+            if editProfileForm.is_valid():
+                editProfileForm.save()
+                editProfileForm = UserProfileForm(instance=request.user)
+                context['editProfileForm'] = editProfileForm
+                context['is_post'] = False
+                return render(request, "home.html", context)
+            else:
+                context['is_post'] = True
+                context['editProfileForm'] = editProfileForm
+                return render(request, "home.html", context)
+    else:
+        editProfileForm = UserProfileForm(instance=request.user)
+        context['editProfileForm'] = editProfileForm
     return render(request, 'home.html', context)
 
 @login_required
@@ -223,16 +243,46 @@ def documents(request):
     editProfileForm = UserProfileForm(instance=request.user)
     context['editProfileForm'] = editProfileForm
     context['nmenu'] = 'documents'
+    if request.method=="POST":
+        if 'editProfileForm' in request.POST:
+            editProfileForm = UserProfileForm(request.POST or None, request.FILES or None,instance=request.user)
+            if editProfileForm.is_valid():
+                editProfileForm.save()
+                editProfileForm = UserProfileForm(instance=request.user)
+                context['editProfileForm'] = editProfileForm
+                context['is_post'] = False
+                return render(request, "home.html", context)
+            else:
+                context['is_post'] = True
+                context['editProfileForm'] = editProfileForm
+                return render(request, "home.html", context)
+    else:
+        editProfileForm = UserProfileForm(instance=request.user)
+        context['editProfileForm'] = editProfileForm
     return render(request, 'home.html', context)
 
 @login_required
 def adminControls(request):
     context={}
-    editProfileForm = UserProfileForm(instance=request.user)
-    context['editProfileForm'] = editProfileForm
      # Only admins needs to know inactive users
     context['allInactiveDoctors'] = Profile.objects.filter(Q(is_active=False)&Q(is_doctor=True))
     context['nmenu'] = 'adminControls'
+    if request.method=="POST":
+        if 'editProfileForm' in request.POST:
+            editProfileForm = UserProfileForm(request.POST or None, request.FILES or None,instance=request.user)
+            if editProfileForm.is_valid():
+                editProfileForm.save()
+                editProfileForm = UserProfileForm(instance=request.user)
+                context['editProfileForm'] = editProfileForm
+                context['is_post'] = False
+                return render(request, "home.html", context)
+            else:
+                context['is_post'] = True
+                context['editProfileForm'] = editProfileForm
+                return render(request, "home.html", context)
+    else:
+        editProfileForm = UserProfileForm(instance=request.user)
+        context['editProfileForm'] = editProfileForm
     return render(request, 'home.html', context)
 
 @login_required
@@ -245,4 +295,32 @@ def bookAppointment(request):
     bookAppointment.fields['doctors'].queryset = Profile.objects.filter(Q(is_active=True)&Q(is_doctor=True))
     context['bookAppointment'] = bookAppointment 
     context['nmenu'] = 'bookAppointment'
+    if request.method=="POST":
+        if 'editProfileForm' in request.POST:
+            editProfileForm = UserProfileForm(request.POST or None, request.FILES or None,instance=request.user)
+            if editProfileForm.is_valid():
+                editProfileForm.save()
+                editProfileForm = UserProfileForm(instance=request.user)
+                context['editProfileForm'] = editProfileForm
+                context['is_post'] = False
+                return render(request, "home.html", context)
+            else:
+                context['is_post'] = True
+                context['editProfileForm'] = editProfileForm
+                return render(request, "home.html", context)
+        if 'bookAppointment' in request.POST:
+            d = date.today()
+            print(d)
+            # Instantiate our calendar class with today's year and date
+            cal = Calendar(d.year, d.month)
+            html_cal = cal.formatmonth(withyear=True)
+            # Figure how to pass this back to the render
+            context['calendar'] = mark_safe(html_cal)
+            return render(request, 'home.html', context)
+
+    else:
+        editProfileForm = UserProfileForm(instance=request.user)
+        context['editProfileForm'] = editProfileForm
+        
+       
     return render(request, 'home.html', context)

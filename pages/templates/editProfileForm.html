@@ -1,6 +1,7 @@
 {% block content %}
 
-    <form method = "POST" action='editProfile/{{request.get_full_path}}/' enctype="multipart/form-data">
+    <h1>{{request.path}}</h1>
+    <form method = "POST" action="" enctype="multipart/form-data">
         {% csrf_token %}
         {{ editProfileForm.as_p }}
         <input type="submit" name="editProfileForm" value="Upload">

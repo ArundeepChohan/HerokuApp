@@ -35,9 +35,8 @@ ul {
   padding: 0px 5px 0px 20px;
 }
 
-
 </style>
-    <form method = "POST" action="displayCalendar" enctype="multipart/form-data">
+    <form method = "POST" action="" enctype="multipart/form-data">
         {% csrf_token %}
         {{ bookAppointment.as_p }}
         <input type="submit" name='bookAppointment' value="Check availability">
