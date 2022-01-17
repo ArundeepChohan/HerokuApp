@@ -1,7 +1,8 @@
 from decouple import config
 from google.oauth2 import service_account
 import googleapiclient.discovery
-import datetime
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 
 CAL_ID = config('CAL_ID')
 SCOPES = ['https://www.googleapis.com/auth/calendar']
@@ -32,10 +33,21 @@ def test_calendar():
     print('Event created')
     """
     
-    # GET ALL EXISTING EVENTS
-    events_result = service.events().list(calendarId=CAL_ID, maxResults=2500).execute()
+    # GET ALL EXISTING EVENTS Max 2500 in this month
+    # Currently gets 1 - today's date not 1-30(Rework necessary)
+    today = datetime.today() 
+    monthAgo = today - relativedelta(months=1)
+    tmax = today.isoformat('T') + "Z"
+    tmin = monthAgo.isoformat('T') + "Z"
+    events_result = service.events().list(
+        calendarId=CAL_ID,
+        timeMin=tmin,
+        timeMax=tmax,
+        maxResults=2500,
+        singleEvents=True,
+        orderBy='startTime',
+    ).execute()
     events = events_result.get('items', [])
-
     # LOG THEM ALL OUT IN DEV TOOLS CONSOLE
     for e in events:
         print(e)

@@ -1,4 +1,3 @@
-from django.http.response import HttpResponseRedirect
 from django.shortcuts import redirect, render
 from pages.calendar import Calendar
 from .forms import BookAppointmentForm, MessageForm, SignUpForm, UserProfileForm, Verify
@@ -158,6 +157,8 @@ def calendar(request):
     results = test_calendar()
     context['results'] = results
     context['nmenu'] = 'calendar'
+    editProfileForm = UserProfileForm(instance=request.user)
+    context['editProfileForm'] = editProfileForm
     if request.method=="POST":
         if 'editProfileForm' in request.POST:
             editProfileForm = UserProfileForm(request.POST or None, request.FILES or None,instance=request.user)
@@ -171,10 +172,7 @@ def calendar(request):
                 context['is_post'] = True
                 context['editProfileForm'] = editProfileForm
                 return render(request, "home.html", context)
-    else:
-        editProfileForm = UserProfileForm(instance=request.user)
-        context['editProfileForm'] = editProfileForm
-      
+
     return render(request, 'home.html', context)
 
 @login_required
@@ -205,9 +203,6 @@ def messagesSend(request):
                 context['is_post'] = True
                 context['editProfileForm'] = editProfileForm
                 return render(request, "home.html", context)
-    else:
-        editProfileForm = UserProfileForm(instance=request.user)
-        context['editProfileForm'] = editProfileForm
 
     return render(request, 'home.html', context)
 
@@ -232,9 +227,6 @@ def messagesInbox(request):
                 context['is_post'] = True
                 context['editProfileForm'] = editProfileForm
                 return render(request, "home.html", context)
-    else:
-        editProfileForm = UserProfileForm(instance=request.user)
-        context['editProfileForm'] = editProfileForm
     return render(request, 'home.html', context)
 
 @login_required
@@ -256,9 +248,6 @@ def documents(request):
                 context['is_post'] = True
                 context['editProfileForm'] = editProfileForm
                 return render(request, "home.html", context)
-    else:
-        editProfileForm = UserProfileForm(instance=request.user)
-        context['editProfileForm'] = editProfileForm
     return render(request, 'home.html', context)
 
 @login_required
@@ -267,6 +256,8 @@ def adminControls(request):
      # Only admins needs to know inactive users
     context['allInactiveDoctors'] = Profile.objects.filter(Q(is_active=False)&Q(is_doctor=True))
     context['nmenu'] = 'adminControls'
+    editProfileForm = UserProfileForm(instance=request.user)
+    context['editProfileForm'] = editProfileForm
     if request.method=="POST":
         if 'editProfileForm' in request.POST:
             editProfileForm = UserProfileForm(request.POST or None, request.FILES or None,instance=request.user)
@@ -280,9 +271,7 @@ def adminControls(request):
                 context['is_post'] = True
                 context['editProfileForm'] = editProfileForm
                 return render(request, "home.html", context)
-    else:
-        editProfileForm = UserProfileForm(instance=request.user)
-        context['editProfileForm'] = editProfileForm
+        
     return render(request, 'home.html', context)
 
 @login_required
@@ -311,16 +300,10 @@ def bookAppointment(request):
         if 'bookAppointment' in request.POST:
             d = date.today()
             print(d)
-            # Instantiate our calendar class with today's year and date
+            results = test_calendar()
             cal = Calendar(d.year, d.month)
-            html_cal = cal.formatmonth(withyear=True)
-            # Figure how to pass this back to the render
+            html_cal = cal.formatmonth(results, withyear=True)
             context['calendar'] = mark_safe(html_cal)
             return render(request, 'home.html', context)
-
-    else:
-        editProfileForm = UserProfileForm(instance=request.user)
-        context['editProfileForm'] = editProfileForm
         
-       
     return render(request, 'home.html', context)

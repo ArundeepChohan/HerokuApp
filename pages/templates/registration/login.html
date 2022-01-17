@@ -18,6 +18,7 @@
     {{ form.as_p }}
     <button type="submit" name="login">Log In</button>
     <button><a href="{% url 'signup' %}">Sign up</a></button>
+    <a href="{% url provider_login_url 'google' %}">Login with Google</a>
   </form>
   
 {% endblock %}

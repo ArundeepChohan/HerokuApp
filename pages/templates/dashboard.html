@@ -5,7 +5,10 @@
         <div class="col-md-6">
             {% if unreadMessagesCount %}
                 {{unreadMessagesCount}}
-            {% endif %}
+            {% else %}
+                0
+            {% endif %}  
+            
         </div>
         <!-- This needs to get the latest unread message -->
         <div>
