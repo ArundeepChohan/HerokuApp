@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load socialaccount %}
+
 {% block title %}Home{% endblock %}
 
 {% block content %}
@@ -13,8 +13,7 @@
     <p>You are not logged in</p>
     <button><a href="{% url 'login' %}">Log In</a></button>
     <button><a href="{% url 'signup' %}">Sign up</a></button>
-    <a href="{% url provider_login_url 'google' %}">Login with Google</a>
-    
+ 
   {% endif %}
 
 {% endblock %}

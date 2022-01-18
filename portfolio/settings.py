@@ -32,7 +32,7 @@ DEBUG = True
 
 # DEBUG = config('DJANGO_DEBUG',default=True, cast=bool)
 
-ALLOWED_HOSTS = ["arundeepchohan.herokuapp.com",'127.0.0.1', '0.0.0.0','localhost']
+ALLOWED_HOSTS = ["arundeepchohan.herokuapp.com",'127.0.0.1','localhost']
 
 # Application definition
 
@@ -47,7 +47,7 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.google', 
     'formtools',
     'phonenumber_field',
     'pages.apps.PagesConfig',
@@ -55,7 +55,6 @@ INSTALLED_APPS = [
     'django_cleanup.apps.CleanupConfig',
 ]
     
-
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -201,11 +200,16 @@ STATICFILES_FINDERS = (
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 #Adding social logins
-AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.AllowAllUsersModelBackend','allauth.account.auth_backends.AuthenticationBackend'
-]
+AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.AllowAllUsersModelBackend','allauth.account.auth_backends.AuthenticationBackend']
 
-SITE_ID = 1 
+
+SITE_ID = 2
 ACCOUNT_EMAIL_VERIFICATION='none'
+# Additional configuration settings
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_EMAIL_VERIFICATION = "none"
+SOCIALACCOUNT_QUERY_EMAIL = True
+
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
         'SCOPE': [
@@ -216,7 +220,8 @@ SOCIALACCOUNT_PROVIDERS = {
             'access_type': 'online',
         }
     }
-}
+} 
+
 LOGIN_URL = 'accounts/login'
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
@@ -225,11 +230,12 @@ SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 SESSION_ENGINE = (
     'django.contrib.sessions.backends.cache'
 )
-""" SESSION_COOKIE_AGE = 60  # change expired session
+""" 
+SESSION_COOKIE_AGE = 60  # change expired session
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_SAVE_EVERY_REQUEST = True 
- """
+"""
 
 
 import django_heroku

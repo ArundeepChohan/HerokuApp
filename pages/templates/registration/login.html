@@ -17,8 +17,11 @@
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit" name="login">Log In</button>
-    <button><a href="{% url 'signup' %}">Sign up</a></button>
-  
+   
   </form>
+  <button><a href="{% url 'signup' %}">Sign up</a></button>
+  <a id="google_login" href="/accounts/google/login" class="btn btn-success">
+    Sign in with Google
+  </a>
   
 {% endblock %}
