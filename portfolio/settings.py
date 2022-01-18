@@ -43,19 +43,19 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
     'django.contrib.sites',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
-
     'formtools',
     'phonenumber_field',
     'pages.apps.PagesConfig',
     'storages',
     'django_cleanup.apps.CleanupConfig',
 ]
+    
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -200,7 +200,23 @@ STATICFILES_FINDERS = (
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+#Adding social logins
+AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.AllowAllUsersModelBackend','allauth.account.auth_backends.AuthenticationBackend'
+]
 
+SITE_ID = 1 
+ACCOUNT_EMAIL_VERIFICATION='none'
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        }
+    }
+}
 LOGIN_URL = 'accounts/login'
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
@@ -215,22 +231,6 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_SAVE_EVERY_REQUEST = True 
  """
 
-#Adding social logins
-AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.AllowAllUsersModelBackend',
-'allauth.account.auth_backends.AuthenticationBackend']
-
-SOCIALACCOUNT_PROVIDERS={
-    'google':{
-        'SCOPE':[
-            'profile',
-            'email'
-        ],
-        'AUTH_PARAMS':{
-            'access_type':'online'
-        }
-    }
-}
-SITE_ID = 2
 
 import django_heroku
 django_heroku.settings(locals(), staticfiles=False)
