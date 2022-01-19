@@ -21,9 +21,7 @@
    
   </form>
   <button><a href="{% url 'signup' %}">Sign up</a></button>
-  <div class="g-signin2" data-onsuccess="onSignIn">
-    <a href="{% provider_login_url 'google' %}" >Login With Google</a>
-  </div>
- 
+  <a href="{% provider_login_url 'google' %}" >Login With Google</a>
+  
   
 {% endblock %}

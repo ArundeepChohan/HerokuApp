@@ -1,6 +1,5 @@
 {% block content %}
 
-    <h1>{{request.path}}</h1>
     <form method = "POST" action="" enctype="multipart/form-data">
         {% csrf_token %}
         {{ editProfileForm.as_p }}

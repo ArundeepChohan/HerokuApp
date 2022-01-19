@@ -181,7 +181,7 @@ def messagesSend(request):
     sendMessageForm = MessageForm()
     if request.user.is_staff:
         sendMessageForm.fields['receiver'].queryset = Profile.objects.filter(Q(is_active=True))
-    elif request.user.verified !='':
+    elif request.user.verified:
         sendMessageForm.fields['receiver'].queryset = Profile.objects.filter(Q(is_active=True))           
     else:
         # Not getting self need to rework remove when fixed maybe username=request.user

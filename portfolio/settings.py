@@ -202,7 +202,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 #Adding social logins
 AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.AllowAllUsersModelBackend','allauth.account.auth_backends.AuthenticationBackend']
 
-SITE_ID = 2
+SITE_ID = 3
 ACCOUNT_EMAIL_VERIFICATION='none'
 # Additional configuration settings
 ACCOUNT_USERNAME_REQUIRED = True

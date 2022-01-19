@@ -4,13 +4,13 @@ from phonenumber_field.modelfields import PhoneNumberField
 from django.templatetags.static import static
 
 class Profile(AbstractUser):
-    bio = models.TextField(max_length=100, blank=True)
+    bio = models.TextField(max_length=100, blank=True,null=True)
     phone_number = PhoneNumberField(max_length=25, region='US')
     birth_date = models.DateField(blank = True, null = True) 
     is_doctor = models.BooleanField(default=False)
-    verified = models.ImageField(default='',upload_to='doctor')
+    verified = models.ImageField(blank=True, null=True,upload_to='doctor')
     date_created = models.DateTimeField(auto_now_add=True)
-    avatar = models.ImageField(upload_to='',null=True)
+    avatar = models.ImageField(upload_to='',blank=True, null=True)
 
     gender_choices = (('others', 'Others'),('male', 'Male'),('female' ,'Female'))
     gender = models.CharField(max_length=10, choices=gender_choices,default='others')
