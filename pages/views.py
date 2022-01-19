@@ -117,8 +117,6 @@ def activate(request,username):
         user.save()
     return redirect('admin')
     
-from urllib.parse import urlparse
-
 def index(request):
     context={}
     context['nmenu']='home'

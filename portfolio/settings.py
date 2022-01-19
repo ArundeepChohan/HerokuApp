@@ -72,7 +72,7 @@ ROOT_URLCONF = 'portfolio.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'DIRS': [os.path.join(BASE_DIR, 'templates'),os.path.join(BASE_DIR, 'templates', 'account')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -155,8 +155,8 @@ USE_TZ = False
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-# All of this is in my console.aws.amazon to configure aws s3 static files only
-# If I am in prod
+# All of this is in my console.aws.amazon to configure aws s3 static files 
+# If I am in prod DEBUG==false
 # IAM Management Console
 if DEBUG:
     AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID') 
@@ -202,12 +202,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 #Adding social logins
 AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.AllowAllUsersModelBackend','allauth.account.auth_backends.AuthenticationBackend']
 
-
 SITE_ID = 2
 ACCOUNT_EMAIL_VERIFICATION='none'
 # Additional configuration settings
-ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_EMAIL_VERIFICATION = "none"
+ACCOUNT_USERNAME_REQUIRED = True
 SOCIALACCOUNT_QUERY_EMAIL = True
 
 SOCIALACCOUNT_PROVIDERS = {

@@ -4,7 +4,7 @@ from pages.views import  index, calendar, messagesSend, messagesInbox, documents
 urlpatterns = [
     path('', index, name='home'),
     path('accounts/login/', login, name='login'),
-    path('signup/', pickUserType, name='signup'),
+    path('accounts/signup/', pickUserType, name='signup'),
     path('user/', UserWizard.as_view() , name='user'), 
     path('doctor/',DoctorWizard.as_view(), name='doctor'),
     path('calendar', calendar, name='calendar'),
