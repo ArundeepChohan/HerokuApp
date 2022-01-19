@@ -51,7 +51,7 @@ class DoctorWizard(SessionWizardView):
     form_list = [SignUpForm,Verify]
     
     def done(self, form_list, **kwargs):
-        process_data(form_list)
+        #process_data(form_list)
         userCreate = form_list[0]
         userCreate.save()
         username = userCreate.cleaned_data.get('username')
@@ -68,7 +68,7 @@ class UserWizard(SessionWizardView):
     template_name = "registration/signup.html"
     form_list = [SignUpForm]
     def done(self, form_list, **kwargs):
-        process_data(form_list)
+        #process_data(form_list)
         form_list[0].save()
         userCreate = form_list[0]
         username = userCreate.cleaned_data.get('username')
