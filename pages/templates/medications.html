@@ -1,0 +1,19 @@
+{% block content %}
+
+    <form method = "POST" action="addMed/" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ medicationForm.as_p }}
+        <input type="submit" name="medicationForm" value="Upload">
+    </form>
+    <h1>Medications</h1>
+    {% for med in medications %}
+    <div>
+        {{med.name}}
+        {{med.dosage}}
+        {{med.times}}
+        {{med.choice}}
+        {{med.type}}
+    </div>
+    
+    {% endfor %}
+{% endblock %}

@@ -1,5 +1,5 @@
 {% block content %}
-
+{% if Inbox %}
     <div class="col-md-12">
         <div class="accordion" id="accordionExample">
             {% for message in Inbox %}
@@ -22,7 +22,8 @@
                     {{ message.text}} 
                     {% if message.contact_parent.count %}
                     <div>
-                        {% for reply in message.get_children %}
+                        {% for reply in message.get_children %}  
+                        <!-- Remove the replies which aren't visibile to that user from view -->
                             <form class="delete-form" method="POST" action="delete/{{reply.id}}/">
                                 {% csrf_token %}
                                 <input type="submit" value="X" >
@@ -61,5 +62,7 @@
              
         
     </div>
-
+    {% else %}
+    <p>No messages</p>
+{% endif %}
 {% endblock %}

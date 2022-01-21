@@ -48,7 +48,6 @@ def test_calendar():
         orderBy='startTime',
     ).execute()
     events = events_result.get('items', [])
-    # LOG THEM ALL OUT IN DEV TOOLS CONSOLE
     for e in events:
         print(e)
     #uncomment the following lines to delete each existing item in the calendar

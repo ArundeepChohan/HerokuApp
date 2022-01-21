@@ -1,3 +1,4 @@
+
 {% block content %}
   <div class="col-md-3" style="float:left">
     <h1>Hi {{ user.username }}!</h1>
@@ -23,6 +24,9 @@
       <li class="nav-item" role="presentation">
         <a class="nav-link" id="documents"  href="documents" >Documents</a>
       </li>
+      <li class="nav-item" role="presentation">
+        <a class="nav-link" id="medications" href="medications">Medications</a>
+      </li>
       {% if request.user.is_staff %}
         <li class="nav-item" role="presentation">
           <a class="nav-link" id="adminControls" href="adminControls" >Admin</a>
@@ -44,17 +48,21 @@
       <div class="tab-pane" id="home" >
         {% include 'dashboard.html' %}
       </div>
+      
       <div class="tab-pane" id="calendar" >
-        {% include 'googleCalendar.html' %}
+        {% include 'calendar.html' %}
       </div>
       <div class="tab-pane" id="messagesSend" >
-        {% include 'sendMessageForm.html' %}
+        {% include 'messagesSend.html' %}
       </div>
       <div class="tab-pane" id="messagesInbox" >
-        {% include 'inbox.html' %}
+        {% include 'messagesInbox.html' %}
       </div>
       <div class="tab-pane" id="documents" >
         {% include 'documents.html' %}
+      </div>
+      <div class="tab-pane" id="medications" >
+        {% include 'medications.html' %}
       </div>
       {% if request.user.is_staff is not True  and request.user.is_doctor is not True  %}
         <div class="tab-pane" id="bookAppointment" >

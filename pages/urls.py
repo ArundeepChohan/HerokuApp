@@ -1,5 +1,5 @@
 from django.urls import path
-from pages.views import  index, calendar, messagesSend, messagesInbox, documents, bookAppointment, adminControls, pickUserType, UserWizard, DoctorWizard, login, reply, delete, send, activate
+from pages.views import  addMed, index, calendar, medications, messagesSend, messagesInbox, documents, bookAppointment, adminControls, pickUserType, UserWizard, DoctorWizard, login, reply, delete, send, activate
 
 urlpatterns = [
     path('', index, name='home'),
@@ -7,6 +7,7 @@ urlpatterns = [
     path('accounts/signup/', pickUserType, name='signup'),
     path('user/', UserWizard.as_view() , name='user'), 
     path('doctor/',DoctorWizard.as_view(), name='doctor'),
+    path('medications', medications, name='medications'),
     path('calendar', calendar, name='calendar'),
     path('messagesSend', messagesSend, name='messagesSend'),
     path('messagesInbox', messagesInbox, name='messagesInbox'),
@@ -17,4 +18,5 @@ urlpatterns = [
     path('reply/<int:messageID>/', reply, name='reply'),
     path('delete/<int:messageID>/', delete, name='delete'),
     path('activate/<str:username>/', activate, name='activate'),
+    path('addMed/', addMed, name='addMed'),
 ]

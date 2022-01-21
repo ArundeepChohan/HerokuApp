@@ -1,12 +1,12 @@
 from django.shortcuts import redirect, render
 from pages.calendar import Calendar
-from .forms import BookAppointmentForm, MessageForm, SignUpForm, UserProfileForm, Verify
+from .forms import BookAppointmentForm, MedicationForm, MessageForm, SignUpForm, UserProfileForm, Verify
 from django.contrib.auth import login as auth_login, authenticate
 from formtools.wizard.views import SessionWizardView
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
-from .models import Messages, Profile
+from .models import Medications, Messages, Profile
 from django.db.models.query_utils import Q
 from pages.googleCalendarAPI import test_calendar
 from django.utils.safestring import mark_safe
@@ -103,8 +103,23 @@ def send(request):
 @login_required
 @require_http_methods(["POST"])
 def delete(request,messageID):
+    #Only remove the message if both people want it removed or if the send and receiver are the same person
     data_to_be_deleted = Messages.objects.get(id = messageID)
-    data_to_be_deleted.delete()
+    
+    if data_to_be_deleted.sender ==request.user and data_to_be_deleted.receiver==request.user:
+        data_to_be_deleted.delete()
+        return redirect('messagesInbox')
+    else:
+        if data_to_be_deleted.sender==request.user:
+            data_to_be_deleted.senderDeleted=True
+            data_to_be_deleted.save()
+        else:
+            data_to_be_deleted.receiverDeleted=True
+            data_to_be_deleted.save()
+
+    data_to_be_deleted = Messages.objects.get(id = messageID)
+    if data_to_be_deleted.senderDeleted and data_to_be_deleted.receiverDeleted:
+        data_to_be_deleted.delete()
     return redirect('messagesInbox')
 
 @login_required
@@ -115,15 +130,28 @@ def activate(request,username):
     if user:
         user.is_active = True
         user.save()
-    return redirect('admin')
+    return redirect('adminControls')
+
     
+@login_required
+@require_http_methods(["POST"])
+def addMed(request):
+    print('Adding med')
+    print(request.user)
+    print(request.POST)
+    med = MedicationForm(request.POST or None,)
+    med.instance.user = request.user
+    med.save()
+    return redirect('medications')
+    
+#Filter messages by if the user deleted from their view
 def index(request):
     context={}
     context['nmenu']='home'
     if request.method=="POST":
-        Inbox = Messages.objects.filter(Q(sender=request.user) | Q(receiver=request.user)).order_by("-time", "read")
+        Inbox = Messages.objects.filter(Q(sender=request.user)&Q(senderDeleted=False) | Q(receiver=request.user)&Q(receiverDeleted=False)).order_by("-time", "read")
         context['Inbox'] = Inbox
-        unreadMessagesCount = Messages.objects.filter(Q(receiver=request.user) & Q(read=False)).count()
+        unreadMessagesCount = Messages.objects.filter(Q(receiver=request.user) & Q(read=False)&Q(receiverDeleted=False)).count()
         context['unreadMessagesCount'] = unreadMessagesCount
         editProfileForm = UserProfileForm(instance=request.user)
         if 'editProfileForm' in request.POST:
@@ -140,15 +168,15 @@ def index(request):
                 return render(request, "home.html", context)
     else:
         if request.user.is_authenticated:
-            Inbox = Messages.objects.filter(Q(sender=request.user) | Q(receiver=request.user)).order_by("-time", "read")
+            Inbox = Messages.objects.filter(Q(sender=request.user)&Q(senderDeleted=False) | Q(receiver=request.user)&Q(receiverDeleted=False)).order_by("-time", "read")
             context['Inbox'] = Inbox
-            unreadMessagesCount = Messages.objects.filter(Q(receiver=request.user) & Q(read=False)).count()
+            unreadMessagesCount = Messages.objects.filter(Q(receiver=request.user) & Q(read=False)&Q(receiverDeleted=False)).count()
             context['unreadMessagesCount'] = unreadMessagesCount
             editProfileForm = UserProfileForm(instance=request.user)
             context['editProfileForm'] = editProfileForm
             context['is_post'] = False
     return render(request, 'home.html', context)
-    
+
 @login_required
 def calendar(request):
     context={}  
@@ -209,7 +237,7 @@ def messagesInbox(request):
     context={}
     editProfileForm = UserProfileForm(instance=request.user)
     context['editProfileForm'] = editProfileForm
-    Inbox = Messages.objects.filter(Q(sender=request.user) | Q(receiver=request.user)).order_by("-time", "read")
+    Inbox = Messages.objects.filter(Q(sender=request.user)&Q(senderDeleted=False) | Q(receiver=request.user)&Q(receiverDeleted=False)).order_by("-time", "read")
     context['Inbox'] = Inbox
     context['nmenu'] = 'messagesInbox'
     if request.method=="POST":
@@ -246,6 +274,30 @@ def documents(request):
                 context['is_post'] = True
                 context['editProfileForm'] = editProfileForm
                 return render(request, "home.html", context)
+    return render(request, 'home.html', context)
+
+@login_required
+def medications(request):
+    context={}  
+    context['nmenu'] = 'medications'
+    editProfileForm = UserProfileForm(instance=request.user)
+    context['editProfileForm'] = editProfileForm
+    context['medicationForm'] = MedicationForm()
+    context['medications']= Medications.objects.filter(user=request.user)
+    if request.method=="POST":
+        if 'editProfileForm' in request.POST:
+            editProfileForm = UserProfileForm(request.POST or None, request.FILES or None,instance=request.user)
+            if editProfileForm.is_valid():
+                editProfileForm.save()
+                editProfileForm = UserProfileForm(instance=request.user)
+                context['editProfileForm'] = editProfileForm
+                context['is_post'] = False
+                return render(request, "home.html", context)
+            else:
+                context['is_post'] = True
+                context['editProfileForm'] = editProfileForm
+                return render(request, "home.html", context)
+
     return render(request, 'home.html', context)
 
 @login_required
@@ -305,3 +357,4 @@ def bookAppointment(request):
             return render(request, 'home.html', context)
         
     return render(request, 'home.html', context)
+

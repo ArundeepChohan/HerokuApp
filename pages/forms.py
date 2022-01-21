@@ -1,8 +1,16 @@
 from django import forms
 from django.core.files.images import get_image_dimensions
-from pages.models import Messages, Profile, Calendar
+from pages.models import Medications, Messages, Profile, Calendar
 from django.contrib.auth.forms import UserCreationForm
 from datetime import date, timedelta
+
+class MedicationForm(forms.ModelForm):
+    name = forms.CharField(max_length=100, required=True, )
+    dosage = forms.IntegerField( required=True,)
+    times = forms.IntegerField( required=True, )
+    class Meta:
+        model = Medications
+        fields = ('name','dosage','times','choice','type')
 
 class BookAppointmentForm(forms.ModelForm):
     class Meta:
@@ -11,7 +19,7 @@ class BookAppointmentForm(forms.ModelForm):
 
 class MessageForm(forms.ModelForm):
     subject = forms.CharField(max_length=100, required=False, help_text='Optional.')
-    text = forms.CharField(max_length=4096, required=True, help_text='Required.')
+    text = forms.CharField(max_length=4096, required=True, )
     class Meta:
         model = Messages
         fields = ('receiver','subject','text',)
