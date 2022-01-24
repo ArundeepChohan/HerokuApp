@@ -1,10 +1,11 @@
 from django.urls import path
-from pages.views import  addMed, index, calendar, medications, messagesSend, messagesInbox, documents, bookAppointment, adminControls, pickUserType, UserWizard, DoctorWizard, login, reply, delete, send, activate
+from pages.views import  addMed, index, calendar, medications, messagesSend, messagesInbox, documents, bookAppointment, adminControls, pickUserType, UserWizard, DoctorWizard, login, logout, reply, delete, send, activate
 
 urlpatterns = [
     path('', index, name='home'),
     path('accounts/login/', login, name='login'),
     path('accounts/signup/', pickUserType, name='signup'),
+    path('accounts/logout/', logout, name='logout'),
     path('user/', UserWizard.as_view() , name='user'), 
     path('doctor/',DoctorWizard.as_view(), name='doctor'),
     path('medications', medications, name='medications'),

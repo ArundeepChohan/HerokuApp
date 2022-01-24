@@ -1,14 +1,14 @@
 from django.shortcuts import redirect, render
 from pages.calendar import Calendar
 from .forms import BookAppointmentForm, MedicationForm, MessageForm, SignUpForm, UserProfileForm, Verify
-from django.contrib.auth import login as auth_login, authenticate
+from django.contrib.auth import login as auth_login, logout as auth_logout,authenticate
 from formtools.wizard.views import SessionWizardView
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from .models import Medications, Messages, Profile
 from django.db.models.query_utils import Q
-from pages.googleCalendarAPI import test_calendar
+from pages.googleCalendarAPI import get_access_token, get_user_events, test_calendar
 from django.utils.safestring import mark_safe
 from django.core.files.storage import FileSystemStorage
 import os
@@ -35,6 +35,11 @@ def login(request):
     else:
         form = AuthenticationForm()
     return render(request, 'registration/login.html',{'form':form})
+
+def logout(request):
+    auth_logout(request)
+    messages.error(request, "You have successfully logged out.")
+    return redirect('login')
 
 def pickUserType(request):
     return render(request,'pickUserType.html')
@@ -148,6 +153,7 @@ def addMed(request):
 def index(request):
     context={}
     context['nmenu']='home'
+    
     if request.method=="POST":
         Inbox = Messages.objects.filter(Q(sender=request.user)&Q(senderDeleted=False) | Q(receiver=request.user)&Q(receiverDeleted=False)).order_by("-time", "read")
         context['Inbox'] = Inbox
@@ -180,9 +186,11 @@ def index(request):
 @login_required
 def calendar(request):
     context={}  
-    results = test_calendar()
+    #results = test_calendar()
+    results = get_user_events(request)
     context['results'] = results
     context['nmenu'] = 'calendar'
+    context['access_token']=get_access_token(request)
     editProfileForm = UserProfileForm(instance=request.user)
     context['editProfileForm'] = editProfileForm
     if request.method=="POST":
@@ -334,6 +342,7 @@ def bookAppointment(request):
     bookAppointment.fields['doctors'].queryset = Profile.objects.filter(Q(is_active=True)&Q(is_doctor=True))
     context['bookAppointment'] = bookAppointment 
     context['nmenu'] = 'bookAppointment'
+   
     if request.method=="POST":
         if 'editProfileForm' in request.POST:
             editProfileForm = UserProfileForm(request.POST or None, request.FILES or None,instance=request.user)

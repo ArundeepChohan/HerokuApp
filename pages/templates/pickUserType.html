@@ -3,7 +3,7 @@
 {% block title %}Pick User Type{% endblock %}
 {% block content %}
 
-    <form method = "POST" action='.' enctype="multipart/form-data">
+    <form method = "POST" action="" enctype="multipart/form-data">
         {% csrf_token %}
         <button><a href="{% url 'doctor' %}">Doctor</a></button>
         <button><a href="{% url 'user' %}">User</a></button>

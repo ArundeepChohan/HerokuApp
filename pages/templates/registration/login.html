@@ -3,7 +3,6 @@
 {% block title %}Login{% endblock %}
 
 {% block content %}
-{% load socialaccount %}
   {% for message in messages %}
 
     <div class="alert alert-success">
@@ -21,7 +20,8 @@
    
   </form>
   <button><a href="{% url 'signup' %}">Sign up</a></button>
-  <a href="{% provider_login_url 'google' %}" >Login With Google</a>
+  <a href="{% url 'social:begin' 'google-oauth2' %}" >Login With Google</a>
+  
   
   
 {% endblock %}
