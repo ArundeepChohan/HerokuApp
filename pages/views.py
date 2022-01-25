@@ -188,9 +188,9 @@ def calendar(request):
     context={}  
     #results = test_calendar()
     results = get_user_events(request)
+    context['access_token']= get_access_token(request)
     context['results'] = results
     context['nmenu'] = 'calendar'
-    context['access_token']=get_access_token(request)
     editProfileForm = UserProfileForm(instance=request.user)
     context['editProfileForm'] = editProfileForm
     if request.method=="POST":

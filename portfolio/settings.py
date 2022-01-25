@@ -86,28 +86,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'portfolio.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/3.2/ref/settings/#databases
-
-# Extends default user with additional fields 
-
-AUTH_USER_MODEL = 'pages.Profile' 
-SOCIAL_AUTH_USER_MODEL = 'pages.Profile' 
-
-# Todo:Add a postgresql for prod settings using Amazon RDS Management Console
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-} 
-
-import dj_database_url
-db_from_env = dj_database_url.config(conn_max_age=600)
-DATABASES['default'].update(db_from_env)
-
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
 
@@ -193,11 +171,31 @@ STATICFILES_FINDERS = (
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 #Adding social logins
 AUTHENTICATION_BACKENDS = ['social_core.backends.google.GoogleOAuth2','django.contrib.auth.backends.AllowAllUsersModelBackend',]
+# Database
+# https://docs.djangoproject.com/en/3.2/ref/settings/#databases
+
+# Extends default user with additional fields 
+
+AUTH_USER_MODEL = 'pages.Profile' 
+SOCIAL_AUTH_USER_MODEL = 'pages.Profile' 
+
+# Todo:Add a postgresql for prod settings using Amazon RDS Management Console
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+} 
+
+import dj_database_url
+db_from_env = dj_database_url.config(conn_max_age=600)
+DATABASES['default'].update(db_from_env)
 
 # social auth configs for google
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = config('GOOGLE_OAUTH2_KEY')
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = config('GOOGLE_OAUTH2_SECRET')
-SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = ['https://www.googleapis.com/auth/calendar']
+#SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = ['https://www.googleapis.com/auth/calendar']
 SOCIAL_AUTH_JSONFIELD_ENABLED = True
 SOCIAL_AUTH_GOOGLE_OAUTH2_AUTH_EXTRA_ARGUMENTS = {
     'access_type': 'offline',
@@ -209,6 +207,7 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.social_user',
     'social_core.pipeline.user.get_username',
     'social_core.pipeline.social_auth.associate_by_email',  # <--- enable this one
+    'pages.pipeline.store_refresh_token',
     'social_core.pipeline.user.create_user',
     'social_core.pipeline.social_auth.associate_user',
     'social_core.pipeline.social_auth.load_extra_data',

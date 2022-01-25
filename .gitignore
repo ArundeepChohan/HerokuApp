@@ -237,3 +237,5 @@ cython_debug/
 
 # this token contains your sensitive google service account info
 google-credentials.json
+# Stores OAuth client access
+credentials.json
