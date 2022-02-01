@@ -187,7 +187,7 @@ def index(request):
 def calendar(request):
     context={}  
     #results = test_calendar()
-    results = get_user_events(request)
+    results = get_user_events()
     context['access_token']= get_access_token(request)
     context['results'] = results
     context['nmenu'] = 'calendar'
