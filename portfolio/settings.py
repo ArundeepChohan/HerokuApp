@@ -28,7 +28,7 @@ from decouple import config
 
 SECRET_KEY = config("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 #DEBUG = config('DJANGO_DEBUG',default=True, cast=bool)
 
@@ -54,6 +54,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django_session_timeout.middleware.SessionTimeoutMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -62,6 +63,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'social_django.middleware.SocialAuthExceptionMiddleware', #new
+   
 ]
 
 ROOT_URLCONF = 'portfolio.urls'
@@ -69,7 +71,7 @@ ROOT_URLCONF = 'portfolio.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -151,11 +153,11 @@ if DEBUG:
 
 else:
     STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-    STATIC_URL= 'static'
+    STATIC_URL= '/static/'
     MEDIA_ROOT = os.path.join(BASE_DIR, 'media') 
     MEDIA_URL = '/media/'  
 
-
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'pages/static'),
 ]
