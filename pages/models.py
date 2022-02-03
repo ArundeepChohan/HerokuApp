@@ -4,7 +4,7 @@ from phonenumber_field.modelfields import PhoneNumberField
 from django.templatetags.static import static
 
 class Profile(AbstractUser):
-    bio = models.TextField(max_length=100, blank=True,null=True)
+    bio = models.TextField(default='',max_length=100, blank=True,null=True)
     phone_number = PhoneNumberField(max_length=25, region='US')
     birth_date = models.DateField(blank = True, null = True) 
     is_doctor = models.BooleanField(default=False)
