@@ -27,7 +27,7 @@ from decouple import config
 
 SECRET_KEY = config("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 #DEBUG = config('DJANGO_DEBUG',default=True, cast=bool)
 
@@ -53,7 +53,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    #'whitenoise.middleware.WhiteNoiseMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django_session_timeout.middleware.SessionTimeoutMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -148,15 +148,17 @@ if DEBUG==False:
     MEDIAFILES_LOCATION = 'media'
     MEDIA_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, MEDIAFILES_LOCATION )
     DEFAULT_FILE_STORAGE = 'portfolio.storage_backends.MediaStorage'
-    #STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+    STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+    STATICFILES_DIRS = [os.path.join(BASE_DIR, 'pages/static'),]
     
 else:
-    #STATIC_ROOT = os.path.join(BASE_DIR, 'pages/static')
+    
     STATIC_URL= '/static/'
     MEDIA_ROOT = os.path.join(BASE_DIR, 'pages/media') 
     MEDIA_URL = '/media/'    
     
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'pages/static'),]
+
 
 # Fixes Found another file with the destination path 
 STATICFILES_FINDERS = (
