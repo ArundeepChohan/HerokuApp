@@ -186,9 +186,9 @@ def index(request):
 @login_required
 def calendar(request):
     context={}  
-    #results = test_calendar()
-    results = get_user_events()
-    context['access_token']= get_access_token(request)
+    results = test_calendar()
+    #results = get_user_events()
+    #context['access_token']= get_access_token(request)
     context['results'] = results
     context['nmenu'] = 'calendar'
     editProfileForm = UserProfileForm(instance=request.user)
