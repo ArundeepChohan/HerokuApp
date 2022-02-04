@@ -27,7 +27,7 @@ from decouple import config
 
 SECRET_KEY = config("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 #DEBUG = config('DJANGO_DEBUG',default=True, cast=bool)
 
@@ -53,7 +53,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
+    #'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django_session_timeout.middleware.SessionTimeoutMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -129,7 +129,7 @@ USE_TZ = False
 # All of this is in my console.aws.amazon to configure aws s3 static files 
 # If I am in prod DEBUG==false
 # IAM Management Console
-if DEBUG:
+if DEBUG==False:
     AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID') 
     AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY') 
     # Amazon S3 Buckets
@@ -149,7 +149,7 @@ if DEBUG:
     MEDIAFILES_LOCATION = 'media'
     MEDIA_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, MEDIAFILES_LOCATION )
     DEFAULT_FILE_STORAGE = 'portfolio.storage_backends.MediaStorage'
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+    #STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
     
 else:
     STATIC_ROOT = os.path.join(BASE_DIR, 'static')
