@@ -4,8 +4,6 @@ import googleapiclient.discovery
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
-from portfolio import settings
-
 CAL_ID = config('CAL_ID')
 SCOPES = ['https://www.googleapis.com/auth/calendar']
 SERVICE_ACCOUNT_FILE = './google-credentials.json'
