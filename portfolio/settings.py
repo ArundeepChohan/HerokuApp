@@ -27,10 +27,8 @@ from decouple import config
 
 SECRET_KEY = config("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
-
-#DEBUG = config('DJANGO_DEBUG',default=True, cast=bool)
-
+#DEBUG = config('DJANGO_DEBUG')
+DEBUG = True
 ALLOWED_HOSTS = ["arundeepchohan.herokuapp.com",'127.0.0.1','localhost']
 
 # Application definition
@@ -53,7 +51,6 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django_session_timeout.middleware.SessionTimeoutMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -129,6 +126,7 @@ USE_TZ = False
 # All of this is in my console.aws.amazon to configure aws s3 static files 
 # If I am in prod DEBUG==false
 # IAM Management Console
+
 if DEBUG==False:
     AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID') 
     AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY') 
@@ -148,20 +146,32 @@ if DEBUG==False:
     MEDIAFILES_LOCATION = 'media'
     MEDIA_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, MEDIAFILES_LOCATION )
     DEFAULT_FILE_STORAGE = 'portfolio.storage_backends.MediaStorage'
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
     
 else:
+    MEDIA_URL = '/media/'  
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  
     STATIC_URL= '/static/'
-    MEDIA_ROOT = os.path.join(BASE_DIR, 'pages/media') 
-    MEDIA_URL = '/media/'    
-    STATICFILES_DIRS = [os.path.join(BASE_DIR, 'pages/static'),]
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'),]
 
 # Fixes Found another file with the destination path 
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     #'django.contrib.staticfiles.finders.AppDirectoriesFinder',    #causes verbose duplicate notifications in django 1.9
 )
+# Todo:Add a postgresql for prod settings using Amazon RDS Management Console
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+} 
+
+import dj_database_url
+db_from_env = dj_database_url.config(conn_max_age=600)
+DATABASES['default'].update(db_from_env)
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
@@ -181,7 +191,8 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = config('GOOGLE_OAUTH2_KEY')
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = config('GOOGLE_OAUTH2_SECRET')
 SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = ['https://www.googleapis.com/auth/calendar']
 SOCIAL_AUTH_JSONFIELD_ENABLED = True
-SOCIAL_AUTH_GOOGLE_OAUTH2_AUTH_EXTRA_ARGUMENTS = {'access_type': 'offline',}
+SOCIAL_AUTH_GOOGLE_OAUTH2_AUTH_EXTRA_ARGUMENTS = {'access_type': 'offline','approval_prompt':'force'}
+SESSION_COOKIE_SAMESITE = None
 SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.social_details',
     'social_core.pipeline.social_auth.social_uid',
@@ -193,19 +204,8 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.associate_user',
     'social_core.pipeline.social_auth.load_extra_data',
     'social_core.pipeline.user.user_details',
+    'pages.pipeline.save_token'
 ) 
-# Todo:Add a postgresql for prod settings using Amazon RDS Management Console
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-} 
-
-import dj_database_url
-db_from_env = dj_database_url.config(conn_max_age=600)
-DATABASES['default'].update(db_from_env)
 
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'home'
@@ -221,7 +221,6 @@ SESSION_COOKIE_AGE = 60  # change expired session
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_SAVE_EVERY_REQUEST = True 
 """
-
 
 import django_heroku
 django_heroku.settings(locals(), staticfiles=False)

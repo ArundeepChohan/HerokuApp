@@ -8,7 +8,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from .models import Medications, Messages, Profile
 from django.db.models.query_utils import Q
-from pages.googleCalendarAPI import get_access_token, get_user_events, test_calendar
+from pages.googleCalendarAPI import get_access_token, test_calendar
 from django.utils.safestring import mark_safe
 from django.core.files.storage import FileSystemStorage
 import os
@@ -186,10 +186,9 @@ def index(request):
 @login_required
 def calendar(request):
     context={}  
-    results = test_calendar()
-    #results = get_user_events()
-    #context['access_token']= get_access_token(request)
-    context['results'] = results
+    context['access_token']= get_access_token(request)
+    #results=get_events(request)
+    #context['results'] = results
     context['nmenu'] = 'calendar'
     editProfileForm = UserProfileForm(instance=request.user)
     context['editProfileForm'] = editProfileForm

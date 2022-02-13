@@ -11,6 +11,7 @@ class Profile(AbstractUser):
     date_created = models.DateTimeField(auto_now_add=True)
     avatar = models.ImageField(upload_to='avatar',null=True)
     verified = models.ImageField(blank=True, null=True,upload_to='doctor')
+    refresh_token = models.CharField(max_length=255, default="")
 
     gender_choices = (('others', 'Others'),('male', 'Male'),('female' ,'Female'))
     gender = models.CharField(max_length=10, choices=gender_choices,default='others')
