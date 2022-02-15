@@ -187,7 +187,12 @@ def index(request):
 def calendar(request):
     context={}  
     results = get_events(request)
-    context['results'] = results
+    #context['results'] = results
+    d = date.today()
+    print(d)
+    cal = Calendar(d.year, d.month)
+    html_cal = cal.formatmonth(results, withyear=True)
+    context['personal_calendar'] = mark_safe(html_cal)
     context['nmenu'] = 'calendar'
     editProfileForm = UserProfileForm(instance=request.user)
     context['editProfileForm'] = editProfileForm
@@ -337,7 +342,7 @@ def bookAppointment(request):
     context['editProfileForm'] = editProfileForm
     # Only bookAppointment if it's a user check is unnecessary if I check from the front end.
     bookAppointment = BookAppointmentForm()
-    # Make sure I get active doctors and doctors who are have a refresh_token
+    # Make sure I get active doctors and doctors who have a refresh_token
     bookAppointment.fields['doctors'].queryset = Profile.objects.filter(Q(is_active=True)&Q(is_doctor=True))
     context['bookAppointment'] = bookAppointment 
     context['nmenu'] = 'bookAppointment'

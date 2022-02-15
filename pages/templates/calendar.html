@@ -1,50 +1,19 @@
+{% load static %}
+  {% block css %}
+  <link rel="stylesheet" href="{% static 'css/calendar.css' %}" type="text/css">
+  {% endblock %}
 {% block content %}
- 
-    <h1>Calendar</h1>
-    <button>+</button>
-    <ul>
-        {% for result in results %}
-            <li>{{result.start.date}}{% if result.end.date %}-{% endif%}{{result.end.date}}: {{result.summary}}</li>
-        {% endfor %}
-    </ul>
-{% endblock %}
+    <div>
+        <h1>Calendar</h1>
+        <button>+</button>
+        <div>
+            {{personal_calendar}}
+        </div>
+    </div>
 
-<!-- <style>
-    .calendar {
-      width: 98%;
-      margin: auto;
-      font-size: 13px;
-    }
-  
-    .calendar tr, .calendar td {
-      border: 1px solid black;
-    }
-  
-    .calendar th {
-      padding: 10px;
-      text-align: center;
-      font-size: 18px;
-    }
-  
-    .calendar td {
-      width: 200px;
-      height: 150px;
-      padding: 20px 0px 0px 5px;
-    }
-  
-    .month {
-      font-size: 25px;
-    }
-  
-    .date {
-      font-size: 16px;
-    }
-  
-    ul {
-      height: 100%;
-      padding: 0px 5px 0px 20px;
-    }
-    </style>
-    {% if personal_calendar %}
-        {{personal_calendar}}
-    {% endif %} -->
+{% endblock %}
+<!-- <ul>
+    {% for result in results %}
+        <li>{{result.start.date}}{% if result.end.date %}-{% endif%}{{result.end.date}}: {{result.summary}}</li>
+    {% endfor %}
+</ul> -->

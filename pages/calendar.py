@@ -11,7 +11,8 @@ class Calendar(HTMLCalendar):
 	# filter events by day
 	def formatday(self, day, events):
 		print("day: "+str(day))
-		events_per_day = list(filter(lambda x: datetime.strptime(x['start']['dateTime'], '%Y-%m-%dT%H:%M:%S%z').day == day, events))
+		# list(filter(lambda x: datetime.strptime(x['start']['dateTime'], '%Y-%m-%dT%H:%M:%S%z').day == day, events))
+		events_per_day = list(filter(lambda x: datetime.strptime(x['start']['date'], '%Y-%m-%d').day == day, events))
 		print("Formatting day")
 		print(events_per_day)
 		d = ''
