@@ -8,7 +8,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from .models import Medications, Messages, Profile
 from django.db.models.query_utils import Q
-from pages.googleCalendarAPI import get_access_token, test_calendar
+from pages.googleCalendarAPI import test_calendar, get_events
 from django.utils.safestring import mark_safe
 from django.core.files.storage import FileSystemStorage
 import os
@@ -186,9 +186,8 @@ def index(request):
 @login_required
 def calendar(request):
     context={}  
-    context['access_token']= get_access_token(request)
-    #results=get_events(request)
-    #context['results'] = results
+    results = get_events(request)
+    context['results'] = results
     context['nmenu'] = 'calendar'
     editProfileForm = UserProfileForm(instance=request.user)
     context['editProfileForm'] = editProfileForm
@@ -310,7 +309,7 @@ def medications(request):
 @login_required
 def adminControls(request):
     context={}
-     # Only admins needs to know inactive users
+    # Only admins needs to know inactive users
     context['allInactiveDoctors'] = Profile.objects.filter(Q(is_active=False)&Q(is_doctor=True))
     context['nmenu'] = 'adminControls'
     editProfileForm = UserProfileForm(instance=request.user)
@@ -338,6 +337,7 @@ def bookAppointment(request):
     context['editProfileForm'] = editProfileForm
     # Only bookAppointment if it's a user check is unnecessary if I check from the front end.
     bookAppointment = BookAppointmentForm()
+    # Make sure I get active doctors and doctors who are have a refresh_token
     bookAppointment.fields['doctors'].queryset = Profile.objects.filter(Q(is_active=True)&Q(is_doctor=True))
     context['bookAppointment'] = bookAppointment 
     context['nmenu'] = 'bookAppointment'

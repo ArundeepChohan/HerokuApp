@@ -1,5 +1,7 @@
+
 from decouple import config
 from google.oauth2 import service_account
+
 import googleapiclient.discovery
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
@@ -35,33 +37,38 @@ def test_calendar():
     #uncomment the following lines to delete each existing item in the calendar
     #event_id = e['id']
         # service.events().delete(calendarId=CAL_ID, eventId=event_id).execute() 
-    return events  
-"""     
-from google.auth.transport.requests import Request
-from google.oauth2.credentials import Credentials
-from google_auth_oauthlib.flow import InstalledAppFlow
-from googleapiclient.discovery import build
-from googleapiclient.errors import HttpError
-import os
-def set_tokens():
-    creds = None
-    # The file token.json stores the user's access and refresh tokens, and is
-    # created automatically when the authorization flow completes for the first
-    # time.
-    if os.path.exists('token.json'):
-        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
-    # If there are no (valid) credentials available, let the user log in.
-    if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-        else:
-            flow = InstalledAppFlow.from_client_secrets_file('./credentials.json', SCOPES)
-            creds = flow.run_local_server(port=0)
-        # Save the credentials for the next run
-        with open('token.json', 'w') as token:
-            token.write(creds.to_json()) 
- """
+    return events 
 
-def get_access_token(request): 
-    social = request.user.social_auth.get(provider='google-oauth2') 
-    return social.extra_data['access_token']
+from googleapiclient.discovery import build
+from google.oauth2.credentials import Credentials
+from google.auth.transport.requests import Request
+def get_events(request):
+    print(request.user.refresh_token)
+    credentials = Credentials(
+    token=None,
+    client_id="1096935503743-ql3p8h42k41v04b6f1c4l15c2d3vvgnf.apps.googleusercontent.com", # Please set the cliend ID.
+    client_secret="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", # Please set client secret.
+    refresh_token= request.user.refresh_token, # Please set refresh token.
+    token_uri="https://oauth2.googleapis.com/token" # Please set token URI.
+)
+    #tokenFile = './credentials.json' # Please set the filename with the path.
+    #credentials =  Credentials.from_authorized_user_file(tokenFile, scopes=SCOPES)
+    credentials.refresh(Request())
+    access_token = credentials.token
+    print(access_token)
+
+    service = build('calendar', 'v3', credentials=credentials)
+    today = datetime.today() 
+    monthAgo = today - relativedelta(months=1)
+    tmax = today.isoformat('T') + "Z"
+    tmin = monthAgo.isoformat('T') + "Z"
+    personal_events = service.events().list(calendarId='primary',
+        timeMin=tmin,
+        timeMax=tmax,
+        maxResults=2500, 
+        singleEvents=True,
+        orderBy='startTime').execute()
+    personal_events = personal_events.get('items', [])
+    for e in personal_events:
+        print(e)
+    return personal_events
