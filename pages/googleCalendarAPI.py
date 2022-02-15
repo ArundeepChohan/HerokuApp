@@ -18,10 +18,11 @@ def test_calendar():
     service = googleapiclient.discovery.build('calendar', 'v3', credentials=credentials)
     
     # GET ALL EXISTING EVENTS Max 2500 in this month
-    # Currently gets 1 - today's date not 1-30(Rework necessary)
     today = datetime.today() 
-    monthAgo = today - relativedelta(months=1)
-    tmax = today.isoformat('T') + "Z"
+    monthAgo = today.replace(day=1)
+    monthForward = monthAgo + relativedelta(months=1)- relativedelta(days=1)
+    print(today,monthAgo,monthForward )
+    tmax = monthForward.isoformat('T') + "Z"
     tmin = monthAgo.isoformat('T') + "Z"
     events_result = service.events().list(
         calendarId=CAL_ID,
@@ -45,12 +46,12 @@ from google.auth.transport.requests import Request
 def get_events(request):
     print(request.user.refresh_token)
     credentials = Credentials(
-    token=None,
-    client_id="1096935503743-ql3p8h42k41v04b6f1c4l15c2d3vvgnf.apps.googleusercontent.com", # Please set the cliend ID.
-    client_secret="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", # Please set client secret.
-    refresh_token= request.user.refresh_token, # Please set refresh token.
-    token_uri="https://oauth2.googleapis.com/token" # Please set token URI.
-)
+        token=None,
+        client_id = config('CLIENT_ID'), # Please set the cliend ID.
+        client_secret = config('CLIENT_SECRET'), # Please set client secret.
+        refresh_token = request.user.refresh_token, # Please set refresh token.
+        token_uri = config('TOKEN_URI') # Please set token URI.
+    )
     #tokenFile = './credentials.json' # Please set the filename with the path.
     #credentials =  Credentials.from_authorized_user_file(tokenFile, scopes=SCOPES)
     credentials.refresh(Request())
@@ -59,15 +60,18 @@ def get_events(request):
 
     service = build('calendar', 'v3', credentials=credentials)
     today = datetime.today() 
-    monthAgo = today - relativedelta(months=1)
-    tmax = today.isoformat('T') + "Z"
+    monthAgo = today.replace(day=1)
+    monthForward = monthAgo + relativedelta(months=1)- relativedelta(days=1)
+    print(today,monthAgo,monthForward )
+    tmax = monthForward.isoformat('T') + "Z"
     tmin = monthAgo.isoformat('T') + "Z"
     personal_events = service.events().list(calendarId='primary',
         timeMin=tmin,
         timeMax=tmax,
         maxResults=2500, 
         singleEvents=True,
-        orderBy='startTime').execute()
+        orderBy='startTime',
+    ).execute() 
     personal_events = personal_events.get('items', [])
     for e in personal_events:
         print(e)
