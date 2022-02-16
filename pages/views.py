@@ -192,6 +192,7 @@ def calendar(request):
     print(d)
     cal = Calendar(d.year, d.month)
     html_cal = cal.formatmonth(results, withyear=True)
+    print(mark_safe(html_cal))
     context['personal_calendar'] = mark_safe(html_cal)
     context['nmenu'] = 'calendar'
     editProfileForm = UserProfileForm(instance=request.user)
