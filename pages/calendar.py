@@ -12,7 +12,9 @@ class Calendar(HTMLCalendar):
 	def formatday(self, day, events):
 		print("day: "+str(day))
 		# list(filter(lambda x: datetime.strptime(x['start']['dateTime'], '%Y-%m-%dT%H:%M:%S%z').day == day, events))
-		events_per_day = list(filter(lambda x: datetime.strptime(x['start']['date'], '%Y-%m-%d').day == day, events))
+		# list(filter(lambda x: datetime.strptime(x['start']['date'], '%Y-%m-%d').day == day , events))
+		# This is the most important function in my project it has to chunk events in the month into 30 min intervals.
+		events_per_day = list(filter(lambda x: datetime.strptime(x['start']['date'], '%Y-%m-%d').day == day , events))
 		print("Formatting day")
 		print(events_per_day)
 		d = ''
@@ -43,5 +45,5 @@ class Calendar(HTMLCalendar):
 		cal += f'{self.formatweekheader()}\n'
 		for week in self.monthdays2calendar(self.year, self.month):
 			cal += f'{self.formatweek(week,events)}\n'
-		cal+=f'</table>\n'
+		cal += f'</table>\n'
 		return cal

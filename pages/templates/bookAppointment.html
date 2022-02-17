@@ -3,14 +3,13 @@
   <link rel="stylesheet" href="{% static 'css/calendar.css' %}" type="text/css">
   {% endblock %}
 {% block content %}
-
-    <form method = "POST" action="" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ bookAppointment.as_p }}
-        <input type="submit" name='bookAppointment' value="Check availability">
-    </form>
-    {% if calendar %}
-        {{calendar}}
-    {% endif %}
+  <form method = "POST" action="" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ bookAppointment.as_p }}
+    <input type="submit" name='bookAppointment' value="Check availability">
+  </form>
+  {% if calendar %}
+    {{calendar}}
+  {% endif %}
 
 {% endblock %}

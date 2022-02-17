@@ -224,7 +224,6 @@ def messagesSend(request):
     elif request.user.verified:
         sendMessageForm.fields['receiver'].queryset = Profile.objects.filter(Q(is_active=True))           
     else:
-        # Not getting self need to rework remove when fixed maybe username=request.user
         sendMessageForm.fields['receiver'].queryset = Profile.objects.filter(Q(is_active=True)&Q(is_doctor=True)|Q(is_staff=True)|Q(username=request.user))
     context['sendMessageForm'] = sendMessageForm
     context['nmenu'] = 'messagesSend'
@@ -341,10 +340,9 @@ def bookAppointment(request):
     context={}
     editProfileForm = UserProfileForm(instance=request.user)
     context['editProfileForm'] = editProfileForm
-    # Only bookAppointment if it's a user check is unnecessary if I check from the front end.
     bookAppointment = BookAppointmentForm()
     # Make sure I get active doctors and doctors who have a refresh_token
-    bookAppointment.fields['doctors'].queryset = Profile.objects.filter(Q(is_active=True)&Q(is_doctor=True))
+    bookAppointment.fields['doctors'].queryset = Profile.objects.filter(Q(is_active=True)&Q(is_doctor=True)&~Q(refresh_token=""))
     context['bookAppointment'] = bookAppointment 
     context['nmenu'] = 'bookAppointment'
    
@@ -364,10 +362,21 @@ def bookAppointment(request):
         if 'bookAppointment' in request.POST:
             d = date.today()
             print(d)
-            results = test_calendar()
-            cal = Calendar(d.year, d.month)
-            html_cal = cal.formatmonth(results, withyear=True)
-            context['calendar'] = mark_safe(html_cal)
+            bookAppointmentForm = BookAppointmentForm(request.POST)
+            if bookAppointmentForm.is_valid():
+                print(request.POST['doctors'])
+                print(int(request.POST['doctors'])-1)
+                # This associates the user with the dropdown selection
+                name=Profile.objects.all()[int(request.POST['doctors'])-1]
+                print(name)
+                user = Profile.objects.get(username=name)
+                if user:
+                    print(user,user.refresh_token)
+                    results = test_calendar()
+                    #results = get_events(request)
+                    cal = Calendar(d.year, d.month)
+                    html_cal = cal.formatmonth(results, withyear=True)
+                    context['calendar'] = mark_safe(html_cal)
             return render(request, 'home.html', context)
         
     return render(request, 'home.html', context)

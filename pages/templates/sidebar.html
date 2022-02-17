@@ -11,9 +11,12 @@
       <li class="nav-item" role="presentation">
         <a class="nav-link" id="home"  href="{% url 'home' %}" >Dashboard</a>
       </li>
+      {% if request.user.refresh_token != "" %}
       <li class="nav-item" role="presentation">
         <a class="nav-link" id="calendar" href="calendar">Calendar</a>
       </li>
+      {% endif %}
+
       <li class="nav-item dropdown" role="presentation">
         <a class="nav-link dropdown-toggle" id="messages-tab" data-bs-toggle="dropdown" >Messages</a>
         <ul class="dropdown-menu">
