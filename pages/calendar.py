@@ -3,6 +3,7 @@ from calendar import HTMLCalendar
 from datetime import date
 from datetime import datetime
 import pytz
+from dateutil.relativedelta import relativedelta
 
 class Calendar(HTMLCalendar):
 	def __init__(self, year=None, month=None):
@@ -54,17 +55,20 @@ class Calendar(HTMLCalendar):
 		print(events)
 
 		time_zone = pytz.timezone('America/Vancouver')
-		# Compare end - start date and make 48 * day datetimes
 		for event in start_dates:
-			new_date_time = datetime.strptime(event['start']['date'], '%Y-%m-%d' )
-			print(new_date_time)
-			vancouver_time = time_zone.localize(new_date_time)
-			print(vancouver_time)
+			new_start_time = datetime.strptime(event['start']['date'], '%Y-%m-%d' )
+			new_end_time = datetime.strptime(event['end']['date'], '%Y-%m-%d' ) 
 			#Loop through each day still missing
+			while new_start_time <= new_end_time:
+				print(new_start_time,new_end_time)
+				vancouver_time = time_zone.localize(new_start_time)
+				print(vancouver_time)
 
-			for delta in range(0, 30 * 48, 30):
-				offsetted_ist = vancouver_time + timedelta(minutes=delta)
-				print("Date & Time in :", offsetted_ist.strftime('%Y-%m-%dT%H:%M:%S%z'))
+				for delta in range(0, 30 * 48, 30):
+					offsetted_ist = vancouver_time + timedelta(minutes=delta)
+					print("Date & Time in :", offsetted_ist.strftime('%Y-%m-%dT%H:%M:%S%z'))
+
+				new_start_time= new_start_time+relativedelta(days=1)
 		# Make multiple hour datetimes into 30 min chunks
 
 		cal = f'<table border="0" cellpadding="0" cellspacing="0" class="calendar">\n'

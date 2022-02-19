@@ -16,8 +16,8 @@ urlpatterns = [
     path('bookAppointment', bookAppointment, name='bookAppointment'),
     path('adminControls', adminControls, name='adminControls'), 
     path('send/', send, name='send'),
-    path('reply/<int:messageID>/', reply, name='reply'),
-    path('delete/<int:messageID>/', delete, name='delete'),
+    path('reply/<int:message_id>/', reply, name='reply'),
+    path('delete/<int:message_id>/', delete, name='delete'),
     path('activate/<str:username>/', activate, name='activate'),
     path('addMed/', addMed, name='addMed'),
 ]
