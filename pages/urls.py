@@ -1,5 +1,5 @@
 from django.urls import path
-from pages.views import  addMed, index, calendar, medications, messagesSend, messagesInbox, documents, bookAppointment, adminControls, pickUserType, UserWizard, DoctorWizard, login, logout, reply, delete, send, activate
+from pages.views import addMed, index, calendar, medications, messagesSend, messagesInbox, documents, bookAppointment, adminControls, pickUserType, UserWizard, DoctorWizard, login, logout, reply, delete, send, activate
 
 urlpatterns = [
     path('', index, name='home'),

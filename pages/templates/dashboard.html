@@ -1,23 +1,22 @@
 {% block content %}
-
     <div class="col-md-6">
         <!-- This needs to get the latest unread message -->
         {% if unreadMessagesCount %}
             <p>Unread: {{unreadMessagesCount}}</p>
             
-            {% if Inbox %}
+            {% if inbox %}
                 <div>
-                    <p>{{Inbox.first.sender}}</p>
+                    <p>{{inbox.first.sender}}</p>
                     <!-- Remove the receiver later -->
-                    <p>{{Inbox.first.receiver}}</p>
+                    <p>{{inbox.first.receiver}}</p>
                 </div>
                 <div>
                     <div>
-                        <p>{{Inbox.first.subject}}</p>
+                        <p>{{inbox.first.subject}}</p>
                     </div>
                 </div>
-                {{Inbox.first.text}}
-                {{Inbox.first.time}}
+                {{inbox.first.text}}
+                {{inbox.first.time}}
             {% endif %}
         {% else %}
             <p>Unread: 0</p>
@@ -25,9 +24,5 @@
                 <p>There are no senders</p>
             </div>
         {% endif %}  
-            
-       
     </div>
-    
-
 {% endblock %}

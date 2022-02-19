@@ -1,5 +1,5 @@
 {% block content %}
-{% if Inbox %}
+    {% if inbox %}
     <div class="col-md-12">
         <div class="accordion" id="accordionExample">
             {% for message in inbox %}
@@ -63,6 +63,6 @@
         
     </div>
     {% else %}
-    <p>No messages</p>
-{% endif %}
+        <p>No messages</p>
+    {% endif %}
 {% endblock %}
