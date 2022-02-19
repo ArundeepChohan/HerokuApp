@@ -52,8 +52,6 @@ def get_events(refresh_token):
         refresh_token = refresh_token, # Please set refresh token.
         token_uri = config('TOKEN_URI') # Please set token URI.
     )
-    #tokenFile = './credentials.json' # Please set the filename with the path.
-    #credentials =  Credentials.from_authorized_user_file(tokenFile, scopes=SCOPES)
     credentials.refresh(Request())
     access_token = credentials.token
     print(access_token)

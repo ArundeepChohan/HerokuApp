@@ -45,6 +45,7 @@ class Calendar(HTMLCalendar):
 	def formatmonth(self, events, withyear=True):
 		print("Formatting month")
 		print(events)
+
 		# This is the most important function in my project it has to chunk events in the month into 30 min intervals.
 		# Move to the backend when done
 		startDates = [x for x in events if ("date" in x['start'])] 
@@ -53,11 +54,18 @@ class Calendar(HTMLCalendar):
 		print(events)
 
 		timeZone = pytz.timezone('America/Vancouver')
+		# Compare end - start date and make 48 * day datetimes
 		for event in startDates:
 			newStartDateTime = datetime.strptime(event['start']['date'], '%Y-%m-%d' )
 			print(newStartDateTime)
-			datetime_ist = datetime.strptime(event['start']['date'], '%Y-%m-%d' ).now(timeZone)
-			print("Date & Time in IST : ",datetime_ist.strftime('%Y-%m-%dT%H:%M:%S%z'))
+			vancouverTime = timeZone.localize(newStartDateTime)
+			print(vancouverTime)
+			#Loop through each day still missing
+			
+			for delta in range(0, 30 * 48, 30):
+				offsetted_ist = vancouverTime + timedelta(minutes=delta)
+				print("Date & Time in :", offsetted_ist.strftime('%Y-%m-%dT%H:%M:%S%z'))
+		# Make multiple hour datetimes into 30 min chunks
 
 		cal = f'<table border="0" cellpadding="0" cellspacing="0" class="calendar">\n'
 		cal += f'{self.formatmonthname(self.year, self.month, withyear=withyear)}\n'

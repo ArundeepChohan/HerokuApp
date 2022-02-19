@@ -2,7 +2,7 @@
 {% if Inbox %}
     <div class="col-md-12">
         <div class="accordion" id="accordionExample">
-            {% for message in Inbox %}
+            {% for message in inbox %}
             <div class="card">
               <div class="card-header" id="heading{{ forloop.counter }}">
                 <h5 class="mb-{{ forloop.counter }}">
