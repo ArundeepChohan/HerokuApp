@@ -43,13 +43,13 @@ def test_calendar():
 from googleapiclient.discovery import build
 from google.oauth2.credentials import Credentials
 from google.auth.transport.requests import Request
-def get_events(request):
-    print(request.user.refresh_token)
+def get_events(refresh_token):
+    print(refresh_token)
     credentials = Credentials(
         token=None,
         client_id = config('CLIENT_ID'), # Please set the cliend ID.
         client_secret = config('CLIENT_SECRET'), # Please set client secret.
-        refresh_token = request.user.refresh_token, # Please set refresh token.
+        refresh_token = refresh_token, # Please set refresh token.
         token_uri = config('TOKEN_URI') # Please set token URI.
     )
     #tokenFile = './credentials.json' # Please set the filename with the path.

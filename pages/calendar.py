@@ -1,5 +1,8 @@
 from datetime import datetime, timedelta
 from calendar import HTMLCalendar
+from datetime import date
+from datetime import datetime
+import pytz
 
 class Calendar(HTMLCalendar):
 	def __init__(self, year=None, month=None):
@@ -13,13 +16,16 @@ class Calendar(HTMLCalendar):
 		print("day: "+str(day))
 		# list(filter(lambda x: datetime.strptime(x['start']['dateTime'], '%Y-%m-%dT%H:%M:%S%z').day == day, events))
 		# list(filter(lambda x: datetime.strptime(x['start']['date'], '%Y-%m-%d').day == day , events))
-		# This is the most important function in my project it has to chunk events in the month into 30 min intervals.
-		events_per_day = list(filter(lambda x: datetime.strptime(x['start']['date'], '%Y-%m-%d').day == day , events))
+
+		events_per_day = list(filter(lambda x: datetime.strptime(x['start']['dateTime'], '%Y-%m-%dT%H:%M:%S%z').day == day, events))
 		print("Formatting day")
 		print(events_per_day)
 		d = ''
 		for event in events_per_day:
-			d += f"<li> {event['summary']} </li>"
+			if "summary" in event:
+				d += f"<li> {event['summary']} </li>"
+			else:
+				d += f"<li> {'No title'} </li>"
 
 		if day != 0:
 			return f"<td><span class='date'>{day}</span><ul> {d} </ul></td>"
@@ -39,6 +45,19 @@ class Calendar(HTMLCalendar):
 	def formatmonth(self, events, withyear=True):
 		print("Formatting month")
 		print(events)
+		# This is the most important function in my project it has to chunk events in the month into 30 min intervals.
+		# Move to the backend when done
+		startDates = [x for x in events if ("date" in x['start'])] 
+		print(startDates)
+		events = [x for x in events if ("date" not in x['start'])]      
+		print(events)
+
+		timeZone = pytz.timezone('America/Vancouver')
+		for event in startDates:
+			newStartDateTime = datetime.strptime(event['start']['date'], '%Y-%m-%d' )
+			print(newStartDateTime)
+			datetime_ist = datetime.strptime(event['start']['date'], '%Y-%m-%d' ).now(timeZone)
+			print("Date & Time in IST : ",datetime_ist.strftime('%Y-%m-%dT%H:%M:%S%z'))
 
 		cal = f'<table border="0" cellpadding="0" cellspacing="0" class="calendar">\n'
 		cal += f'{self.formatmonthname(self.year, self.month, withyear=withyear)}\n'

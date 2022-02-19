@@ -149,12 +149,12 @@ def addMed(request):
     med.save()
     return redirect('medications')
     
-#Filter messages by if the user deleted from their view
 def index(request):
     context={}
     context['nmenu']='home'
     
     if request.method=="POST":
+        #Filter messages by if the user deleted from their view
         Inbox = Messages.objects.filter(Q(sender=request.user)&Q(senderDeleted=False) | Q(receiver=request.user)&Q(receiverDeleted=False)).order_by("-time", "read")
         context['Inbox'] = Inbox
         unreadMessagesCount = Messages.objects.filter(Q(receiver=request.user) & Q(read=False)&Q(receiverDeleted=False)).count()
@@ -186,7 +186,7 @@ def index(request):
 @login_required
 def calendar(request):
     context={}  
-    results = get_events(request)
+    results = get_events(request.user.refresh_token)
     #context['results'] = results
     d = date.today()
     print(d)
@@ -367,13 +367,13 @@ def bookAppointment(request):
                 print(request.POST['doctors'])
                 print(int(request.POST['doctors'])-1)
                 # This associates the user with the dropdown selection
-                name=Profile.objects.all()[int(request.POST['doctors'])-1]
+                name = Profile.objects.all()[int(request.POST['doctors'])-1]
                 print(name)
                 user = Profile.objects.get(username=name)
                 if user:
                     print(user,user.refresh_token)
-                    results = test_calendar()
-                    #results = get_events(request)
+                    #results = test_calendar()
+                    results = get_events(user.refresh_token)
                     cal = Calendar(d.year, d.month)
                     html_cal = cal.formatmonth(results, withyear=True)
                     context['calendar'] = mark_safe(html_cal)
