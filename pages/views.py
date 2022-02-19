@@ -116,14 +116,14 @@ def delete(request,message_id):
         return redirect('messagesInbox')
     else:
         if data_to_be_deleted.sender==request.user:
-            data_to_be_deleted.senderDeleted=True
+            data_to_be_deleted.sender_deleted=True
             data_to_be_deleted.save()
         else:
-            data_to_be_deleted.receiverDeleted=True
+            data_to_be_deleted.receiver_deleted=True
             data_to_be_deleted.save()
 
     data_to_be_deleted = Messages.objects.get(id = message_id)
-    if data_to_be_deleted.senderDeleted and data_to_be_deleted.receiverDeleted:
+    if data_to_be_deleted.sender_deleted and data_to_be_deleted.receiver_deleted:
         data_to_be_deleted.delete()
     return redirect('messagesInbox')
 
@@ -155,9 +155,9 @@ def index(request):
     
     if request.method=="POST":
         #Filter messages by if the user deleted from their view
-        inbox = Messages.objects.filter(Q(sender=request.user)&Q(senderDeleted=False) | Q(receiver=request.user)&Q(receiverDeleted=False)).order_by("-time", "read")
+        inbox = Messages.objects.filter(Q(sender=request.user)&Q(sender_deleted=False) | Q(receiver=request.user)&Q(receiver_deleted=False)).order_by("-time", "read")
         context['inbox'] = inbox
-        unread_messages_count = Messages.objects.filter(Q(receiver=request.user) & Q(read=False)&Q(receiverDeleted=False)).count()
+        unread_messages_count = Messages.objects.filter(Q(receiver=request.user) & Q(read=False)&Q(receiver_deleted=False)).count()
         context['unreadMessagesCount'] = unread_messages_count
         edit_profile_form = UserProfileForm(instance=request.user)
         if 'editProfileForm' in request.POST:
@@ -174,9 +174,9 @@ def index(request):
                 return render(request, "home.html", context)
     else:
         if request.user.is_authenticated:
-            inbox = Messages.objects.filter(Q(sender=request.user)&Q(senderDeleted=False) | Q(receiver=request.user)&Q(receiverDeleted=False)).order_by("-time", "read")
+            inbox = Messages.objects.filter(Q(sender=request.user)&Q(sender_deleted=False) | Q(receiver=request.user)&Q(receiver_deleted=False)).order_by("-time", "read")
             context['inbox'] = inbox
-            unread_messages_count = Messages.objects.filter(Q(receiver=request.user) & Q(read=False)&Q(receiverDeleted=False)).count()
+            unread_messages_count = Messages.objects.filter(Q(receiver=request.user) & Q(read=False)&Q(receiver_deleted=False)).count()
             context['unreadMessagesCount'] = unread_messages_count
             edit_profile_form = UserProfileForm(instance=request.user)
             context['editProfileForm'] = edit_profile_form
@@ -248,7 +248,7 @@ def messagesInbox(request):
     context={}
     edit_profile_form= UserProfileForm(instance=request.user)
     context['editProfileForm'] = edit_profile_form
-    inbox = Messages.objects.filter(Q(sender=request.user)&Q(senderDeleted=False) | Q(receiver=request.user)&Q(receiverDeleted=False)).order_by("-time", "read")
+    inbox = Messages.objects.filter(Q(sender=request.user)&Q(sender_deleted=False) | Q(receiver=request.user)&Q(receiver_deleted=False)).order_by("-time", "read")
     context['inbox'] = inbox
     context['nmenu'] = 'messagesInbox'
     if request.method=="POST":

@@ -24,9 +24,9 @@ class Profile(AbstractUser):
 
 class Messages(models.Model):
     sender = models.ForeignKey(Profile,related_name='sender',on_delete=models.CASCADE)
-    senderDeleted = models.BooleanField(default=False)
+    sender_deleted = models.BooleanField(default=False)
     receiver = models.ForeignKey(Profile,related_name='receiver',on_delete=models.CASCADE)
-    receiverDeleted = models.BooleanField(default=False)
+    receiver_deleted = models.BooleanField(default=False)
     subject = models.CharField(default='',max_length=100)
     text = models.CharField(default='',max_length=4096)
     time = models.DateTimeField(auto_now_add=True)

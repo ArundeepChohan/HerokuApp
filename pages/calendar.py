@@ -48,22 +48,22 @@ class Calendar(HTMLCalendar):
 
 		# This is the most important function in my project it has to chunk events in the month into 30 min intervals.
 		# Move to the backend when done
-		startDates = [x for x in events if ("date" in x['start'])] 
-		print(startDates)
+		start_dates = [x for x in events if ("date" in x['start'])] 
+		print(start_dates)
 		events = [x for x in events if ("date" not in x['start'])]      
 		print(events)
 
-		timeZone = pytz.timezone('America/Vancouver')
+		time_zone = pytz.timezone('America/Vancouver')
 		# Compare end - start date and make 48 * day datetimes
-		for event in startDates:
-			newStartDateTime = datetime.strptime(event['start']['date'], '%Y-%m-%d' )
-			print(newStartDateTime)
-			vancouverTime = timeZone.localize(newStartDateTime)
-			print(vancouverTime)
+		for event in start_dates:
+			new_date_time = datetime.strptime(event['start']['date'], '%Y-%m-%d' )
+			print(new_date_time)
+			vancouver_time = time_zone.localize(new_date_time)
+			print(vancouver_time)
 			#Loop through each day still missing
-			
+
 			for delta in range(0, 30 * 48, 30):
-				offsetted_ist = vancouverTime + timedelta(minutes=delta)
+				offsetted_ist = vancouver_time + timedelta(minutes=delta)
 				print("Date & Time in :", offsetted_ist.strftime('%Y-%m-%dT%H:%M:%S%z'))
 		# Make multiple hour datetimes into 30 min chunks
 

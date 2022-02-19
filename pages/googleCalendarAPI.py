@@ -19,11 +19,12 @@ def test_calendar():
     
     # GET ALL EXISTING EVENTS Max 2500 in this month
     today = datetime.today() 
-    monthAgo = today.replace(day=1)
-    monthForward = monthAgo + relativedelta(months=1)- relativedelta(days=1)
-    print(today,monthAgo,monthForward )
-    tmax = monthForward.isoformat('T') + "Z"
-    tmin = monthAgo.isoformat('T') + "Z"
+    first_day = today.replace(day=1)
+    last_day = first_day + relativedelta(months=1)- relativedelta(days=1)
+    print(today,first_day,last_day )
+    tmax = last_day.isoformat('T') + "Z"
+    tmin = first_day.isoformat('T') + "Z"
+    #camelcase usage due to services check if can switch to lowercase_with_underscores
     events_result = service.events().list(
         calendarId=CAL_ID,
         timeMin=tmin,
@@ -58,11 +59,11 @@ def get_events(refresh_token):
 
     service = build('calendar', 'v3', credentials=credentials)
     today = datetime.today() 
-    monthAgo = today.replace(day=1)
-    monthForward = monthAgo + relativedelta(months=1)- relativedelta(days=1)
-    print(today,monthAgo,monthForward )
-    tmax = monthForward.isoformat('T') + "Z"
-    tmin = monthAgo.isoformat('T') + "Z"
+    first_day = today.replace(day=1)
+    last_day = first_day + relativedelta(months=1)- relativedelta(days=1)
+    print(today,first_day,last_day )
+    tmax = last_day.isoformat('T') + "Z"
+    tmin = first_day.isoformat('T') + "Z"
     personal_events = service.events().list(calendarId='primary',
         timeMin=tmin,
         timeMax=tmax,
