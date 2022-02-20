@@ -20,8 +20,8 @@ def test_calendar():
     # GET ALL EXISTING EVENTS Max 2500 in this month
     today = datetime.today() 
     first_day = today.replace(day=1)
-    last_day = first_day + relativedelta(months=1)- relativedelta(days=1)
-    print(today,first_day,last_day )
+    last_day = first_day + relativedelta(months=1) - relativedelta(days=1)
+    #print(today,first_day,last_day )
     tmax = last_day.isoformat('T') + "Z"
     tmin = first_day.isoformat('T') + "Z"
     #camelcase usage due to services check if can switch to lowercase_with_underscores
@@ -34,18 +34,17 @@ def test_calendar():
         orderBy='startTime',
     ).execute()
     events = events_result.get('items', [])
+    """ 
     for e in events:
-        print(e)
-    #uncomment the following lines to delete each existing item in the calendar
-    #event_id = e['id']
-        # service.events().delete(calendarId=CAL_ID, eventId=event_id).execute() 
+        print(e)  
+    """
     return events 
 
 from googleapiclient.discovery import build
 from google.oauth2.credentials import Credentials
 from google.auth.transport.requests import Request
 def get_events(refresh_token):
-    print(refresh_token)
+    #print(refresh_token)
     credentials = Credentials(
         token=None,
         client_id = config('CLIENT_ID'), # Please set the cliend ID.
@@ -55,13 +54,13 @@ def get_events(refresh_token):
     )
     credentials.refresh(Request())
     access_token = credentials.token
-    print(access_token)
+    #print(access_token)
 
     service = build('calendar', 'v3', credentials=credentials)
     today = datetime.today() 
     first_day = today.replace(day=1)
-    last_day = first_day + relativedelta(months=1)- relativedelta(days=1)
-    print(today,first_day,last_day )
+    last_day = first_day + relativedelta(months=1) - relativedelta(days=1)
+    #print(today,first_day,last_day )
     tmax = last_day.isoformat('T') + "Z"
     tmin = first_day.isoformat('T') + "Z"
     personal_events = service.events().list(calendarId='primary',
@@ -72,6 +71,8 @@ def get_events(refresh_token):
         orderBy='startTime',
     ).execute() 
     personal_events = personal_events.get('items', [])
+    """ 
     for e in personal_events:
-        print(e)
+        print(e) 
+    """
     return personal_events
