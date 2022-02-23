@@ -15,7 +15,6 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
@@ -50,6 +49,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django_session_timeout.middleware.SessionTimeoutMiddleware',
@@ -127,33 +127,27 @@ USE_TZ = False
 # If I am in prod DEBUG==false
 # IAM Management Console
 
-if DEBUG==False:
-    AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID') 
-    AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY') 
-    AWS_STORAGE_BUCKET_NAME =  config('AWS_STORAGE_BUCKET_NAME')
-    AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
-    AWS_S3_OBJECT_PARAMETERS = {
-        'CacheControl': 'max-age=86400',
-    }
-    AWS_DEFAULT_ACL = None
-    AWS_S3_SIGNATURE_VERSION = 's3v4'
-    AWS_S3_REGION_NAME = 'us-east-2'
+AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID') 
+AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY') 
+AWS_STORAGE_BUCKET_NAME =  config('AWS_STORAGE_BUCKET_NAME')
+AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400',}
+AWS_DEFAULT_ACL = None
+AWS_S3_SIGNATURE_VERSION = 's3v4'
+AWS_S3_REGION_NAME = 'us-east-2'
 
-    AWS_STATIC_LOCATION = 'static'
-    STATIC_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, AWS_STATIC_LOCATION)
-    STATICFILES_STORAGE = 'portfolio.storage_backends.StaticStorage'
+AWS_STATIC_LOCATION = 'static'
+STATIC_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, AWS_STATIC_LOCATION)
+STATICFILES_STORAGE = 'portfolio.storage_backends.StaticStorage'
 
-    MEDIAFILES_LOCATION = 'media'
-    MEDIA_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, MEDIAFILES_LOCATION )
-    DEFAULT_FILE_STORAGE = 'portfolio.storage_backends.MediaStorage'
-    
-else:
-    MEDIA_URL = '/media/'  
-    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  
-    STATIC_URL = '/static/'
-    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
+MEDIAFILES_LOCATION = 'media'
+MEDIA_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, MEDIAFILES_LOCATION )
+DEFAULT_FILE_STORAGE = 'portfolio.storage_backends.MediaStorage'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'),]
+#MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  
+#MEDIA_URL = '/media/'  
+#STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+#STATIC_URL = '/static/'
 
 # Fixes Found another file with the destination path 
 STATICFILES_FINDERS = (

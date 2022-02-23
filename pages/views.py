@@ -186,12 +186,11 @@ def index(request):
 @login_required
 def calendar(request):
     context={}  
-    results = get_events(request.user.refresh_token)
-    #context['results'] = results
+    results = get_events(request.user.refresh_token,is_book_appointment=False)
     d = date.today()
     print(d)
     cal = Calendar(d.year, d.month)
-    html_cal = cal.formatmonth(results, withyear=True)
+    html_cal = cal.formatmonth(results, withyear=True,is_book_appointment=False)
     print(mark_safe(html_cal))
     context['personalCalendar'] = mark_safe(html_cal)
     context['nmenu'] = 'calendar'
@@ -373,9 +372,9 @@ def bookAppointment(request):
                 if user:
                     print(user,user.refresh_token)
                     #results = test_calendar()
-                    results = get_events(user.refresh_token)
+                    results = get_events(user.refresh_token,is_book_appointment=True)
                     cal = Calendar(d.year, d.month)
-                    html_cal = cal.formatmonth(results, withyear=True)
+                    html_cal = cal.formatmonth(results, withyear=True,is_book_appointment=True)
                     context['calendar'] = mark_safe(html_cal)
             return render(request, 'home.html', context)
         
