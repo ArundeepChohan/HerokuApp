@@ -1,5 +1,5 @@
 from django.urls import path
-from pages.views import addMed, index, calendar, medications, messagesSend, messagesInbox, documents, bookAppointment, adminControls, pickUserType, UserWizard, DoctorWizard, login, logout, reply, delete, send, activate
+from pages.views import addMed, index, calendar, medications, messagesSend, messagesInbox, documents, bookAppointment, adminControls, pickUserType, UserWizard, DoctorWizard, login, logout, reply, delete, send, activate, addAppointment
 
 urlpatterns = [
     path('', index, name='home'),
@@ -20,4 +20,5 @@ urlpatterns = [
     path('delete/<int:message_id>/', delete, name='delete'),
     path('activate/<str:username>/', activate, name='activate'),
     path('addMed/', addMed, name='addMed'),
+    path('addAppointment/',addAppointment,name='addAppointment')
 ]

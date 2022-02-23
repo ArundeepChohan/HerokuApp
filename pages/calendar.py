@@ -14,43 +14,47 @@ class Calendar(HTMLCalendar):
 		print("Formatting day")
 		d = ''
 		if day !=0:
+			# list(filter(lambda x: datetime.strptime(x['start']['dateTime'], '%Y-%m-%dT%H:%M:%S%z').day == day, events))
+			# list(filter(lambda x: datetime.strptime(x['start']['date'], '%Y-%m-%d').day == day , events))
 			events_per_day = list(filter(lambda x: datetime.strptime(x['start']['dateTime'], '%Y-%m-%dT%H:%M:%S%z').day == day, events))
 			print(self.year,self.month,day)
 			start = datetime(self.year,self.month,day)
-			tz='America/Vancouver'
+			tz = 'America/Vancouver'
 			time_zone = pytz.timezone(tz)
 			start = time_zone.localize(start)
+			# Modify this to get user's time slots later on
+			# Starts at 7 am  then goes for the next 10 hours
 			start+=relativedelta(hours=7)
-			# Starts at 7 am  then goes for the next 8 hours
-			end = start+relativedelta(hours=8)
+			end = start+relativedelta(hours=10)
 			min_gap = 30
-
-			# compute datetime interval
+			# Compute datetime interval of 30 mins for a day
 			time_slots = [(start + timedelta(hours=min_gap*i/60)).strftime('%Y-%m-%dT%H:%M:%S%z')for i in range(int((end-start).total_seconds() / 60.0 / min_gap))]
 			print(time_slots)
+			# Hide other's information from the user
+		
 			if is_book_appointment:
 				print("Book appointments",is_book_appointment)
 				for time in time_slots:
 					# Just check if there's an event in time slots
-					time_occupied=False
+					am_format = datetime.strptime(time[:-8].split('T')[1].split('-')[0], '%H:%M').strftime('%I:%M %p').lstrip('0')
+					print(am_format)
+					time_occupied = False
 					for event in events_per_day:
-						print(datetime.strptime(time, '%Y-%m-%dT%H:%M:%S%z'),datetime.strptime(event['start']['dateTime'], '%Y-%m-%dT%H:%M:%S%z'))
+						print(credits,datetime.strptime(event['start']['dateTime'], '%Y-%m-%dT%H:%M:%S%z'))
 						if datetime.strptime(time, '%Y-%m-%dT%H:%M:%S%z')==datetime.strptime(event['start']['dateTime'], '%Y-%m-%dT%H:%M:%S%z'):
-							time_occupied=True
-							if 'summary' in event:
-								d += f"<li> {event['summary']} </li>"
-							else:
-								d += f"<li> {'No title'} </li>"
+							time_occupied = True
+							d += f"<li> {'Booked'} {am_format}</li>"
 							break
 					if not time_occupied:
-						d += f"<li><button type='button' data-bs-toggle='modal' data-bs-target='#calendarBook'>Book Now</button> </li>"
+						form="<form action='addAppointment/' method='POST' enctype='multipart/form-data'><button type='submit'>Book now</button></form>"
+						d += f'<li>'+form+am_format+'</li>'
 
 			else:
 				for event in events_per_day:
 					if 'summary' in event:
-						d += f"<li> {event['summary']} </li>"
+						d += f"<li> {event['summary']} {am_format}</li>"
 					else:
-						d += f"<li> {'No title'} </li>"
+						d += f"<li> {'No title'}{am_format} </li>"
 
 		if day != 0:
 			return f"<td><span class='date'>{day}</span><ul> {d} </ul></td>"
@@ -61,9 +65,6 @@ class Calendar(HTMLCalendar):
 		print("Formatting week")
 		week = ''
 		for d, weekday in theweek:
-			# list(filter(lambda x: datetime.strptime(x['start']['dateTime'], '%Y-%m-%dT%H:%M:%S%z').day == day, events))
-			# list(filter(lambda x: datetime.strptime(x['start']['date'], '%Y-%m-%d').day == day , events))
-			
 			week += self.formatday(d,events,is_book_appointment)
 		return f'<tr> {week} </tr>'
 
@@ -72,7 +73,6 @@ class Calendar(HTMLCalendar):
 	def formatmonth(self, events, withyear=True,is_book_appointment=False):
 		print("Formatting month")
 		#print(events)
-
 		cal = f'<table border="0" cellpadding="0" cellspacing="0" class="calendar">\n'
 		cal += f'{self.formatmonthname(self.year, self.month, withyear=withyear)}\n'
 		cal += f'{self.formatweekheader()}\n'

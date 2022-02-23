@@ -145,3 +145,42 @@ def get_events(refresh_token,is_book_appointment=False):
         print(e)
     
     return events
+
+def book_appointment(user,start_time):
+    credentials = Credentials(
+        token=None,
+        client_id = config('CLIENT_ID'), # Please set the client ID.
+        client_secret = config('CLIENT_SECRET'), # Please set client secret.
+        refresh_token = user.refresh_token, # Please set refresh token.
+        token_uri = config('TOKEN_URI') # Please set token URI.
+    )
+    credentials.refresh(Request())
+    access_token = credentials.token
+    #print(access_token)
+    event = {
+        'summary': 'Appointment',
+        'location': 'Online',
+        'description': 'Online appointment',
+        'start': {
+            'dateTime': start_time,
+            'timeZone': 'America/Vancouver',
+        },
+        'end': {
+            'dateTime': start_time+timedelta(minutes=30),
+            'timeZone': 'America/Vancouver',
+        },
+        'attendees': [
+            {'email': 'arundeepchohan2009@hotmail.com'},
+            {'email': user.email_address},
+        ],
+        'reminders': {
+            'useDefault': False,
+            'overrides': [
+                {'method': 'email', 'minutes': 24 * 60},
+                {'method': 'popup', 'minutes': 10},
+            ],
+        },
+    }
+    service = build('calendar', 'v3', credentials=credentials)
+    event = service.events().insert(calendarId='primary', body=event).execute()
+    print('Event created: %s' % (event.get('htmlLink')))

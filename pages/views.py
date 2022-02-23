@@ -380,3 +380,8 @@ def bookAppointment(request):
         
     return render(request, 'home.html', context)
 
+@login_required
+@require_http_methods(["POST"])
+def addAppointment(request):
+    print('add appointment')
+    return redirect('bookAppointment')
