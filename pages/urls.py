@@ -20,5 +20,5 @@ urlpatterns = [
     path('delete/<int:message_id>/', delete, name='delete'),
     path('activate/<str:username>/', activate, name='activate'),
     path('addMed/', addMed, name='addMed'),
-    path('addAppointment/',addAppointment,name='addAppointment')
+    path('addAppointment/<str:username>/<str:start>/',addAppointment,name='addAppointment')
 ]

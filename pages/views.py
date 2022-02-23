@@ -369,19 +369,23 @@ def bookAppointment(request):
                 name = Profile.objects.all()[int(request.POST['doctors'])-1]
                 print(name)
                 user = Profile.objects.get(username=name)
+                context['doctor']= user
                 if user:
                     print(user,user.refresh_token)
                     #results = test_calendar()
                     results = get_events(user.refresh_token,is_book_appointment=True)
                     cal = Calendar(d.year, d.month)
-                    html_cal = cal.formatmonth(results, withyear=True,is_book_appointment=True)
+                    html_cal = cal.formatmonth(results,withyear=True,is_book_appointment=True)
                     context['calendar'] = mark_safe(html_cal)
             return render(request, 'home.html', context)
         
     return render(request, 'home.html', context)
 
 @login_required
-@require_http_methods(["POST"])
-def addAppointment(request):
+def addAppointment(request,username,start):
     print('add appointment')
+    print(request.user)
+    user = Profile.objects.get(username=username)
+    print(user)
+    print(start)
     return redirect('bookAppointment')

@@ -45,8 +45,12 @@ class Calendar(HTMLCalendar):
 							time_occupied = True
 							d += f"<li> {'Booked'} {am_format}</li>"
 							break
+					# I need to pass the current user, the doctor it clicked(pass from front end or context?), start time(not occupied time)
 					if not time_occupied:
-						form="<form action='addAppointment/' method='POST' enctype='multipart/form-data'><button type='submit'>Book now</button></form>"
+						#form="<form action='addAppointment/' method='POST' enctype='multipart/form-data'><button type='submit'>Book now</button></form>"
+	
+						form="<button onclick="+ 'location.href="'+"/addAppointment/manjit/2022-02-28T07:00:00-0800"+ '"'+">Book now</button>"
+						#form ="<button>"+'<a href="'+'/addAppointment"' +"> Book Now"+"</a>"+"</button>"
 						d += f'<li>'+form+am_format+'</li>'
 
 			else:
