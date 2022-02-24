@@ -4,12 +4,12 @@
 
 {% block content %}
   {% for message in messages %}
-
-    <div class="alert alert-success">
-        <a class="close" href="" data-bs-dismiss="alert">×</a>
-        {{ message }}
-    </div>
-
+    {%if "login" in message.tags %}
+      <div class="alert alert-success">
+          <a class="close" href="" data-bs-dismiss="alert">x</a>
+          {{ message }}
+      </div>
+    {%endif%}
   {% endfor %}
 
   <h2>Log In</h2>
@@ -21,7 +21,5 @@
   </form>
   <button><a href="{% url 'signup' %}">Sign up</a></button>
   <a href="{% url 'social:begin' 'google-oauth2' %}" >Login With Google</a>
-  
-  
-  
+
 {% endblock %}

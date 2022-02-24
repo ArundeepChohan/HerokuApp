@@ -1,4 +1,3 @@
-
 {% block content %}
   <div class="col-md-3" style="float:left">
     <h1>Hi {{ user.username }}!</h1>
@@ -51,7 +50,6 @@
       <div class="tab-pane" id="home" >
         {% include 'dashboard.html' %}
       </div>
-      
       <div class="tab-pane" id="calendar" >
         {% include 'calendar.html' %}
       </div>
@@ -67,7 +65,7 @@
       <div class="tab-pane" id="medications" >
         {% include 'medications.html' %}
       </div>
-      {% if request.user.is_staff is not True  and request.user.is_doctor is not True  %}
+      {% if request.user.is_staff is not True and request.user.is_doctor is not True  %}
         <div class="tab-pane" id="bookAppointment" >
           {% include 'bookAppointment.html' %}
         </div>

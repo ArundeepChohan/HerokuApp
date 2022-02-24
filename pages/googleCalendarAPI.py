@@ -179,5 +179,15 @@ def add_appointment(user,doctor,start_time):
         },
     }
     service = build('calendar', 'v3', credentials=credentials)
-    event = service.events().insert(calendarId='primary', body=event).execute()
-    print('Event created: %s' % (event.get('htmlLink')))
+    created_event = service.events().insert(calendarId='primary', body=event).execute()
+    print('Event created: %s' % (created_event.get('htmlLink')))
+
+    # Accepts for the users so it's automatically going to update so multiple users don't book the same time slot
+    for attendee in event['attendees']:
+        attendee['responseStatus'] = 'accepted'
+        
+    service.events().patch(
+        calendarId='primary',
+            eventId=created_event['id'],
+            body=event
+    )

@@ -13,7 +13,8 @@ from django.utils.safestring import mark_safe
 from django.core.files.storage import FileSystemStorage
 import os
 from django.conf import settings
-from datetime import date
+from datetime import date, datetime
+import pytz
 from django.views.decorators.http import require_http_methods
 
 def login(request):
@@ -27,10 +28,10 @@ def login(request):
                 auth_login(request, user)
                 return redirect('home')
             else:
-                messages.error(request,'User blocked')
+                messages.error(request,'User blocked',extra_tags='login')
                 return redirect('login')
         else:
-            messages.error(request,'username or password not correct')
+            messages.error(request,'username or password not correct',extra_tags='login')
             return redirect('login')
     else:
         form = AuthenticationForm()
@@ -38,7 +39,7 @@ def login(request):
 
 def logout(request):
     auth_logout(request)
-    messages.error(request, "You have successfully logged out.")
+    messages.error(request, "You have successfully logged out.",extra_tags='login')
     return redirect('login')
 
 def pickUserType(request):
@@ -190,7 +191,7 @@ def calendar(request):
     d = date.today()
     print(d)
     cal = Calendar(d.year, d.month,request.user)
-    html_cal = cal.formatmonth(results, withyear=True,is_book_appointment=False)
+    html_cal = cal.formatmonth(request,results, withyear=True,is_book_appointment=False)
     print(mark_safe(html_cal))
     context['personalCalendar'] = mark_safe(html_cal)
     context['nmenu'] = 'calendar'
@@ -374,18 +375,29 @@ def bookAppointment(request):
                     #results = test_calendar()
                     results = get_events(user.refresh_token,is_book_appointment=True)
                     cal = Calendar(d.year, d.month,user.username)
-                    html_cal = cal.formatmonth(results,withyear=True,is_book_appointment=True)
+                    html_cal = cal.formatmonth(request,results,withyear=True,is_book_appointment=True)
                     context['calendar'] = mark_safe(html_cal)
             return render(request, 'home.html', context)
         
     return render(request, 'home.html', context)
 
 @login_required
+@require_http_methods(["POST"])
 def addAppointment(request,username,start):
     print('add appointment')
     print(request.user)
     doctor = Profile.objects.get(username=username)
     print(doctor)
     print(start)
-    add_appointment(request.user,doctor,start)
+    tz = pytz.timezone('America/Vancouver')
+    today = datetime.now(tz)
+    time_slot = datetime.strptime(start, '%Y-%m-%dT%H:%M:%S%z')
+    #print(today,time_slot)
+    #print(type(today),type(time_slot))
+    #print(time_slot>today)
+    if time_slot>today:
+        add_appointment(request.user,doctor,start)
+    else:
+        messages.error(request,'Booking failed',extra_tags='bookAppointment')
+
     return redirect('bookAppointment')

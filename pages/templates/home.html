@@ -3,7 +3,7 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-  {% if user.is_authenticated and user.is_active%}
+  {% if user.is_authenticated and user.is_active %}
     {% include 'editProfileModal.html' %} 
     <div class='row'>  
       {% include 'sidebar.html' %}
