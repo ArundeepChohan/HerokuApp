@@ -189,7 +189,7 @@ def calendar(request):
     results = get_events(request.user.refresh_token,is_book_appointment=False)
     d = date.today()
     print(d)
-    cal = Calendar(d.year, d.month)
+    cal = Calendar(d.year, d.month,request.user)
     html_cal = cal.formatmonth(results, withyear=True,is_book_appointment=False)
     print(mark_safe(html_cal))
     context['personalCalendar'] = mark_safe(html_cal)

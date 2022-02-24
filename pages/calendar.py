@@ -58,10 +58,13 @@ class Calendar(HTMLCalendar):
 
 			else:
 				for event in events_per_day:
+					am_format = datetime.strptime(event['start']['dateTime'][:-9].split('T')[1].split('-')[0], '%H:%M').strftime('%I:%M %p').lstrip('0')
+					print(am_format)
+
 					if 'summary' in event:
 						d += f"<li> {event['summary']} {am_format}</li>"
 					else:
-						d += f"<li> {'No title'}{am_format} </li>"
+						d += f"<li> {'No title'}{am_format}</li>"
 
 		if day != 0:
 			return f"<td><span class='date'>{day}</span><ul> {d} </ul></td>"
