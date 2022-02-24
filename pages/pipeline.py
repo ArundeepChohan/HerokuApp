@@ -8,7 +8,6 @@ def save_token(user,*args,**kwargs):
     )
 
     # `created` will be false if the object exists
-
     if not created:
         profile.refresh_token = extra_data["refresh_token"]
         profile.save()

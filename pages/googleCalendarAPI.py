@@ -1,7 +1,5 @@
-
 from decouple import config
 from google.oauth2 import service_account
-
 import googleapiclient.discovery
 from datetime import datetime, timedelta
 import pytz
@@ -13,12 +11,9 @@ SCOPES = ['https://www.googleapis.com/auth/calendar']
 SERVICE_ACCOUNT_FILE = './google-credentials.json'
 
 def test_calendar():
-
     print("RUNNING TEST_CALENDAR()")
-    
     credentials = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
     service = googleapiclient.discovery.build('calendar', 'v3', credentials=credentials)
-    
     # GET ALL EXISTING EVENTS Max 2500 in this month
     today = datetime.today() 
     first_day = today.replace(day=1)
@@ -141,22 +136,24 @@ def get_events(refresh_token,is_book_appointment=False):
                 events.append(new)
             new_start_time = new_start_time+relativedelta(days=1)
 	
+    """ 
     for e in events:
-        print(e)
-    
+        print(e) 
+    """
     return events
 
-def book_appointment(user,start_time):
+def add_appointment(user,doctor,start_time):
     credentials = Credentials(
         token=None,
         client_id = config('CLIENT_ID'), # Please set the client ID.
         client_secret = config('CLIENT_SECRET'), # Please set client secret.
-        refresh_token = user.refresh_token, # Please set refresh token.
+        refresh_token = doctor.refresh_token, # Please set refresh token.
         token_uri = config('TOKEN_URI') # Please set token URI.
     )
     credentials.refresh(Request())
     access_token = credentials.token
     #print(access_token)
+    print(start_time)
     event = {
         'summary': 'Appointment',
         'location': 'Online',
@@ -166,12 +163,12 @@ def book_appointment(user,start_time):
             'timeZone': 'America/Vancouver',
         },
         'end': {
-            'dateTime': start_time+timedelta(minutes=30),
+            'dateTime': (datetime.strptime(start_time,'%Y-%m-%dT%H:%M:%S%z')+timedelta(minutes=30)).strftime('%Y-%m-%dT%H:%M:%S%z'),
             'timeZone': 'America/Vancouver',
         },
         'attendees': [
-            {'email': 'arundeepchohan2009@hotmail.com'},
-            {'email': user.email_address},
+            {'email': user.email},
+            {'email': doctor.email},
         ],
         'reminders': {
             'useDefault': False,

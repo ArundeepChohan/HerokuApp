@@ -8,7 +8,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from .models import Medications, Messages, Profile
 from django.db.models.query_utils import Q
-from pages.googleCalendarAPI import test_calendar, get_events
+from pages.googleCalendarAPI import add_appointment, test_calendar, get_events
 from django.utils.safestring import mark_safe
 from django.core.files.storage import FileSystemStorage
 import os
@@ -369,12 +369,11 @@ def bookAppointment(request):
                 name = Profile.objects.all()[int(request.POST['doctors'])-1]
                 print(name)
                 user = Profile.objects.get(username=name)
-                context['doctor']= user
                 if user:
                     print(user,user.refresh_token)
                     #results = test_calendar()
                     results = get_events(user.refresh_token,is_book_appointment=True)
-                    cal = Calendar(d.year, d.month)
+                    cal = Calendar(d.year, d.month,user.username)
                     html_cal = cal.formatmonth(results,withyear=True,is_book_appointment=True)
                     context['calendar'] = mark_safe(html_cal)
             return render(request, 'home.html', context)
@@ -385,7 +384,8 @@ def bookAppointment(request):
 def addAppointment(request,username,start):
     print('add appointment')
     print(request.user)
-    user = Profile.objects.get(username=username)
-    print(user)
+    doctor = Profile.objects.get(username=username)
+    print(doctor)
     print(start)
+    add_appointment(request.user,doctor,start)
     return redirect('bookAppointment')
