@@ -1,7 +1,7 @@
 {% load static %}
-  {% block css %}
-  <link rel="stylesheet" href="{% static 'css/calendar.css' %}" type="text/css">
-  {% endblock %}
+{% block css %}
+    <link rel="stylesheet" href="{% static 'css/calendar.css' %}" type="text/css">
+{% endblock %}
 {% block content %}
     <div>
         <h1>Calendar</h1>
@@ -9,7 +9,6 @@
             {{personalCalendar}}
         </div>
     </div>
-
 {% endblock %}
 <!-- <ul>
     {% for result in results %}

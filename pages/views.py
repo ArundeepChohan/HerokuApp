@@ -384,7 +384,7 @@ def bookAppointment(request):
 @login_required
 @require_http_methods(["POST"])
 def addAppointment(request,username,start):
-    print('add appointment')
+    print('Add appointment')
     print(request.user)
     doctor = Profile.objects.get(username=username)
     print(doctor)

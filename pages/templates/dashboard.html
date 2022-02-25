@@ -1,26 +1,99 @@
+{% load static %}
+{% block css %}
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}" type="text/css">
+{% endblock %}
 {% block content %}
-    <div class="col-md-6">
-        <!-- This needs to get the latest unread message -->
-        {% if unreadMessagesCount %}
-            <p>Unread: {{unreadMessagesCount}}</p>
-            
-            {% if inbox %}
-                <div>
-                    <p>{{inbox.first.sender}}</p>
-                </div>
-                <div>
-                    <div>
-                        <p>{{inbox.first.subject}}</p>
+    <div class="col-xs-3">
+        <div class="row row-eq-height">
+            <div class="col-md-6">
+                <!-- h-100 makes the two columns equal size, shadow makes the bottom part -->
+                <div class="shadow p-3 bg-white rounded h-100">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-6">
+                                -Icon-
+                            </div>
+                            <div class="col-md-6">
+                                <p>Date</p>
+                            </div>
+                        </div>
+                        
+                    </div>
+                    <p>Author</p>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p>Time</p>
+                        </div>
+                    
+                        <div class="col-md-6">
+                            <div>
+    
+                            </div>
+                        </div>
+                        <!-- This needs to get the latest unread message -->
+                        <!-- {% if unreadMessagesCount %}
+                            <p>Unread: {{unreadMessagesCount}}</p>
+                    
+                            {% if inbox %}
+                                <div>
+                                    <p>{{inbox.first.sender}}</p>
+                                </div>
+                                <div>
+                                    <div>
+                                        <p>{{inbox.first.subject}}</p>
+                                    </div>
+                                </div>
+                                {{inbox.first.text}}
+                                {{inbox.first.time}}
+                            {% endif %}
+                        {% else %}
+                            <p>Unread: 0</p>
+                            <div>
+                                <p>There are no senders</p>
+                            </div>
+                        {% endif %}  --> 
                     </div>
                 </div>
-                {{inbox.first.text}}
-                {{inbox.first.time}}
-            {% endif %}
-        {% else %}
-            <p>Unread: 0</p>
-            <div>
-                <p>There are no senders</p>
             </div>
-        {% endif %}  
+            <div class="col-md-6">
+                <div class="shadow p-3 bg-white rounded h-100">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-6">
+                                -Icon-
+                            </div>
+                            <div class="col-md-6">
+                                More stuff than possible
+                                <!-- {% if request.user.refresh_token != "" %}
+                                    <div>
+                                        There are maybe some
+                                    </div>
+                                    {% else %}
+                                    <div>
+                                        There are no calendar events
+                                    </div>
+                                {% endif %}  -->
+                      
+                            </div>
+                        </div>
+                        
+                    </div>
+                    <p>Author</p>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p>Time</p>
+                        </div>
+                    
+                        <div class="col-md-6">
+                            <div>
+    
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- This needs to get the earliest calendar event -->
+        </div>
     </div>
+
 {% endblock %}

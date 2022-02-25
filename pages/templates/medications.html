@@ -7,13 +7,12 @@
     </form>
     <h1>Medications</h1>
     {% for med in medications %}
-    <div>
-        {{med.name}}
-        {{med.dosage}}
-        {{med.times}}
-        {{med.choice}}
-        {{med.type}}
-    </div>
-    
+        <div>
+            {{med.name}}
+            {{med.dosage}}
+            {{med.times}}
+            {{med.choice}}
+            {{med.type}}
+        </div>
     {% endfor %}
 {% endblock %}

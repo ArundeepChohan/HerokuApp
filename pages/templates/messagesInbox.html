@@ -1,66 +1,65 @@
 {% block content %}
+
     {% if inbox %}
     <div class="col-md-12">
         <div class="accordion" id="accordionExample">
             {% for message in inbox %}
-            <div class="card">
-              <div class="card-header" id="heading{{ forloop.counter }}">
-                <h5 class="mb-{{ forloop.counter }}">
-                  <button class="btn" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ forloop.counter }}" aria-expanded="false" aria-controls="collapse{{ forloop.counter }}">
-                    {{ message.sender }} {{ message.subject}} {{ message.time }}
-                  </button>
-                </h5>
-              </div>
-          
-              <div id="collapse{{ forloop.counter }}" class="collapse" aria-labelledby="heading{{ forloop.counter }}" data-parent="#accordionExample">
-                <form class="delete-form" method="POST" action="delete/{{message.id}}/">
-                    {% csrf_token %}
-                    <input type="submit" value="X" >
-                </form>
-                
-                <div class="card-body">
-                    {{ message.text}} 
-                    {% if message.contact_parent.count %}
-                    <div>
-                        {% for reply in message.get_children %}  
-                        <!-- Remove the replies which aren't visibile to that user from view -->
-                            <form class="delete-form" method="POST" action="delete/{{reply.id}}/">
-                                {% csrf_token %}
-                                <input type="submit" value="X" >
-                            </form>
-                            <div>{{ reply.sender }}</div>
-                            <div>{{ reply.text }}</div>
-                            <div>{{ reply.time }}</div>
-                            <div class="form-group row">
-                                <form class="reply-form" method="POST" action="reply/{{reply.id}}/">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="{{ reply.id }}" value="{{ reply.id }}">
-                                    <div class="form-group">
-                                        <textarea name="text" cols="60" rows="2" maxlength="4096" required="" id="id_text"></textarea>
+                <div class="card">
+                <div class="card-header" id="heading{{ forloop.counter }}">
+                    <h5 class="mb-{{ forloop.counter }}">
+                    <button class="btn" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ forloop.counter }}" aria-expanded="false" aria-controls="collapse{{ forloop.counter }}">
+                        {{ message.sender }} {{ message.subject}} {{ message.time }}
+                    </button>
+                    </h5>
+                </div>
+            
+                <div id="collapse{{ forloop.counter }}" class="collapse" aria-labelledby="heading{{ forloop.counter }}" data-parent="#accordionExample">
+                    <form class="delete-form" method="POST" action="delete/{{message.id}}/">
+                        {% csrf_token %}
+                        <input type="submit" value="X" >
+                    </form>
+                    
+                    <div class="card-body">
+                        {{ message.text}} 
+                        {% if message.contact_parent.count %}
+                            <div>
+                                {% for reply in message.get_children %}  
+                                    <!-- Remove the replies which aren't visibile to that user from view -->
+                                    <form class="delete-form" method="POST" action="delete/{{reply.id}}/">
+                                        {% csrf_token %}
+                                        <input type="submit" value="X" >
+                                    </form>
+                                    <div>{{ reply.sender }}</div>
+                                    <div>{{ reply.text }}</div>
+                                    <div>{{ reply.time }}</div>
+                                    <div class="form-group row">
+                                        <form class="reply-form" method="POST" action="reply/{{reply.id}}/">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="{{ reply.id }}" value="{{ reply.id }}">
+                                            <div class="form-group">
+                                                <textarea name="text" cols="60" rows="2" maxlength="4096" required="" id="id_text"></textarea>
+                                            </div>
+                                            <input type="submit" value="Submit" >
+                                        </form>
                                     </div>
-                                    <input type="submit" value="Submit" >
-                                </form>
+                                {% endfor %}    
                             </div>
-                        {% endfor %}    
-                    </div>
-                    {% endif %}
-                    <div class="form-group row">
-                        <form class="reply-form" method="POST" action="reply/{{message.id}}/">
-                            {% csrf_token %}
-                            <input type="hidden" name="{{ message.id }}" value="{{ message.id }}">
-                            <div class="form-group">
-                                <textarea name="text" cols="60" rows="2" maxlength="4096" required="" id="id_text"></textarea>
-                            </div>
-                            <input type="submit" value="Submit" >
-                        </form>
+                        {% endif %}
+                        <div class="form-group row">
+                            <form class="reply-form" method="POST" action="reply/{{message.id}}/">
+                                {% csrf_token %}
+                                <input type="hidden" name="{{ message.id }}" value="{{ message.id }}">
+                                <div class="form-group">
+                                    <textarea name="text" cols="60" rows="2" maxlength="4096" required="" id="id_text"></textarea>
+                                </div>
+                                <input type="submit" value="Submit" >
+                            </form>
+                        </div>
                     </div>
                 </div>
-              </div>
-            </div>
+                </div>
             {% endfor %}
-          </div>
-             
-        
+        </div>
     </div>
     {% else %}
         <p>No messages</p>

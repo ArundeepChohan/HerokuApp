@@ -1,6 +1,6 @@
 {% load static %}
   {% block css %}
-  <link rel="stylesheet" href="{% static 'css/calendar.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'css/calendar.css' %}" type="text/css">
   {% endblock %}
 {% block content %}
   {% for message in messages %}
@@ -10,7 +10,6 @@
           {{ message }}
       </div>
     {%endif%}
-
   {% endfor %}
   <form method = "POST" action="" enctype="multipart/form-data">
     {% csrf_token %}

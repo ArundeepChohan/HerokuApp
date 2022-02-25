@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Home{% endblock %}
+{% block title %} Home {% endblock %}
 
 {% block content %}
   {% if user.is_authenticated and user.is_active %}
@@ -8,12 +8,10 @@
     <div class='row'>  
       {% include 'sidebar.html' %}
     </div> 
-  
   {% else %}
     <p>You are not logged in</p>
     <button><a href="{% url 'login' %}">Log In</a></button>
     <button><a href="{% url 'signup' %}">Sign up</a></button>
- 
   {% endif %}
 
 {% endblock %}

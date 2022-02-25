@@ -11,9 +11,9 @@
         <a class="nav-link" id="home"  href="{% url 'home' %}" >Dashboard</a>
       </li>
       {% if request.user.refresh_token != "" %}
-      <li class="nav-item" role="presentation">
-        <a class="nav-link" id="calendar" href="calendar">Calendar</a>
-      </li>
+        <li class="nav-item" role="presentation">
+          <a class="nav-link" id="calendar" href="calendar">Calendar</a>
+        </li>
       {% endif %}
 
       <li class="nav-item dropdown" role="presentation">
@@ -79,10 +79,10 @@
   </div>
 
   {% if nmenu %} 
-  <script type="text/javascript">
-    $("a#{{nmenu}}").addClass("active");
-    $("div#{{nmenu}}").addClass("active");
-  </script>
+    <script type="text/javascript">
+      $("a#{{nmenu}}").addClass("active");
+      $("div#{{nmenu}}").addClass("active");
+    </script>
   {% endif %}
 
 {% endblock %} 
