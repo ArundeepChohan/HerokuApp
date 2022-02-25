@@ -394,8 +394,11 @@ def addAppointment(request,username,start):
     time_slot = datetime.strptime(start, '%Y-%m-%dT%H:%M:%S%z')
     #print(today,time_slot)
     #print(type(today),type(time_slot))
-    #print(time_slot>today)
-    if time_slot>today:
+    #print(time_slot>=today)
+
+    # Make a certain time before appointment let's say 1 hour before
+    # What if the doctor added events between the page reload?
+    if time_slot>=today:
         add_appointment(request.user,doctor,start)
     else:
         messages.error(request,'Booking failed',extra_tags='bookAppointment')

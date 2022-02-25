@@ -43,7 +43,7 @@ from google.auth.transport.requests import Request
 def get_events(refresh_token,is_book_appointment=False):
     #print(refresh_token)
     credentials = Credentials(
-        token=None,
+        token = None,
         client_id = config('CLIENT_ID'), # Please set the client ID.
         client_secret = config('CLIENT_SECRET'), # Please set client secret.
         refresh_token = refresh_token, # Please set refresh token.
@@ -142,9 +142,10 @@ def get_events(refresh_token,is_book_appointment=False):
     """
     return events
 
+
 def add_appointment(user,doctor,start_time):
     credentials = Credentials(
-        token=None,
+        token = None,
         client_id = config('CLIENT_ID'), # Please set the client ID.
         client_secret = config('CLIENT_SECRET'), # Please set client secret.
         refresh_token = doctor.refresh_token, # Please set refresh token.
