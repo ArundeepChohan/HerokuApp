@@ -5,6 +5,9 @@ from datetime import datetime, timedelta
 import pytz
 from dateutil.relativedelta import relativedelta
 from copy import deepcopy
+from googleapiclient.discovery import build
+from google.oauth2.credentials import Credentials
+from google.auth.transport.requests import Request
 
 CAL_ID = config('CAL_ID')
 SCOPES = ['https://www.googleapis.com/auth/calendar']
@@ -14,33 +17,9 @@ def test_calendar():
     print("RUNNING TEST_CALENDAR()")
     credentials = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
     service = googleapiclient.discovery.build('calendar', 'v3', credentials=credentials)
-    # GET ALL EXISTING EVENTS Max 2500 in this month
-    today = datetime.today() 
-    first_day = today.replace(day=1)
-    last_day = first_day + relativedelta(months=1) - relativedelta(days=1)
-    #print(today,first_day,last_day )
-    tmax = last_day.isoformat('T') + "Z"
-    tmin = first_day.isoformat('T') + "Z"
-    #camelcase usage due to services check if can switch to lowercase_with_underscores
-    events_result = service.events().list(
-        calendarId=CAL_ID,
-        timeMin=tmin,
-        timeMax=tmax,
-        maxResults=2500,
-        singleEvents=True,
-        orderBy='startTime',
-    ).execute()
-    events = events_result.get('items', [])
-    """ 
-    for e in events:
-        print(e)  
-    """
-    return events 
+    return get_events_from_service(service)
 
-from googleapiclient.discovery import build
-from google.oauth2.credentials import Credentials
-from google.auth.transport.requests import Request
-def get_events(refresh_token,is_book_appointment=False):
+def get_token_refresh(refresh_token):
     #print(refresh_token)
     credentials = Credentials(
         token = None,
@@ -52,22 +31,29 @@ def get_events(refresh_token,is_book_appointment=False):
     credentials.refresh(Request())
     access_token = credentials.token
     #print(access_token)
+    return credentials
 
-    service = build('calendar', 'v3', credentials=credentials)
+def get_events_from_service(service):
     today = datetime.today() 
     first_day = today.replace(day=1)
     last_day = first_day + relativedelta(months=1) - relativedelta(days=1)
     #print(today,first_day,last_day )
     tmax = last_day.isoformat('T') + "Z"
     tmin = first_day.isoformat('T') + "Z"
-    events = service.events().list(calendarId='primary',
+    events_results = service.events().list(calendarId='primary',
         timeMin=tmin,
         timeMax=tmax,
         maxResults=2500, 
         singleEvents=True,
         orderBy='startTime',
     ).execute() 
-    events = events.get('items', [])
+    events = events_results.get('items', [])
+    return events
+
+def get_events(refresh_token,is_book_appointment=False):
+    credentials = get_token_refresh(refresh_token)
+    service = build('calendar', 'v3', credentials=credentials)
+    events = get_events_from_service(service)
     # This is the most important function in my project it has to chunk events in the month into 30 min intervals.
     start_dates = [x for x in events if ('date' in x['start'])] 
     print(start_dates)
@@ -142,18 +128,8 @@ def get_events(refresh_token,is_book_appointment=False):
     """
     return events
 
-
 def add_appointment(user,doctor,start_time):
-    credentials = Credentials(
-        token = None,
-        client_id = config('CLIENT_ID'), # Please set the client ID.
-        client_secret = config('CLIENT_SECRET'), # Please set client secret.
-        refresh_token = doctor.refresh_token, # Please set refresh token.
-        token_uri = config('TOKEN_URI') # Please set token URI.
-    )
-    credentials.refresh(Request())
-    access_token = credentials.token
-    #print(access_token)
+    credentials = get_token_refresh(doctor.refresh_token)
     print(start_time)
     event = {
         'summary': 'Appointment',

@@ -160,6 +160,7 @@ def index(request):
         context['inbox'] = inbox
         unread_messages_count = Messages.objects.filter(Q(receiver=request.user) & Q(read=False)&Q(receiver_deleted=False)).count()
         context['unreadMessagesCount'] = unread_messages_count
+        context['medications']= Medications.objects.filter(user=request.user)
         edit_profile_form = UserProfileForm(instance=request.user)
         if 'editProfileForm' in request.POST:
             edit_profile_form = UserProfileForm(request.POST or None, request.FILES or None,instance=request.user)
@@ -179,6 +180,7 @@ def index(request):
             context['inbox'] = inbox
             unread_messages_count = Messages.objects.filter(Q(receiver=request.user) & Q(read=False)&Q(receiver_deleted=False)).count()
             context['unreadMessagesCount'] = unread_messages_count
+            context['medications']= Medications.objects.filter(user=request.user)
             edit_profile_form = UserProfileForm(instance=request.user)
             context['editProfileForm'] = edit_profile_form
             context['isPost'] = False
