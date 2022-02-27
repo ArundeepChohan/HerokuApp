@@ -1,3 +1,4 @@
+from this import s
 from decouple import config
 from google.oauth2 import service_account
 import googleapiclient.discovery
@@ -14,7 +15,7 @@ SCOPES = ['https://www.googleapis.com/auth/calendar']
 SERVICE_ACCOUNT_FILE = './google-credentials.json'
 
 def test_calendar():
-    print("RUNNING TEST_CALENDAR()")
+    #print("RUNNING TEST_CALENDAR()")
     credentials = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
     service = googleapiclient.discovery.build('calendar', 'v3', credentials=credentials)
     return get_events_from_service(service)
@@ -49,7 +50,7 @@ def get_events_from_service(service):
     ).execute() 
     events = events_results.get('items', [])
     return events
-
+    
 def get_events(refresh_token,is_book_appointment=False):
     credentials = get_token_refresh(refresh_token)
     service = build('calendar', 'v3', credentials=credentials)
@@ -58,7 +59,7 @@ def get_events(refresh_token,is_book_appointment=False):
     start_dates = [x for x in events if ('date' in x['start'])] 
     print(start_dates)
     events = [x for x in events if ('date' not in x['start'])]      
-    print(events)
+    #print(events)
     tz='America/Vancouver'
     time_zone = pytz.timezone(tz)
     # Make multiple hour datetimes into 30 min chunks and convert timezone if it's book appointment
@@ -70,10 +71,10 @@ def get_events(refresh_token,is_book_appointment=False):
             time_dif = end_time - start_time
             minute_dif = int(round(time_dif.total_seconds()/60, 0))
             half_hours=(minute_dif//30)
-            print("minute dif",minute_dif,"times:",half_hours)
+            #print("minute dif",minute_dif,"times:",half_hours)
             
             for delta in range(0,30*half_hours,30):
-                print("delta",delta)
+                #print("delta",delta)
                 time_slots = dict(deepcopy(e))
                 start = start_time + timedelta(minutes=delta)
                 end = start_time + timedelta(minutes=(delta+30))
@@ -122,15 +123,19 @@ def get_events(refresh_token,is_book_appointment=False):
                 events.append(new)
             new_start_time = new_start_time+relativedelta(days=1)
 	
+    #print(events)
+    events = sorted(events, key = lambda x:datetime.strptime(x['start']['dateTime'], '%Y-%m-%dT%H:%M:%S%z'))
+    #print(events)
     """ 
     for e in events:
         print(e) 
     """
     return events
 
+# Make a check to see if time slot is not booked.
 def add_appointment(user,doctor,start_time):
     credentials = get_token_refresh(doctor.refresh_token)
-    print(start_time)
+    #print(start_time)
     event = {
         'summary': 'Appointment',
         'location': 'Online',
@@ -157,7 +162,7 @@ def add_appointment(user,doctor,start_time):
     }
     service = build('calendar', 'v3', credentials=credentials)
     created_event = service.events().insert(calendarId='primary', body=event).execute()
-    print('Event created: %s' % (created_event.get('htmlLink')))
+    #print('Event created: %s' % (created_event.get('htmlLink')))
 
     # Accepts for the users so it's automatically going to update so multiple users don't book the same time slot
     for attendee in event['attendees']:
@@ -165,6 +170,6 @@ def add_appointment(user,doctor,start_time):
         
     service.events().patch(
         calendarId='primary',
-            eventId=created_event['id'],
-            body=event
+        eventId=created_event['id'],
+        body=event
     )

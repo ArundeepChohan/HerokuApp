@@ -48,7 +48,7 @@ def pickUserType(request):
 @login_required
 def process_data(form_list):
     form_data = [form.cleaned_data for form in form_list]
-    print(form_data)
+    #print(form_data)
     return form_data
     
 class DoctorWizard(SessionWizardView):
@@ -87,19 +87,19 @@ class UserWizard(SessionWizardView):
 @login_required
 @require_http_methods(["POST"])
 def reply(request,message_id):
-    print(message_id)
+    #print(message_id)
     parent = Messages.objects.get(id=message_id)
     reply = Messages.objects.create(text=request.POST['text'], receiver=parent.sender, sender=request.user, parent=parent)
-    print(parent)
-    print(reply)
-    print(request.POST)
+    #print(parent)
+    #print(reply)
+    #print(request.POST)
     return redirect('messagesInbox')
 
 @login_required
 @require_http_methods(["POST"])
 def send(request):
     send_message_form = MessageForm(request.POST or None,)
-    print(send_message_form )
+    #print(send_message_form )
     if send_message_form.is_valid(): 
         send_message_form_user = send_message_form.save(commit=False)
         send_message_form_user.sender = request.user
@@ -132,7 +132,7 @@ def delete(request,message_id):
 @require_http_methods(["POST"])
 def activate(request,username):
     user = Profile.objects.get(username=username)
-    print(user)
+    #print(user)
     if user:
         user.is_active = True
         user.save()
@@ -142,9 +142,9 @@ def activate(request,username):
 @login_required
 @require_http_methods(["POST"])
 def addMed(request):
-    print('Adding med')
-    print(request.user)
-    print(request.POST)
+    #print('Adding med')
+    #print(request.user)
+    #print(request.POST)
     med = MedicationForm(request.POST or None,)
     med.instance.user = request.user
     med.save()
@@ -184,6 +184,10 @@ def index(request):
             edit_profile_form = UserProfileForm(instance=request.user)
             context['editProfileForm'] = edit_profile_form
             context['isPost'] = False
+            if request.user.refresh_token !="":
+                results = get_events(request.user.refresh_token,is_book_appointment=True)
+                print(results)
+            
     return render(request, 'home.html', context)
 
 @login_required
@@ -191,10 +195,10 @@ def calendar(request):
     context={}  
     results = get_events(request.user.refresh_token,is_book_appointment=False)
     d = date.today()
-    print(d)
+    #print(d)
     cal = Calendar(d.year, d.month,request.user)
     html_cal = cal.formatmonth(request,results, withyear=True,is_book_appointment=False)
-    print(mark_safe(html_cal))
+    #print(mark_safe(html_cal))
     context['personalCalendar'] = mark_safe(html_cal)
     context['nmenu'] = 'calendar'
     edit_profile_form = UserProfileForm(instance=request.user)
@@ -363,17 +367,17 @@ def bookAppointment(request):
                 return render(request, "home.html", context)
         if 'bookAppointment' in request.POST:
             d = date.today()
-            print(d)
+            #print(d)
             book_appointment = BookAppointmentForm(request.POST)
             if book_appointment.is_valid():
-                print(request.POST['doctors'])
-                print(int(request.POST['doctors'])-1)
+                #print(request.POST['doctors'])
+                #print(int(request.POST['doctors'])-1)
                 # This associates the user with the dropdown selection
                 name = Profile.objects.all()[int(request.POST['doctors'])-1]
-                print(name)
+                #print(name)
                 user = Profile.objects.get(username=name)
                 if user:
-                    print(user,user.refresh_token)
+                    #print(user,user.refresh_token)
                     #results = test_calendar()
                     results = get_events(user.refresh_token,is_book_appointment=True)
                     cal = Calendar(d.year, d.month,user.username)
@@ -386,11 +390,11 @@ def bookAppointment(request):
 @login_required
 @require_http_methods(["POST"])
 def addAppointment(request,username,start):
-    print('Add appointment')
-    print(request.user)
+    #print('Add appointment')
+    #print(request.user)
     doctor = Profile.objects.get(username=username)
-    print(doctor)
-    print(start)
+    #print(doctor)
+    #print(start)
     tz = pytz.timezone('America/Vancouver')
     today = datetime.now(tz)
     time_slot = datetime.strptime(start, '%Y-%m-%dT%H:%M:%S%z')
@@ -400,7 +404,7 @@ def addAppointment(request,username,start):
 
     # Make a certain time before appointment let's say 1 hour before
     # What if the doctor added events between the page reload?
-    if time_slot>=today:
+    if time_slot >= today:
         add_appointment(request.user,doctor,start)
     else:
         messages.error(request,'Booking failed',extra_tags='bookAppointment')

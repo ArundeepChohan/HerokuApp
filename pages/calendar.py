@@ -13,14 +13,15 @@ class Calendar(HTMLCalendar):
 
 	# formats a day as a td
 	def formatday(self,request, day, events,is_book_appointment=False):
-		print("day: "+str(day))
-		print("Formatting day")
+		#print("day: "+str(day))
+		#print("Formatting day")
 		d = ''
 		if day !=0:
 			# list(filter(lambda x: datetime.strptime(x['start']['dateTime'], '%Y-%m-%dT%H:%M:%S%z').day == day, events))
 			# list(filter(lambda x: datetime.strptime(x['start']['date'], '%Y-%m-%d').day == day , events))
-			events_per_day = list(filter(lambda x: datetime.strptime(x['start']['dateTime'], '%Y-%m-%dT%H:%M:%S%z').day == day, events))
-			print(self.year,self.month,day)
+			events_per_day = list(filter(lambda x: datetime.strptime(x['start']['dateTime'], '%Y-%m-%dT%H:%M:%S%z').day == day and datetime.strptime(x['start']['dateTime'], '%Y-%m-%dT%H:%M:%S%z').month == self.month and datetime.strptime(x['start']['dateTime'], '%Y-%m-%dT%H:%M:%S%z').year == self.year, events))
+			#print(self.year,self.month,day), events))
+			#print(self.year,self.month,day)
 			start = datetime(self.year,self.month,day)
 			tz = 'America/Vancouver'
 			time_zone = pytz.timezone(tz)
@@ -32,20 +33,20 @@ class Calendar(HTMLCalendar):
 			min_gap = 30
 			# Compute datetime interval of 30 mins for a day
 			time_slots = [(start + timedelta(hours=min_gap*i/60)).strftime('%Y-%m-%dT%H:%M:%S%z')for i in range(int((end-start).total_seconds() / 60.0 / min_gap))]
-			print(time_slots)
+			#print(time_slots)
 			# Hide other's information from the user
 			if is_book_appointment:
 				print("Book appointments",is_book_appointment)
 				for time in time_slots:
 					# Just check if there's an event in time slots
 					am_format = datetime.strptime(time[:-8].split('T')[1].split('-')[0], '%H:%M').strftime('%I:%M %p').lstrip('0')
-					print(am_format)
+					#print(am_format)
 					time_occupied = False
 					converted_time=datetime.strptime(time, '%Y-%m-%dT%H:%M:%S%z')
 					for event in events_per_day:
 
 						converted_start=datetime.strptime(event['start']['dateTime'], '%Y-%m-%dT%H:%M:%S%z')
-						print(converted_time,converted_start)
+						#print(converted_time,converted_start)
 						if converted_time==converted_start:
 							time_occupied = True
 							d += f"<li> {'Booked'} {am_format}</li>"
@@ -53,7 +54,7 @@ class Calendar(HTMLCalendar):
 					# I need to pass the current user, the doctor it clicked(pass from front end or context?), start time(not occupied time)
 					if not time_occupied:
 						token = django.middleware.csrf.get_token(request)
-						print("token: ",token)
+						#print("token: ",token)
 						form='<form action="/addAppointment/'+self.username+"/"+time+ '/"'+ ' method="POST" enctype="multipart/form-data"><button type="submit">Book now</button>'+'<input name="csrfmiddlewaretoken"'+'value="'+token+'"'+ 'type="hidden">'+'</form>'
 						#form="<button onclick="+ 'location.href="'+"/addAppointment/"+self.username+"/"+time+ '/"'+">Book now</button>"
 						#form ="<button>"+'<a href="'+'/addAppointment"' +"> Book Now"+"</a>"+"</button>"
@@ -62,7 +63,7 @@ class Calendar(HTMLCalendar):
 			else:
 				for event in events_per_day:
 					am_format = datetime.strptime(event['start']['dateTime'][:-9].split('T')[1].split('-')[0], '%H:%M').strftime('%I:%M %p').lstrip('0')
-					print(am_format)
+					#print(am_format)
 
 					if 'summary' in event:
 						d += f"<li> {event['summary']} {am_format}</li>"
@@ -75,7 +76,7 @@ class Calendar(HTMLCalendar):
 
 	# formats a week as a tr 
 	def formatweek(self,request, theweek,events,is_book_appointment=False):
-		print("Formatting week")
+		#print("Formatting week")
 		week = ''
 		for d, weekday in theweek:
 			week += self.formatday(request,d,events,is_book_appointment)
@@ -84,7 +85,7 @@ class Calendar(HTMLCalendar):
 	# formats a month as a table
 	# filter events by year and month
 	def formatmonth(self,request, events, withyear=True,is_book_appointment=False):
-		print("Formatting month")
+		#print("Formatting month")
 		#print(events)
 		cal = f'<table border="0" cellpadding="0" cellspacing="0" class="calendar">\n'
 		cal += f'{self.formatmonthname(self.year, self.month, withyear=withyear)}\n'
