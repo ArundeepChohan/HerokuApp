@@ -192,6 +192,8 @@ def index(request):
 
 @login_required
 def calendar(request):
+    if request.user.refresh_token == "":
+        return redirect('home')
     context={}  
     results = get_events(request.user.refresh_token,is_book_appointment=False)
     d = date.today()
@@ -319,6 +321,8 @@ def medications(request):
 
 @login_required
 def adminControls(request):
+    if request.user.is_staff is not True:
+        return redirect('home')
     context={}
     # Only admins needs to know inactive users
     context['allInactiveDoctors'] = Profile.objects.filter(Q(is_active=False)&Q(is_doctor=True))
@@ -343,6 +347,10 @@ def adminControls(request):
 
 @login_required
 def bookAppointment(request):
+    # Make a checks to see if it's a user and not doctor
+    # request.user.is_staff is not True and request.user.is_doctor is not True
+    if request.user.is_staff is True or request.user.is_doctor is True:
+        return redirect('home')
     context={}
     edit_profile_form= UserProfileForm(instance=request.user)
     context['editProfileForm'] = edit_profile_form
