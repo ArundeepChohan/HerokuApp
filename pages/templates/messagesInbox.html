@@ -1,5 +1,11 @@
 {% block content %}
-
+    <!-- Figure how to change name, value for input tag -->
+    <script>
+        function myFunction(index,id) {
+            document.getElementsByClassName("reply-form")[index].setAttribute("action","reply/"+id+"/");
+        }
+    </script>
+    
     {% if inbox %}
     <div class="col-md-12">
         <div class="accordion" id="accordionExample">
@@ -18,6 +24,7 @@
                         {% csrf_token %}
                         <input type="submit" value="X" >
                     </form>
+                    <button onclick='myFunction("{{forloop.counter}}","{{message.id}}")'>Reply</button>
                     
                     <div class="card-body">
                         {{ message.text}} 
@@ -29,10 +36,12 @@
                                         {% csrf_token %}
                                         <input type="submit" value="X" >
                                     </form>
+                                    <button onclick='myFunction("{{forloop.counter}}","{{reply.id}}")'>Reply</button>
+                    
                                     <div>{{ reply.sender }}</div>
                                     <div>{{ reply.text }}</div>
                                     <div>{{ reply.time }}</div>
-                                    <div class="form-group row">
+                                   <!--  <div class="form-group row">
                                         <form class="reply-form" method="POST" action="reply/{{reply.id}}/">
                                             {% csrf_token %}
                                             <input type="hidden" name="{{ reply.id }}" value="{{ reply.id }}">
@@ -41,7 +50,7 @@
                                             </div>
                                             <input type="submit" value="Submit" >
                                         </form>
-                                    </div>
+                                    </div> -->
                                 {% endfor %}    
                             </div>
                         {% endif %}
