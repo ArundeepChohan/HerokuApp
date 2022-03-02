@@ -5,14 +5,15 @@ import django
 import pytz
 
 class Calendar(HTMLCalendar):
-	def __init__(self, year=None, month=None,username=None):
+	def __init__(self, year=None, month=None,day=None,username=None):
 		self.year = year
 		self.month = month
+		self.day = day
 		self.username = username
 		super(Calendar, self).__init__()
 
 	# formats a day as a td
-	def formatday(self,request, day, events,is_book_appointment=False):
+	def formatday(self, request, day, events,is_book_appointment=False):
 		#print("day: "+str(day))
 		#print("Formatting day")
 		d = ''
@@ -42,23 +43,27 @@ class Calendar(HTMLCalendar):
 					am_format = datetime.strptime(time[:-8].split('T')[1].split('-')[0], '%H:%M').strftime('%I:%M %p').lstrip('0')
 					#print(am_format)
 					time_occupied = False
-					converted_time=datetime.strptime(time, '%Y-%m-%dT%H:%M:%S%z')
+					converted_time = datetime.strptime(time, '%Y-%m-%dT%H:%M:%S%z')
 					for event in events_per_day:
-
-						converted_start=datetime.strptime(event['start']['dateTime'], '%Y-%m-%dT%H:%M:%S%z')
+						converted_start = datetime.strptime(event['start']['dateTime'], '%Y-%m-%dT%H:%M:%S%z')
 						#print(converted_time,converted_start)
 						if converted_time==converted_start:
 							time_occupied = True
 							d += f"<li> {'Booked'} {am_format}</li>"
 							break
-					# I need to pass the current user, the doctor it clicked(pass from front end or context?), start time(not occupied time)
-					if not time_occupied:
-						token = django.middleware.csrf.get_token(request)
-						#print("token: ",token)
-						form='<form action="/addAppointment/'+self.username+"/"+time+ '/"'+ ' method="POST" enctype="multipart/form-data"><button type="submit">Book now</button>'+'<input name="csrfmiddlewaretoken"'+'value="'+token+'"'+ 'type="hidden">'+'</form>'
-						#form="<button onclick="+ 'location.href="'+"/addAppointment/"+self.username+"/"+time+ '/"'+">Book now</button>"
-						#form ="<button>"+'<a href="'+'/addAppointment"' +"> Book Now"+"</a>"+"</button>"
-						d += f'<li>'+form+am_format+'</li>'
+					if converted_time>=time_zone.localize(datetime(self.year,self.month,self.day)):
+						# I need to pass the current user, the doctor it clicked(pass from front end or context?), start time(not occupied time)
+						if not time_occupied:
+							token = django.middleware.csrf.get_token(request)
+							#print("token: ",token)
+							form='<form action="/addAppointment/'+self.username+"/"+time+ '/"'+ ' method="POST" enctype="multipart/form-data"><button type="submit">Book now</button>'+'<input name="csrfmiddlewaretoken"'+'value="'+token+'"'+ 'type="hidden">'+'</form>'
+							#form="<button onclick="+ 'location.href="'+"/addAppointment/"+self.username+"/"+time+ '/"'+">Book now</button>"
+							#form ="<button>"+'<a href="'+'/addAppointment"' +"> Book Now"+"</a>"+"</button>"
+							d += f'<li>'+form+am_format+'</li>'
+					else:
+						d += f'<li> Unavailable </li>'
+
+					
 
 			else:
 				for event in events_per_day:
