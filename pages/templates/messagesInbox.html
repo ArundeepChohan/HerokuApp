@@ -2,7 +2,10 @@
     <!-- Figure how to change name, value for input tag -->
     <script>
         function myFunction(index,id) {
-            document.getElementsByClassName("reply-form")[index].setAttribute("action","reply/"+id+"/");
+            const ind = +index;
+            alert(typeof ind);
+            const val="reply/"+id+"/";
+            document.getElementsByClassName("reply-form")[ind-1].setAttribute("action",val);
         }
     </script>
     
@@ -24,8 +27,7 @@
                         {% csrf_token %}
                         <input type="submit" value="X" >
                     </form>
-                    <button onclick='myFunction("{{forloop.counter}}","{{message.id}}")'>Reply</button>
-                    
+                    <button onClick="myFunction('{{forloop.counter}}','{{message.id}}')">Reply</button>
                     <div class="card-body">
                         {{ message.text}} 
                         {% if message.contact_parent.count %}
@@ -36,21 +38,11 @@
                                         {% csrf_token %}
                                         <input type="submit" value="X" >
                                     </form>
-                                    <button onclick='myFunction("{{forloop.counter}}","{{reply.id}}")'>Reply</button>
+                                    <button onClick="myFunction('{{forloop.parentloop.counter}}','{{reply.id}}')">Reply</button>
                     
                                     <div>{{ reply.sender }}</div>
                                     <div>{{ reply.text }}</div>
                                     <div>{{ reply.time }}</div>
-                                   <!--  <div class="form-group row">
-                                        <form class="reply-form" method="POST" action="reply/{{reply.id}}/">
-                                            {% csrf_token %}
-                                            <input type="hidden" name="{{ reply.id }}" value="{{ reply.id }}">
-                                            <div class="form-group">
-                                                <textarea name="text" cols="60" rows="2" maxlength="4096" required="" id="id_text"></textarea>
-                                            </div>
-                                            <input type="submit" value="Submit" >
-                                        </form>
-                                    </div> -->
                                 {% endfor %}    
                             </div>
                         {% endif %}
