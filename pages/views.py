@@ -196,9 +196,9 @@ def calendar(request):
         return redirect('home')
     context={}  
     results = get_events(request.user.refresh_token,is_book_appointment=False)
-    d = date.today()
+    d = datetime.now()
     #print(d)
-    cal = Calendar(d.year, d.month,d.day,request.user)
+    cal = Calendar(d.year, d.month,d.day,d,request.user)
     html_cal = cal.formatmonth(request,results, withyear=True,is_book_appointment=False)
     #print(mark_safe(html_cal))
     context['personalCalendar'] = mark_safe(html_cal)
@@ -374,7 +374,7 @@ def bookAppointment(request):
                 context['editProfileForm'] = edit_profile_form
                 return render(request, "home.html", context)
         if 'bookAppointment' in request.POST:
-            d = date.today()
+            d = datetime.now()
             #print(d)
             book_appointment = BookAppointmentForm(request.POST)
             if book_appointment.is_valid():
@@ -388,7 +388,7 @@ def bookAppointment(request):
                     #print(user,user.refresh_token)
                     #results = test_calendar()
                     results = get_events(user.refresh_token,is_book_appointment=True)
-                    cal = Calendar(d.year,d.month,d.day,user.username)
+                    cal = Calendar(d.year,d.month,d.day,d,user.username)
                     html_cal = cal.formatmonth(request,results,withyear=True,is_book_appointment=True)
                     context['calendar'] = mark_safe(html_cal)
             return render(request, 'home.html', context)
@@ -412,7 +412,13 @@ def addAppointment(request,username,start):
 
     # Make a certain time before appointment let's say 1 hour before
     # What if the doctor added events between the page reload?
-    if time_slot >= today:
+    results = get_events(doctor.refresh_token,is_book_appointment=True)
+    events_per_day = list(filter(lambda x: datetime.strptime(x['start']['dateTime'], '%Y-%m-%dT%H:%M:%S%z') == time_slot, results))
+    # print(len(events_per_day))
+    # Check if time_slot is in results
+    if len(events_per_day)>=1:
+        messages.error(request,'Booked',extra_tags='bookAppointment')
+    elif time_slot >= today:
         add_appointment(request.user,doctor,start)
     else:
         messages.error(request,'Booking failed',extra_tags='bookAppointment')

@@ -5,11 +5,12 @@ import django
 import pytz
 
 class Calendar(HTMLCalendar):
-	def __init__(self, year=None, month=None,day=None,username=None):
+	def __init__(self, year=None, month=None, day=None, time=None, username=None):
 		self.year = year
 		self.month = month
 		self.day = day
 		self.username = username
+		self.time = time
 		super(Calendar, self).__init__()
 
 	# formats a day as a td
@@ -21,16 +22,14 @@ class Calendar(HTMLCalendar):
 			# list(filter(lambda x: datetime.strptime(x['start']['dateTime'], '%Y-%m-%dT%H:%M:%S%z').day == day, events))
 			# list(filter(lambda x: datetime.strptime(x['start']['date'], '%Y-%m-%d').day == day , events))
 			events_per_day = list(filter(lambda x: datetime.strptime(x['start']['dateTime'], '%Y-%m-%dT%H:%M:%S%z').day == day and datetime.strptime(x['start']['dateTime'], '%Y-%m-%dT%H:%M:%S%z').month == self.month and datetime.strptime(x['start']['dateTime'], '%Y-%m-%dT%H:%M:%S%z').year == self.year, events))
-			#print(self.year,self.month,day), events))
-			#print(self.year,self.month,day)
 			start = datetime(self.year,self.month,day)
 			tz = 'America/Vancouver'
 			time_zone = pytz.timezone(tz)
 			start = time_zone.localize(start)
 			# Modify this to get user's time slots later on
 			# Starts at 7 am  then goes for the next 10 hours
-			start+=relativedelta(hours=7)
-			end = start+relativedelta(hours=10)
+			start += relativedelta(hours=7)
+			end = start + relativedelta(hours=10)
 			min_gap = 30
 			# Compute datetime interval of 30 mins for a day
 			time_slots = [(start + timedelta(hours=min_gap*i/60)).strftime('%Y-%m-%dT%H:%M:%S%z')for i in range(int((end-start).total_seconds() / 60.0 / min_gap))]
@@ -51,19 +50,17 @@ class Calendar(HTMLCalendar):
 							time_occupied = True
 							d += f"<li> {'Booked'} {am_format}</li>"
 							break
-					if converted_time>=time_zone.localize(datetime(self.year,self.month,self.day)):
+					if converted_time>=time_zone.localize(self.time):
 						# I need to pass the current user, the doctor it clicked(pass from front end or context?), start time(not occupied time)
 						if not time_occupied:
 							token = django.middleware.csrf.get_token(request)
 							#print("token: ",token)
-							form='<form action="/addAppointment/'+self.username+"/"+time+ '/"'+ ' method="POST" enctype="multipart/form-data"><button type="submit">Book now</button>'+'<input name="csrfmiddlewaretoken"'+'value="'+token+'"'+ 'type="hidden">'+'</form>'
+							form = '<form action="/addAppointment/'+self.username+"/"+time+ '/"'+ ' method="POST" enctype="multipart/form-data"><button type="submit">Book now</button>'+'<input name="csrfmiddlewaretoken"'+'value="'+token+'"'+ 'type="hidden">'+'</form>'
 							#form="<button onclick="+ 'location.href="'+"/addAppointment/"+self.username+"/"+time+ '/"'+">Book now</button>"
 							#form ="<button>"+'<a href="'+'/addAppointment"' +"> Book Now"+"</a>"+"</button>"
 							d += f'<li>'+form+am_format+'</li>'
 					else:
 						d += f'<li> Unavailable </li>'
-
-					
 
 			else:
 				for event in events_per_day:
@@ -80,16 +77,16 @@ class Calendar(HTMLCalendar):
 		return '<td></td>'
 
 	# formats a week as a tr 
-	def formatweek(self,request, theweek,events,is_book_appointment=False):
+	def formatweek(self, request, theweek, events, is_book_appointment=False):
 		#print("Formatting week")
 		week = ''
 		for d, weekday in theweek:
-			week += self.formatday(request,d,events,is_book_appointment)
+			week += self.formatday(request, d, events, is_book_appointment)
 		return f'<tr> {week} </tr>'
 
 	# formats a month as a table
 	# filter events by year and month
-	def formatmonth(self,request, events, withyear=True,is_book_appointment=False):
+	def formatmonth(self, request, events, withyear=True, is_book_appointment=False):
 		#print("Formatting month")
 		#print(events)
 		cal = f'<table border="0" cellpadding="0" cellspacing="0" class="calendar">\n'
