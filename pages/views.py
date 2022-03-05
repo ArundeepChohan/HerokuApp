@@ -153,15 +153,21 @@ def addMed(request):
 def index(request):
     context={}
     context['nmenu']='home'
-    
+    tz = 'America/Vancouver'
+    time_zone = pytz.timezone(tz)
+
     if request.method=="POST":
         #Filter messages by if the user deleted from their view
         inbox = Messages.objects.filter(Q(sender=request.user)&Q(sender_deleted=False) | Q(receiver=request.user)&Q(receiver_deleted=False)).order_by("-time", "read")
         context['inbox'] = inbox
         unread_messages_count = Messages.objects.filter(Q(receiver=request.user) & Q(read=False)&Q(receiver_deleted=False)).count()
         context['unreadMessagesCount'] = unread_messages_count
-        context['medications']= Medications.objects.filter(user=request.user)
+        context['medications'] = Medications.objects.filter(user=request.user)
         edit_profile_form = UserProfileForm(instance=request.user)
+        if request.user.refresh_token !="":
+            results = get_events(request.user.refresh_token,is_book_appointment=True)
+            print(min(results, key=lambda x:abs(datetime.strptime(x['start']['dateTime'], "%Y-%m-%dT%H:%M:%S%z") - time_zone.localize(datetime.now()))))
+            #print(results)
         if 'editProfileForm' in request.POST:
             edit_profile_form = UserProfileForm(request.POST or None, request.FILES or None,instance=request.user)
             if edit_profile_form.is_valid():
@@ -180,13 +186,14 @@ def index(request):
             context['inbox'] = inbox
             unread_messages_count = Messages.objects.filter(Q(receiver=request.user) & Q(read=False)&Q(receiver_deleted=False)).count()
             context['unreadMessagesCount'] = unread_messages_count
-            context['medications']= Medications.objects.filter(user=request.user)
+            context['medications'] = Medications.objects.filter(user=request.user)
             edit_profile_form = UserProfileForm(instance=request.user)
             context['editProfileForm'] = edit_profile_form
             context['isPost'] = False
             if request.user.refresh_token !="":
                 results = get_events(request.user.refresh_token,is_book_appointment=True)
-                print(results)
+                print(min(results, key=lambda x:abs(datetime.strptime(x['start']['dateTime'], "%Y-%m-%dT%H:%M:%S%z") - time_zone.localize(datetime.now()))))
+                #print(results)
             
     return render(request, 'home.html', context)
 
@@ -347,8 +354,7 @@ def adminControls(request):
 
 @login_required
 def bookAppointment(request):
-    # Make a checks to see if it's a user and not doctor
-    # request.user.is_staff is not True and request.user.is_doctor is not True
+    # Make a checks to see if it's a user and not doctor, add a check for if it has request.user.refresh_token(Todo)
     if request.user.is_staff is True or request.user.is_doctor is True:
         return redirect('home')
     context={}
@@ -380,17 +386,23 @@ def bookAppointment(request):
             if book_appointment.is_valid():
                 #print(request.POST['doctors'])
                 #print(int(request.POST['doctors'])-1)
-                # This associates the user with the dropdown selection
-                name = Profile.objects.all()[int(request.POST['doctors'])-1]
-                #print(name)
-                user = Profile.objects.get(username=name)
-                if user:
-                    #print(user,user.refresh_token)
-                    #results = test_calendar()
-                    results = get_events(user.refresh_token,is_book_appointment=True)
-                    cal = Calendar(d.year,d.month,d.day,d,user.username)
-                    html_cal = cal.formatmonth(request,results,withyear=True,is_book_appointment=True)
-                    context['calendar'] = mark_safe(html_cal)
+                # What if the doctor gets deleted?
+                try:
+                    # This associates the user with the dropdown selection
+                    name = Profile.objects.all()[int(request.POST['doctors'])-1]
+                    #print(name)
+                    user = Profile.objects.get(username=name)
+                    if user:
+                        #print(user,user.refresh_token)
+                        #results = test_calendar()
+                        results = get_events(user.refresh_token,is_book_appointment=True)
+                        cal = Calendar(d.year,d.month,d.day,d,user.username)
+                        html_cal = cal.formatmonth(request,results,withyear=True,is_book_appointment=True)
+                        context['calendar'] = mark_safe(html_cal)
+                except IndexError:
+                    messages.error(request,'Booking failed',extra_tags='bookAppointment')
+                    return redirect('bookAppointment')
+
             return render(request, 'home.html', context)
         
     return render(request, 'home.html', context)
@@ -401,25 +413,28 @@ def addAppointment(request,username,start):
     #print('Add appointment')
     #print(request.user)
     doctor = Profile.objects.get(username=username)
-    #print(doctor)
-    #print(start)
-    tz = pytz.timezone('America/Vancouver')
-    today = datetime.now(tz)
-    time_slot = datetime.strptime(start, '%Y-%m-%dT%H:%M:%S%z')
-    #print(today,time_slot)
-    #print(type(today),type(time_slot))
-    #print(time_slot>=today)
+    if doctor:
+        #print(doctor)
+        #print(start)
+        tz = pytz.timezone('America/Vancouver')
+        today = datetime.now(tz)
+        time_slot = datetime.strptime(start, '%Y-%m-%dT%H:%M:%S%z')
+        #print(today,time_slot)
+        #print(type(today),type(time_slot))
+        #print(time_slot>=today)
 
-    # Make a certain time before appointment let's say 1 hour before
-    # What if the doctor added events between the page reload?
-    results = get_events(doctor.refresh_token,is_book_appointment=True)
-    events_per_day = list(filter(lambda x: datetime.strptime(x['start']['dateTime'], '%Y-%m-%dT%H:%M:%S%z') == time_slot, results))
-    # print(len(events_per_day))
-    # Check if time_slot is in results
-    if len(events_per_day)>=1:
-        messages.error(request,'Booked',extra_tags='bookAppointment')
-    elif time_slot >= today:
-        add_appointment(request.user,doctor,start)
+        # Make a certain time before appointment let's say 1 hour before
+        # What if the doctor added events between the page reload?
+        results = get_events(doctor.refresh_token,is_book_appointment=True)
+        events_per_day = list(filter(lambda x: datetime.strptime(x['start']['dateTime'], '%Y-%m-%dT%H:%M:%S%z') == time_slot, results))
+        # print(len(events_per_day))
+        # Check if time_slot is in results
+        if len(events_per_day)>=1:
+            messages.error(request,'Booked',extra_tags='bookAppointment')
+        elif time_slot >= today:
+            add_appointment(request.user,doctor,start)
+        else:
+            messages.error(request,'Booking failed',extra_tags='bookAppointment')
     else:
         messages.error(request,'Booking failed',extra_tags='bookAppointment')
 

@@ -38,9 +38,9 @@ class Calendar(HTMLCalendar):
 			if is_book_appointment:
 				print("Book appointments",is_book_appointment)
 				for time in time_slots:
-					# Just check if there's an event in time slots
 					am_format = datetime.strptime(time[:-8].split('T')[1].split('-')[0], '%H:%M').strftime('%I:%M %p').lstrip('0')
 					#print(am_format)
+					# Just check if there's an event in time slots
 					time_occupied = False
 					converted_time = datetime.strptime(time, '%Y-%m-%dT%H:%M:%S%z')
 					for event in events_per_day:
@@ -50,6 +50,7 @@ class Calendar(HTMLCalendar):
 							time_occupied = True
 							d += f"<li> {'Booked'} {am_format}</li>"
 							break
+					# Checks if can book the time if it's past current time.
 					if converted_time>=time_zone.localize(self.time):
 						# I need to pass the current user, the doctor it clicked(pass from front end or context?), start time(not occupied time)
 						if not time_occupied:
@@ -70,7 +71,7 @@ class Calendar(HTMLCalendar):
 					if 'summary' in event:
 						d += f"<li> {event['summary']} {am_format}</li>"
 					else:
-						d += f"<li> {'No title'}{am_format}</li>"
+						d += f"<li> {'No title'} {am_format}</li>"
 
 		if day != 0:
 			return f"<td><span class='date'>{day}</span><ul> {d} </ul></td>"

@@ -50,45 +50,23 @@ def get_events_from_service(service):
     ).execute() 
     events = events_results.get('items', [])
     return events
+
+def round_dt(dt, dir, amount):
+    new_minute = (dt.minute // amount + dir) * amount 
+    return dt + timedelta(minutes = new_minute - dt.minute)
     
+# This is the most important function in my project it has to chunk events in the month into 30 min intervals.  
 def get_events(refresh_token,is_book_appointment=False):
     credentials = get_token_refresh(refresh_token)
     service = build('calendar', 'v3', credentials=credentials)
     events = get_events_from_service(service)
-    # This is the most important function in my project it has to chunk events in the month into 30 min intervals.
     start_dates = [x for x in events if ('date' in x['start'])] 
-    print(start_dates)
+    #print(start_dates)
     events = [x for x in events if ('date' not in x['start'])]      
     #print(events)
-    tz='America/Vancouver'
+    tz = 'America/Vancouver'
     time_zone = pytz.timezone(tz)
-    # Make multiple hour datetimes into 30 min chunks and convert timezone if it's book appointment
-    if is_book_appointment:
-        res=[]
-        for e in events:
-            start_time = datetime.strptime(e['start']['dateTime'], '%Y-%m-%dT%H:%M:%S%z')
-            end_time = datetime.strptime(e['end']['dateTime'], '%Y-%m-%dT%H:%M:%S%z') 
-            time_dif = end_time - start_time
-            minute_dif = int(round(time_dif.total_seconds()/60, 0))
-            half_hours=(minute_dif//30)
-            #print("minute dif",minute_dif,"times:",half_hours)
-            
-            for delta in range(0,30*half_hours,30):
-                #print("delta",delta)
-                time_slots = dict(deepcopy(e))
-                start = start_time + timedelta(minutes=delta)
-                end = start_time + timedelta(minutes=(delta+30))
-                time_slots['start']['dateTime'] = start.strftime('%Y-%m-%dT%H:%M:%S%z')
-                time_slots['end']['dateTime'] = end.strftime('%Y-%m-%dT%H:%M:%S%z')
-                #time_slots['start']['timeZone'] = tz
-                #time_slots['end']['timeZone'] = tz
-                #print(time_slots)
-                res.append(time_slots)
 
-            if minute_dif>=30:
-                events.remove(e)
-        for r in res:
-            events.append(r)
     for event in start_dates:
         new_start_time = datetime.strptime(event['start']['date'], '%Y-%m-%d' )
         new_end_time = datetime.strptime(event['end']['date'], '%Y-%m-%d' ) 
@@ -122,6 +100,36 @@ def get_events(refresh_token,is_book_appointment=False):
                 #print(new)
                 events.append(new)
             new_start_time = new_start_time+relativedelta(days=1)
+        # Make multiple hour datetimes into 30 min chunks and convert timezone if it's book appointment
+    if is_book_appointment:
+        res=[]
+        for e in events:
+            # What if you get some start dates in 23 mins, 7 mins? (Todo)
+            new_start_time = datetime.strptime(e['start']['dateTime'], '%Y-%m-%dT%H:%M:%S%z')
+            new_end_time = datetime.strptime(e['end']['dateTime'], '%Y-%m-%dT%H:%M:%S%z')
+            converted_start_time = round_dt(new_start_time,0,30)
+            converted_end_time = round_dt(new_end_time,1,30)
+            time_dif = converted_end_time-converted_start_time
+            print(converted_start_time,converted_end_time,time_dif)
+            minute_dif = int(round(time_dif.total_seconds()/60, 0))
+            half_hours = (minute_dif//30)
+            print(minute_dif,half_hours)
+            #print("minute dif",minute_dif,"times:",half_hours)
+            
+            for delta in range(0,30 * half_hours,30):
+                #print("delta",delta)
+                time_slots = dict(deepcopy(e))
+                start = converted_start_time + timedelta(minutes=delta)
+                end = converted_start_time + timedelta(minutes=(delta+30))
+                time_slots['start']['dateTime'] = start.strftime('%Y-%m-%dT%H:%M:%S%z')
+                time_slots['end']['dateTime'] = end.strftime('%Y-%m-%dT%H:%M:%S%z')
+                res.append(time_slots)
+                #time_slots['start']['timeZone'] = tz
+                #time_slots['end']['timeZone'] = tz
+                #print(time_slots)
+                res.append(time_slots)
+        for r in res:
+            events.append(r)
 	
     #print(events)
     events = sorted(events, key = lambda x:datetime.strptime(x['start']['dateTime'], '%Y-%m-%dT%H:%M:%S%z'))
