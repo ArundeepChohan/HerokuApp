@@ -43,15 +43,16 @@ class Calendar(HTMLCalendar):
 					# Just check if there's an event in time slots
 					time_occupied = False
 					converted_time = datetime.strptime(time, '%Y-%m-%dT%H:%M:%S%z')
-					for event in events_per_day:
-						converted_start = datetime.strptime(event['start']['dateTime'], '%Y-%m-%dT%H:%M:%S%z')
-						#print(converted_time,converted_start)
-						if converted_time==converted_start:
-							time_occupied = True
-							d += f"<li> {'Booked'} {am_format}</li>"
-							break
 					# Checks if can book the time if it's past current time.
 					if converted_time>=time_zone.localize(self.time):
+						for event in events_per_day:
+							converted_start = datetime.strptime(event['start']['dateTime'], '%Y-%m-%dT%H:%M:%S%z')
+							#print(converted_time,converted_start)
+							if converted_time==converted_start:
+								time_occupied = True
+								d += f"<li> {'Booked'} {am_format}</li>"
+								break
+						
 						# I need to pass the current user, the doctor it clicked(pass from front end or context?), start time(not occupied time)
 						if not time_occupied:
 							token = django.middleware.csrf.get_token(request)
