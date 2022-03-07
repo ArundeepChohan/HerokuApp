@@ -73,6 +73,7 @@ class DoctorWizard(SessionWizardView):
 class UserWizard(SessionWizardView):
     template_name = "registration/signup.html"
     form_list = [SignUpForm]
+
     def done(self, form_list, **kwargs):
         #process_data(form_list)
         form_list[0].save()
@@ -88,8 +89,9 @@ class UserWizard(SessionWizardView):
 @require_http_methods(["POST"])
 def reply(request,message_id):
     #print(message_id)
-    parent = Messages.objects.get(id=message_id)
-    reply = Messages.objects.create(text=request.POST['text'], receiver=parent.sender, sender=request.user, parent=parent)
+    parent = Messages.objects.get(id = message_id)
+    if parent:
+        reply = Messages.objects.create(text=request.POST['text'], receiver=parent.sender, sender=request.user, parent=parent)
     #print(parent)
     #print(reply)
     #print(request.POST)
@@ -151,8 +153,8 @@ def addMed(request):
     return redirect('medications')
     
 def index(request):
-    context={}
-    context['nmenu']='home'
+    context = {}
+    context['nmenu'] = 'home'
     tz = 'America/Vancouver'
     time_zone = pytz.timezone(tz)
 
@@ -166,8 +168,8 @@ def index(request):
         edit_profile_form = UserProfileForm(instance=request.user)
         if request.user.refresh_token !="":
             results = get_events(request.user.refresh_token,is_book_appointment=True)
-            print(min(results, key=lambda x:abs(datetime.strptime(x['start']['dateTime'], "%Y-%m-%dT%H:%M:%S%z") - time_zone.localize(datetime.now()))))
-            #print(results)
+            #print(min(results, key=lambda x:abs(datetime.strptime(x['start']['dateTime'], "%Y-%m-%dT%H:%M:%S%z") - time_zone.localize(datetime.now()))))
+            print(results)
         if 'editProfileForm' in request.POST:
             edit_profile_form = UserProfileForm(request.POST or None, request.FILES or None,instance=request.user)
             if edit_profile_form.is_valid():
@@ -192,8 +194,8 @@ def index(request):
             context['isPost'] = False
             if request.user.refresh_token !="":
                 results = get_events(request.user.refresh_token,is_book_appointment=True)
-                print(min(results, key=lambda x:abs(datetime.strptime(x['start']['dateTime'], "%Y-%m-%dT%H:%M:%S%z") - time_zone.localize(datetime.now()))))
-                #print(results)
+                #print(min(results, key=lambda x:abs(datetime.strptime(x['start']['dateTime'], "%Y-%m-%dT%H:%M:%S%z") - time_zone.localize(datetime.now()))))
+                print(results)
             
     return render(request, 'home.html', context)
 
@@ -201,7 +203,7 @@ def index(request):
 def calendar(request):
     if request.user.refresh_token == "":
         return redirect('home')
-    context={}  
+    context = {}  
     results = get_events(request.user.refresh_token,is_book_appointment=False)
     d = datetime.now()
     #print(d)
@@ -230,7 +232,7 @@ def calendar(request):
 
 @login_required
 def messagesSend(request):
-    context={}
+    context = {}
     edit_profile_form = UserProfileForm(instance=request.user)
     context['editProfileForm'] = edit_profile_form
     send_message_form = MessageForm()
@@ -260,8 +262,8 @@ def messagesSend(request):
 
 @login_required
 def messagesInbox(request):
-    context={}
-    edit_profile_form= UserProfileForm(instance=request.user)
+    context = {}
+    edit_profile_form = UserProfileForm(instance=request.user)
     context['editProfileForm'] = edit_profile_form
     inbox = Messages.objects.filter(Q(sender=request.user)&Q(sender_deleted=False) | Q(receiver=request.user)&Q(receiver_deleted=False)).order_by("-time", "read")
     context['inbox'] = inbox
@@ -357,7 +359,7 @@ def bookAppointment(request):
     # Make a checks to see if it's a user and not doctor, add a check for if it has request.user.refresh_token(Todo)
     if request.user.is_staff is True or request.user.is_doctor is True:
         return redirect('home')
-    context={}
+    context = {}
     edit_profile_form= UserProfileForm(instance=request.user)
     context['editProfileForm'] = edit_profile_form
     book_appointment = BookAppointmentForm()

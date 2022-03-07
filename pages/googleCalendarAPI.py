@@ -67,6 +67,7 @@ def get_events(refresh_token,is_book_appointment=False):
     tz = 'America/Vancouver'
     time_zone = pytz.timezone(tz)
 
+    #What if min starts with 1(ToDo)
     for event in start_dates:
         new_start_time = datetime.strptime(event['start']['date'], '%Y-%m-%d' )
         new_end_time = datetime.strptime(event['end']['date'], '%Y-%m-%d' ) 
@@ -104,16 +105,16 @@ def get_events(refresh_token,is_book_appointment=False):
     if is_book_appointment:
         res=[]
         for e in events:
-            # What if you get some start dates in 23 mins, 7 mins? (Todo)
+            # Variable start times between 0-60 mins
             new_start_time = datetime.strptime(e['start']['dateTime'], '%Y-%m-%dT%H:%M:%S%z')
             new_end_time = datetime.strptime(e['end']['dateTime'], '%Y-%m-%dT%H:%M:%S%z')
             converted_start_time = round_dt(new_start_time,0,30)
             converted_end_time = round_dt(new_end_time,1,30)
             time_dif = converted_end_time-converted_start_time
-            print(converted_start_time,converted_end_time,time_dif)
+            #print(converted_start_time,converted_end_time,time_dif)
             minute_dif = int(round(time_dif.total_seconds()/60, 0))
             half_hours = (minute_dif//30)
-            print(minute_dif,half_hours)
+            #print(minute_dif,half_hours)
             #print("minute dif",minute_dif,"times:",half_hours)
             
             for delta in range(0,30 * half_hours,30):
