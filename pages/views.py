@@ -1,6 +1,6 @@
 from django.shortcuts import redirect, render
 from pages.calendar import Calendar
-from .forms import BookAppointmentForm, MedicationForm, MessageForm, SignUpForm, UserProfileForm, Verify
+from .forms import BookAppointmentForm, ContactForm, MedicationForm, MessageForm, SignUpForm, UserProfileForm, Verify
 from django.contrib.auth import login as auth_login, logout as auth_logout,authenticate
 from formtools.wizard.views import SessionWizardView
 from django.contrib import messages
@@ -101,7 +101,7 @@ def reply(request,message_id):
 @require_http_methods(["POST"])
 def send(request):
     send_message_form = MessageForm(request.POST or None,)
-    #print(send_message_form )
+    #print(send_message_form)
     if send_message_form.is_valid(): 
         send_message_form_user = send_message_form.save(commit=False)
         send_message_form_user.sender = request.user
@@ -155,8 +155,6 @@ def addMed(request):
 def index(request):
     context = {}
     context['nmenu'] = 'home'
-    tz = 'America/Vancouver'
-    time_zone = pytz.timezone(tz)
 
     if request.method=="POST":
         #Filter messages by if the user deleted from their view
@@ -167,9 +165,12 @@ def index(request):
         context['medications'] = Medications.objects.filter(user=request.user)
         edit_profile_form = UserProfileForm(instance=request.user)
         if request.user.refresh_token !="":
-            results = get_events(request.user.refresh_token,is_book_appointment=True)
+            results = get_events(request.user.refresh_token, is_book_appointment=True)
             #print(min(results, key=lambda x:abs(datetime.strptime(x['start']['dateTime'], "%Y-%m-%dT%H:%M:%S%z") - time_zone.localize(datetime.now()))))
             print(results)
+            emails = [x.email for x  in Profile.objects.exclude(Q(username=request.user))]
+            print(emails)
+
         if 'editProfileForm' in request.POST:
             edit_profile_form = UserProfileForm(request.POST or None, request.FILES or None,instance=request.user)
             if edit_profile_form.is_valid():
@@ -195,7 +196,19 @@ def index(request):
             if request.user.refresh_token !="":
                 results = get_events(request.user.refresh_token,is_book_appointment=True)
                 #print(min(results, key=lambda x:abs(datetime.strptime(x['start']['dateTime'], "%Y-%m-%dT%H:%M:%S%z") - time_zone.localize(datetime.now()))))
+                # Simply if there are no results you should return that otherwise you need to filter out by email and current date
                 print(results)
+                #if len(results)==0:
+                context['latestEvent'] = results
+                #else:
+                    # Get all the emails for every(active? and not current user) profile and cross check with events should be in ['attendee'] 
+                    
+                emails = [x.email for x  in Profile.objects.exclude(Q(username=request.user))]
+                print(emails)
+        else:
+            contact_form = ContactForm()
+            context['contactForm'] = contact_form
+
             
     return render(request, 'home.html', context)
 
@@ -311,7 +324,7 @@ def medications(request):
     edit_profile_form = UserProfileForm(instance=request.user)
     context['editProfileForm'] = edit_profile_form
     context['medicationForm'] = MedicationForm()
-    context['medications']= Medications.objects.filter(user=request.user)
+    context['medications'] = Medications.objects.filter(user=request.user)
     if request.method=="POST":
         if 'editProfileForm' in request.POST:
             edit_profile_form = UserProfileForm(request.POST or None, request.FILES or None,instance=request.user)

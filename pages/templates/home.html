@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block title %} Home {% endblock %}
 
 {% block content %}
@@ -12,6 +12,12 @@
     <p>You are not logged in</p>
     <button><a href="{% url 'login' %}">Log In</a></button>
     <button><a href="{% url 'signup' %}">Sign up</a></button>
+    <img src="{% static 'img/company_page.jpg' %}" />
+    <form method = "POST" action="" enctype="multipart/form-data">
+      {% csrf_token %}
+      {{ contactForm.as_p }}
+      <input type="submit" name="contactForm" value="Submit">
+    </form>
   {% endif %}
 
 {% endblock %}

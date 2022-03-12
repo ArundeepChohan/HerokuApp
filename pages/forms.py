@@ -1,6 +1,6 @@
 from django import forms
 from django.core.files.images import get_image_dimensions
-from pages.models import Medications, Messages, Profile, Calendar
+from pages.models import Contact, Medications, Messages, Profile, Calendar
 from django.contrib.auth.forms import UserCreationForm
 from datetime import date, timedelta
 
@@ -96,3 +96,7 @@ class UserProfileForm(forms.ModelForm):
 
         return avatar
 
+class ContactForm(forms.ModelForm):
+    class Meta:
+        model = Contact
+        fields = '__all__'

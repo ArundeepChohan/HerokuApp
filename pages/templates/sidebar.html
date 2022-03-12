@@ -34,7 +34,7 @@
           <a class="nav-link" id="adminControls" href="adminControls" >Admin</a>
         </li>
       {% endif %}
-      {% if request.user.is_staff is not True  and request.user.is_doctor is not True %}
+      {% if request.user.is_staff is not True and request.user.is_doctor is not True %}
         <li class="nav-item" role="presentation">
           <a class="nav-link" id="bookAppointment"  href="bookAppointment" >Book Appointment</a>
         </li>
