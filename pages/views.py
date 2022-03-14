@@ -175,7 +175,9 @@ def index(request):
             print(results)
             print("---------------")
             if len(results)==0:
-                context['latestEvent'] = results
+                context['latestEventDay'] = 'No day'
+                context['latestEventTime'] = 'No time'
+                context['latestEventUser'] = "No user"
             else:
                 # Get all the emails for every(active? and not current user) profile and cross check with events should be in ['attendee'] 
                     
@@ -183,20 +185,32 @@ def index(request):
             
                 print(emails)
                 print("------------")
-                #print(min(results, key=lambda x:abs(datetime.strptime(x['start']['dateTime'], "%Y-%m-%dT%H:%M:%S%z") - time_zone.localize(datetime.now()))))
-                after_date=[x for x in results if datetime.strptime(x['start']['dateTime'], "%Y-%m-%dT%H:%M:%S%z") >=time_zone.localize(datetime.now())]
+            
+                after_date = [x for x in results if datetime.strptime(x['start']['dateTime'], '%Y-%m-%dT%H:%M:%S%z') >=time_zone.localize(datetime.now())]
                 print(after_date)
                 print("---------------")
-                with_out_attendee=[]
+                with_out_attendee = []
                 for e in after_date:
                     try:
-                        if e['attendees'][0]['email'] in emails:
+                        if e['attendees'][0]['email'] in emails or e['attendees'][1]['email'] in emails:
                             with_out_attendee.append(e)
                     except KeyError:
                         pass
-                print(with_out_attendee)
-                print("---------------")
-                context['latestEvent'] = with_out_attendee
+                if len(with_out_attendee)==0:
+                    context['latestEventDay'] = 'No day'
+                    context['latestEventTime'] = 'No time'
+                    context['latestEventUser'] = "No user"
+                else:
+
+                    print(with_out_attendee)
+                    print("---------------")
+                    am_format = datetime.strptime(with_out_attendee[0]['start']['dateTime'][:-8].split('T')[1].split('-')[0], '%H:%M').strftime('%I:%M %p').lstrip('0')
+                    print(am_format)
+                    context['latestEventDay'] = datetime.strptime(with_out_attendee[0]['start']['dateTime'], '%Y-%m-%dT%H:%M:%S%z').strftime('%A, %B %d')
+                    context['latestEventTime'] = am_format
+
+                    # Figure out the user who messaged by using the email (Todo)
+                    context['latestEventUser'] = 'User'
 
         if request.method=="POST":
             if 'editProfileForm' in request.POST:
