@@ -133,10 +133,9 @@ def get_events(refresh_token,is_book_appointment=False):
 	
     print(events)
     print("--------")
-    #events = sorted(events, key = lambda x:datetime.strptime(x['start']['dateTime'], '%Y-%m-%dT%H:%M:%S%z'))
-
-    #print(events)
-    #print("--------")
+    events = sorted(events, key = lambda x:datetime.strptime(x['start']['dateTime'], '%Y-%m-%dT%H:%M:%S%z'))
+    print(events)
+    print("--------")
     """ 
     for e in events:
         print(e) 

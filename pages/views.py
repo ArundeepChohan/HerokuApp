@@ -173,19 +173,30 @@ def index(request):
             results = get_events(request.user.refresh_token,is_book_appointment=True)
             # Simply if there are no results you should return that otherwise you need to filter out by email and current date
             print(results)
-            #if len(results)==0:
-            context['latestEvent'] = results
-            #else:
+            print("---------------")
+            if len(results)==0:
+                context['latestEvent'] = results
+            else:
                 # Get all the emails for every(active? and not current user) profile and cross check with events should be in ['attendee'] 
                     
-            emails = [x.email for x in Profile.objects.exclude(Q(username=request.user))]
-        
-            print("---------------")
-            print(emails)
-            print("------------")
-            #print(min(results, key=lambda x:abs(datetime.strptime(x['start']['dateTime'], "%Y-%m-%dT%H:%M:%S%z") - time_zone.localize(datetime.now()))))
-            after_date=[x for x in results if datetime.strptime(x['start']['dateTime'], "%Y-%m-%dT%H:%M:%S%z") >=time_zone.localize(datetime.now())]
-            print(after_date)
+                emails = [x.email for x in Profile.objects.exclude(Q(username=request.user))]
+            
+                print(emails)
+                print("------------")
+                #print(min(results, key=lambda x:abs(datetime.strptime(x['start']['dateTime'], "%Y-%m-%dT%H:%M:%S%z") - time_zone.localize(datetime.now()))))
+                after_date=[x for x in results if datetime.strptime(x['start']['dateTime'], "%Y-%m-%dT%H:%M:%S%z") >=time_zone.localize(datetime.now())]
+                print(after_date)
+                print("---------------")
+                with_out_attendee=[]
+                for e in after_date:
+                    try:
+                        if e['attendees'][0]['email'] in emails:
+                            with_out_attendee.append(e)
+                    except KeyError:
+                        pass
+                print(with_out_attendee)
+                print("---------------")
+                context['latestEvent'] = with_out_attendee
 
         if request.method=="POST":
             if 'editProfileForm' in request.POST:

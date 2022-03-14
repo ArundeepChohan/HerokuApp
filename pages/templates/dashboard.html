@@ -15,8 +15,9 @@
                             </div>
                             <div class="col-md-6">
                                 {% if request.user.refresh_token != "" %}
+
                                     <div>
-                                        There are maybe some
+                                        {{latestEvent.0.start.dateTime}}
                                     </div>
                                 {% else %}
                                     <div>
@@ -27,7 +28,14 @@
                         </div>
                         
                     </div>
-                    <p>Author</p>
+                    {% if request.user.refresh_token != "" %}                  
+                        <p>
+                            {{latestEvent.0.attendees.0.email}}
+                        </p>
+                    {% else %}
+                        <p>Author</p>
+                    {% endif %}  
+                    
                     <div class="row">
                         <div class="col-md-6">
                             <p>Time</p>
