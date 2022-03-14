@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+    #'axes',
     'social_django', 
     'formtools',
     'phonenumber_field',
@@ -58,7 +59,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'social_django.middleware.SocialAuthExceptionMiddleware', #new
+    #'axes.middleware.AxesMiddleware',
    
 ]
 
@@ -171,16 +172,22 @@ DATABASES['default'].update(db_from_env)
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-#Adding social logins
-AUTHENTICATION_BACKENDS = ['social_core.backends.google.GoogleOAuth2','django.contrib.auth.backends.AllowAllUsersModelBackend',]
+
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 # Extends default user with additional fields 
 AUTH_USER_MODEL = 'pages.Profile' 
-SOCIAL_AUTH_USER_MODEL = 'pages.Profile' 
 
-# social auth configs for google
+# Adding social logins
+AUTHENTICATION_BACKENDS = [
+    # AxesBackend should be the first backend in the AUTHENTICATION_BACKENDS list.
+    #'axes.backends.AxesBackend',
+    'social_core.backends.google.GoogleOAuth2',
+    'django.contrib.auth.backends.AllowAllUsersModelBackend',
+]
+
+SOCIAL_AUTH_USER_MODEL = 'pages.Profile' 
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = config('GOOGLE_OAUTH2_KEY')
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = config('GOOGLE_OAUTH2_SECRET')
 SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = ['https://www.googleapis.com/auth/calendar']
@@ -201,7 +208,7 @@ SOCIAL_AUTH_PIPELINE = (
     'pages.pipeline.save_token'
 ) 
 # 'social_core.pipeline.user.create_user',
-#'social_core.pipeline.social_auth.associate_by_email', 
+# 'social_core.pipeline.social_auth.associate_by_email', 
 
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'home'
@@ -218,5 +225,23 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_SAVE_EVERY_REQUEST = True 
 """
 
+if DEBUG:
+    # Shows up in the console for emails instead of sending them for local development
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+    EMAIL_HOST = 'localhost'
+    EMAIL_PORT = 587
+    EMAIL_USE_TLS = False
+    EMAIL_HOST_USER = ''
+    EMAIL_HOST_PASSWORD = ''
+else:
+    # Twilio SendGrid
+    EMAIL_HOST = 'smtp.sendgrid.net'
+    EMAIL_PORT = 587
+    EMAIL_USE_TLS = True
+    EMAIL_HOST_USER = 'apikey'
+    EMAIL_HOST_PASSWORD = config('SENDGRID_API_KEY')
+
+
+# This should always be last
 import django_heroku
 django_heroku.settings(locals(), staticfiles=False)

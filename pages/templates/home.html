@@ -3,12 +3,16 @@
 {% block title %} Home {% endblock %}
 
 {% block content %}
+
   {% if user.is_authenticated and user.is_active %}
     {% include 'editProfileModal.html' %} 
     <div class='row'>  
       {% include 'sidebar.html' %}
     </div> 
   {% else %}
+    {% block css %}
+      <link rel="stylesheet" href="{% static 'css/contactForm.css' %}" type="text/css">
+    {% endblock %}
     <p>You are not logged in</p>
     <button><a href="{% url 'login' %}">Log In</a></button>
     <button><a href="{% url 'signup' %}">Sign up</a></button>

@@ -16,6 +16,8 @@ from django.conf import settings
 from datetime import date, datetime
 import pytz
 from django.views.decorators.http import require_http_methods
+from django.core.mail import send_mail
+from django.conf import settings
 
 def login(request):
     if request.method == 'POST':
@@ -155,61 +157,60 @@ def addMed(request):
 def index(request):
     context = {}
     context['nmenu'] = 'home'
-
-    if request.method=="POST":
-        #Filter messages by if the user deleted from their view
+    tz = 'America/Vancouver'
+    time_zone = pytz.timezone(tz)
+    if request.user.is_authenticated:
+        # Filter messages by if the user deleted from their view
         inbox = Messages.objects.filter(Q(sender=request.user)&Q(sender_deleted=False) | Q(receiver=request.user)&Q(receiver_deleted=False)).order_by("-time", "read")
         context['inbox'] = inbox
         unread_messages_count = Messages.objects.filter(Q(receiver=request.user) & Q(read=False)&Q(receiver_deleted=False)).count()
         context['unreadMessagesCount'] = unread_messages_count
         context['medications'] = Medications.objects.filter(user=request.user)
         edit_profile_form = UserProfileForm(instance=request.user)
+        context['editProfileForm'] = edit_profile_form
+        context['isPost'] = False
         if request.user.refresh_token !="":
-            results = get_events(request.user.refresh_token, is_book_appointment=True)
-            #print(min(results, key=lambda x:abs(datetime.strptime(x['start']['dateTime'], "%Y-%m-%dT%H:%M:%S%z") - time_zone.localize(datetime.now()))))
+            results = get_events(request.user.refresh_token,is_book_appointment=True)
+            # Simply if there are no results you should return that otherwise you need to filter out by email and current date
             print(results)
-            emails = [x.email for x  in Profile.objects.exclude(Q(username=request.user))]
-            print(emails)
-
-        if 'editProfileForm' in request.POST:
-            edit_profile_form = UserProfileForm(request.POST or None, request.FILES or None,instance=request.user)
-            if edit_profile_form.is_valid():
-                edit_profile_form.save()
-                edit_profile_form = UserProfileForm(instance=request.user)
-                context['editProfileForm'] = edit_profile_form
-                context['isPost'] = False
-                return render(request, "home.html", context)
-            else:
-                context['isPost'] = True
-                context['editProfileForm'] = edit_profile_form
-                return render(request, "home.html", context)
-    else:
-        if request.user.is_authenticated:
-            inbox = Messages.objects.filter(Q(sender=request.user)&Q(sender_deleted=False) | Q(receiver=request.user)&Q(receiver_deleted=False)).order_by("-time", "read")
-            context['inbox'] = inbox
-            unread_messages_count = Messages.objects.filter(Q(receiver=request.user) & Q(read=False)&Q(receiver_deleted=False)).count()
-            context['unreadMessagesCount'] = unread_messages_count
-            context['medications'] = Medications.objects.filter(user=request.user)
-            edit_profile_form = UserProfileForm(instance=request.user)
-            context['editProfileForm'] = edit_profile_form
-            context['isPost'] = False
-            if request.user.refresh_token !="":
-                results = get_events(request.user.refresh_token,is_book_appointment=True)
-                #print(min(results, key=lambda x:abs(datetime.strptime(x['start']['dateTime'], "%Y-%m-%dT%H:%M:%S%z") - time_zone.localize(datetime.now()))))
-                # Simply if there are no results you should return that otherwise you need to filter out by email and current date
-                print(results)
-                #if len(results)==0:
-                context['latestEvent'] = results
-                #else:
-                    # Get all the emails for every(active? and not current user) profile and cross check with events should be in ['attendee'] 
+            #if len(results)==0:
+            context['latestEvent'] = results
+            #else:
+                # Get all the emails for every(active? and not current user) profile and cross check with events should be in ['attendee'] 
                     
-                emails = [x.email for x  in Profile.objects.exclude(Q(username=request.user))]
-                print(emails)
-        else:
-            contact_form = ContactForm()
-            context['contactForm'] = contact_form
+            emails = [x.email for x in Profile.objects.exclude(Q(username=request.user))]
+        
+            print("---------------")
+            print(emails)
+            print("------------")
+            #print(min(results, key=lambda x:abs(datetime.strptime(x['start']['dateTime'], "%Y-%m-%dT%H:%M:%S%z") - time_zone.localize(datetime.now()))))
+            after_date=[x for x in results if datetime.strptime(x['start']['dateTime'], "%Y-%m-%dT%H:%M:%S%z") >=time_zone.localize(datetime.now())]
+            print(after_date)
 
-            
+        if request.method=="POST":
+            if 'editProfileForm' in request.POST:
+                edit_profile_form = UserProfileForm(request.POST or None, request.FILES or None,instance=request.user)
+                if edit_profile_form.is_valid():
+                    edit_profile_form.save()
+                    edit_profile_form = UserProfileForm(instance=request.user)
+                    context['editProfileForm'] = edit_profile_form
+                    context['isPost'] = False
+                else:
+                    context['isPost'] = True
+                    context['editProfileForm'] = edit_profile_form
+    else:
+        contact_form = ContactForm()
+        context['contactForm'] = contact_form
+        if request.method=="POST":
+            if 'contactForm' in request.POST:
+                print('contact form')
+                contact_form = ContactForm(request.POST)
+                if contact_form.is_valid():
+                    contact_form.save()
+                    email_subject = f'New contact {contact_form.cleaned_data["email"]}: {contact_form.cleaned_data["subject"]}'
+                    email_message = contact_form.cleaned_data['message']
+                    send_mail(email_subject, email_message,'arundeepchohan2009@hotmail.com',['arundeepchohan2009@hotmail.com'])
+  
     return render(request, 'home.html', context)
 
 @login_required
@@ -217,6 +218,7 @@ def calendar(request):
     if request.user.refresh_token == "":
         return redirect('home')
     context = {}  
+    context['nmenu'] = 'calendar'
     results = get_events(request.user.refresh_token,is_book_appointment=False)
     d = datetime.now()
     #print(d)
@@ -224,7 +226,6 @@ def calendar(request):
     html_cal = cal.formatmonth(request,results, withyear=True,is_book_appointment=False)
     #print(mark_safe(html_cal))
     context['personalCalendar'] = mark_safe(html_cal)
-    context['nmenu'] = 'calendar'
     edit_profile_form = UserProfileForm(instance=request.user)
     context['editProfileForm'] = edit_profile_form
     if request.method=="POST":
@@ -235,19 +236,16 @@ def calendar(request):
                 edit_profile_form = UserProfileForm(instance=request.user)
                 context['editProfileForm'] = edit_profile_form
                 context['isPost'] = False
-                return render(request, "home.html", context)
             else:
                 context['isPost'] = True
                 context['editProfileForm'] = edit_profile_form
-                return render(request, "home.html", context)
 
     return render(request, 'home.html', context)
 
 @login_required
 def messagesSend(request):
     context = {}
-    edit_profile_form = UserProfileForm(instance=request.user)
-    context['editProfileForm'] = edit_profile_form
+    context['nmenu'] = 'messagesSend'
     send_message_form = MessageForm()
     if request.user.is_staff:
         send_message_form .fields['receiver'].queryset = Profile.objects.filter(Q(is_active=True))
@@ -256,7 +254,8 @@ def messagesSend(request):
     else:
         send_message_form.fields['receiver'].queryset = Profile.objects.filter(Q(is_active=True)&Q(is_doctor=True)|Q(is_staff=True)|Q(username=request.user))
     context['sendMessageForm'] = send_message_form 
-    context['nmenu'] = 'messagesSend'
+    edit_profile_form = UserProfileForm(instance=request.user)
+    context['editProfileForm'] = edit_profile_form
     if request.method=="POST":
         if 'editProfileForm' in request.POST:
             edit_profile_form = UserProfileForm(request.POST or None, request.FILES or None,instance=request.user)
@@ -265,22 +264,20 @@ def messagesSend(request):
                 edit_profile_form= UserProfileForm(instance=request.user)
                 context['editProfileForm'] = edit_profile_form
                 context['isPost'] = False
-                return render(request, "home.html", context)
+
             else:
                 context['isPost'] = True
                 context['editProfileForm'] = edit_profile_form
-                return render(request, "home.html", context)
-
     return render(request, 'home.html', context)
 
 @login_required
 def messagesInbox(request):
     context = {}
-    edit_profile_form = UserProfileForm(instance=request.user)
-    context['editProfileForm'] = edit_profile_form
+    context['nmenu'] = 'messagesInbox'
     inbox = Messages.objects.filter(Q(sender=request.user)&Q(sender_deleted=False) | Q(receiver=request.user)&Q(receiver_deleted=False)).order_by("-time", "read")
     context['inbox'] = inbox
-    context['nmenu'] = 'messagesInbox'
+    edit_profile_form = UserProfileForm(instance=request.user)
+    context['editProfileForm'] = edit_profile_form
     if request.method=="POST":
         if 'editProfileForm' in request.POST:
             edit_profile_form = UserProfileForm(request.POST or None, request.FILES or None,instance=request.user)
@@ -289,19 +286,19 @@ def messagesInbox(request):
                 edit_profile_form = UserProfileForm(instance=request.user)
                 context['editProfileForm'] = edit_profile_form
                 context['isPost'] = False
-                return render(request, "home.html", context)
+
             else:
                 context['isPost'] = True
                 context['editProfileForm'] = edit_profile_form
-                return render(request, "home.html", context)
+
     return render(request, 'home.html', context)
 
 @login_required
 def documents(request):
     context={}
+    context['nmenu'] = 'documents'
     edit_profile_form = UserProfileForm(instance=request.user)
     context['editProfileForm'] = edit_profile_form
-    context['nmenu'] = 'documents'
     if request.method=="POST":
         if 'editProfileForm' in request.POST:
             edit_profile_form = UserProfileForm(request.POST or None, request.FILES or None,instance=request.user)
@@ -310,21 +307,21 @@ def documents(request):
                 edit_profile_form= UserProfileForm(instance=request.user)
                 context['editProfileForm'] = edit_profile_form
                 context['isPost'] = False
-                return render(request, "home.html", context)
+
             else:
                 context['isPost'] = True
                 context['editProfileForm'] = edit_profile_form
-                return render(request, "home.html", context)
+
     return render(request, 'home.html', context)
 
 @login_required
 def medications(request):
     context={}  
     context['nmenu'] = 'medications'
-    edit_profile_form = UserProfileForm(instance=request.user)
-    context['editProfileForm'] = edit_profile_form
     context['medicationForm'] = MedicationForm()
     context['medications'] = Medications.objects.filter(user=request.user)
+    edit_profile_form = UserProfileForm(instance=request.user)
+    context['editProfileForm'] = edit_profile_form
     if request.method=="POST":
         if 'editProfileForm' in request.POST:
             edit_profile_form = UserProfileForm(request.POST or None, request.FILES or None,instance=request.user)
@@ -333,11 +330,10 @@ def medications(request):
                 edit_profile_form = UserProfileForm(instance=request.user)
                 context['editProfileForm'] = edit_profile_form
                 context['isPost'] = False
-                return render(request, "home.html", context)
+
             else:
                 context['isPost'] = True
                 context['editProfileForm'] = edit_profile_form
-                return render(request, "home.html", context)
 
     return render(request, 'home.html', context)
 
@@ -346,10 +342,10 @@ def adminControls(request):
     if request.user.is_staff is not True:
         return redirect('home')
     context={}
+    context['nmenu'] = 'adminControls'
     # Only admins needs to know inactive users
     context['allInactiveDoctors'] = Profile.objects.filter(Q(is_active=False)&Q(is_doctor=True))
-    context['nmenu'] = 'adminControls'
-    edit_profile_form= UserProfileForm(instance=request.user)
+    edit_profile_form = UserProfileForm(instance=request.user)
     context['editProfileForm'] = edit_profile_form
     if request.method=="POST":
         if 'editProfileForm' in request.POST:
@@ -359,12 +355,10 @@ def adminControls(request):
                 edit_profile_form = UserProfileForm(instance=request.user)
                 context['editProfileForm'] = edit_profile_form
                 context['isPost'] = False
-                return render(request, "home.html", context)
             else:
                 context['isPost'] = True
                 context['editProfileForm'] = edit_profile_form
-                return render(request, "home.html", context)
-        
+
     return render(request, 'home.html', context)
 
 @login_required
@@ -373,14 +367,13 @@ def bookAppointment(request):
     if request.user.is_staff is True or request.user.is_doctor is True:
         return redirect('home')
     context = {}
-    edit_profile_form= UserProfileForm(instance=request.user)
-    context['editProfileForm'] = edit_profile_form
+    context['nmenu'] = 'bookAppointment'
     book_appointment = BookAppointmentForm()
     # Make sure I get active doctors and doctors who have a refresh_token
     book_appointment.fields['doctors'].queryset = Profile.objects.filter(Q(is_active=True)&Q(is_doctor=True)&~Q(refresh_token=""))
     context['bookAppointment'] = book_appointment
-    context['nmenu'] = 'bookAppointment'
-   
+    edit_profile_form= UserProfileForm(instance=request.user)
+    context['editProfileForm'] = edit_profile_form
     if request.method=="POST":
         if 'editProfileForm' in request.POST:
             edit_profile_form= UserProfileForm(request.POST or None, request.FILES or None,instance=request.user)
@@ -389,11 +382,11 @@ def bookAppointment(request):
                 edit_profile_form = UserProfileForm(instance=request.user)
                 context['editProfileForm'] = edit_profile_form
                 context['isPost'] = False
-                return render(request, "home.html", context)
+
             else:
                 context['isPost'] = True
                 context['editProfileForm'] = edit_profile_form
-                return render(request, "home.html", context)
+
         if 'bookAppointment' in request.POST:
             d = datetime.now()
             #print(d)
@@ -418,7 +411,6 @@ def bookAppointment(request):
                     messages.error(request,'Booking failed',extra_tags='bookAppointment')
                     return redirect('bookAppointment')
 
-            return render(request, 'home.html', context)
         
     return render(request, 'home.html', context)
 

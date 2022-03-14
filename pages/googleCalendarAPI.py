@@ -67,7 +67,7 @@ def get_events(refresh_token,is_book_appointment=False):
     tz = 'America/Vancouver'
     time_zone = pytz.timezone(tz)
 
-    #What if min starts with 1(ToDo)
+    # What if min starts with 1(ToDo)
     for event in start_dates:
         new_start_time = datetime.strptime(event['start']['date'], '%Y-%m-%d' )
         new_end_time = datetime.strptime(event['end']['date'], '%Y-%m-%d' ) 
@@ -128,13 +128,15 @@ def get_events(refresh_token,is_book_appointment=False):
                 #time_slots['start']['timeZone'] = tz
                 #time_slots['end']['timeZone'] = tz
                 #print(time_slots)
-                res.append(time_slots)
-        for r in res:
-            events.append(r)
+
+        events = res
 	
+    print(events)
+    print("--------")
+    #events = sorted(events, key = lambda x:datetime.strptime(x['start']['dateTime'], '%Y-%m-%dT%H:%M:%S%z'))
+
     #print(events)
-    events = sorted(events, key = lambda x:datetime.strptime(x['start']['dateTime'], '%Y-%m-%dT%H:%M:%S%z'))
-    #print(events)
+    #print("--------")
     """ 
     for e in events:
         print(e) 
