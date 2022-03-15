@@ -26,8 +26,7 @@ class Calendar(HTMLCalendar):
 			tz = 'America/Vancouver'
 			time_zone = pytz.timezone(tz)
 			start = time_zone.localize(start)
-			# Modify this to get user's time slots later on
-			# Starts at 7 am  then goes for the next 10 hours
+			# Modify this to get user's time slots later on. Starts at 7 am then goes for the next 10 hours.
 			start += relativedelta(hours=7)
 			end = start + relativedelta(hours=10)
 			min_gap = 30

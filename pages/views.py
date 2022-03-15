@@ -41,7 +41,7 @@ def login(request):
 
 def logout(request):
     auth_logout(request)
-    messages.error(request, "You have successfully logged out.",extra_tags='login')
+    messages.error(request, 'You have successfully logged out.',extra_tags='login')
     return redirect('login')
 
 def pickUserType(request):
@@ -55,7 +55,7 @@ def process_data(form_list):
     
 class DoctorWizard(SessionWizardView):
     file_storage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'doctor'))
-    template_name = "registration/signup.html"
+    template_name = 'registration/signup.html'
     form_list = [SignUpForm,Verify]
     
     def done(self, form_list, **kwargs):
@@ -73,7 +73,7 @@ class DoctorWizard(SessionWizardView):
         return redirect('home')
     
 class UserWizard(SessionWizardView):
-    template_name = "registration/signup.html"
+    template_name = 'registration/signup.html'
     form_list = [SignUpForm]
 
     def done(self, form_list, **kwargs):
@@ -88,7 +88,7 @@ class UserWizard(SessionWizardView):
         return redirect('home')
 
 @login_required
-@require_http_methods(["POST"])
+@require_http_methods(['POST'])
 def reply(request,message_id):
     #print(message_id)
     parent = Messages.objects.get(id = message_id)
@@ -100,7 +100,7 @@ def reply(request,message_id):
     return redirect('messagesInbox')
 
 @login_required
-@require_http_methods(["POST"])
+@require_http_methods(['POST'])
 def send(request):
     send_message_form = MessageForm(request.POST or None,)
     #print(send_message_form)
@@ -111,7 +111,7 @@ def send(request):
     return redirect('messagesSend')
 
 @login_required
-@require_http_methods(["POST"])
+@require_http_methods(['POST'])
 def delete(request,message_id):
     #Only remove the message if both people want it removed or if the send and receiver are the same person
     data_to_be_deleted = Messages.objects.get(id = message_id)
@@ -133,7 +133,7 @@ def delete(request,message_id):
     return redirect('messagesInbox')
 
 @login_required
-@require_http_methods(["POST"])
+@require_http_methods(['POST'])
 def activate(request,username):
     user = Profile.objects.get(username=username)
     #print(user)
@@ -144,7 +144,7 @@ def activate(request,username):
 
     
 @login_required
-@require_http_methods(["POST"])
+@require_http_methods(['POST'])
 def addMed(request):
     #print('Adding med')
     #print(request.user)
@@ -172,28 +172,26 @@ def index(request):
         if request.user.refresh_token !="":
             results = get_events(request.user.refresh_token,is_book_appointment=True)
             # Simply if there are no results you should return that otherwise you need to filter out by email and current date
-            print(results)
-            print("---------------")
+            #print(results)
+            #print("---------------")
             if len(results)==0:
                 context['latestEventDay'] = 'No day'
                 context['latestEventTime'] = 'No time'
                 context['latestEventUser'] = "No user"
             else:
                 # Get all the emails for every(active? and not current user) profile and cross check with events should be in ['attendee'] 
-                    
-                emails = [x.email for x in Profile.objects.exclude(Q(username=request.user))]
-            
-                print(emails)
-                print("------------")
-            
+                emails = [x.email for x in Profile.objects.exclude(Q(username=request.user)|Q(is_active=False))]   
+                #print(emails)
+                #print("------------")           
                 after_date = [x for x in results if datetime.strptime(x['start']['dateTime'], '%Y-%m-%dT%H:%M:%S%z') >=time_zone.localize(datetime.now())]
-                print(after_date)
-                print("---------------")
+                #print(after_date)
+                #print("---------------")
                 with_out_attendee = []
                 for e in after_date:
                     try:
                         if e['attendees'][0]['email'] in emails or e['attendees'][1]['email'] in emails:
                             with_out_attendee.append(e)
+                            break
                     except KeyError:
                         pass
                 if len(with_out_attendee)==0:
@@ -201,16 +199,28 @@ def index(request):
                     context['latestEventTime'] = 'No time'
                     context['latestEventUser'] = "No user"
                 else:
-
-                    print(with_out_attendee)
-                    print("---------------")
+                    #print(with_out_attendee)
+                    #print("---------------")
                     am_format = datetime.strptime(with_out_attendee[0]['start']['dateTime'][:-8].split('T')[1].split('-')[0], '%H:%M').strftime('%I:%M %p').lstrip('0')
-                    print(am_format)
+                    #print(am_format)
                     context['latestEventDay'] = datetime.strptime(with_out_attendee[0]['start']['dateTime'], '%Y-%m-%dT%H:%M:%S%z').strftime('%A, %B %d')
                     context['latestEventTime'] = am_format
-
-                    # Figure out the user who messaged by using the email (Todo)
-                    context['latestEventUser'] = 'User'
+                    # Figure out the user who messaged by using the email.
+                    #print(with_out_attendee[0]['attendees'][0]['email'])
+                    if with_out_attendee[0]['attendees'][0]['email']==request.user.email:
+                        grab_user_by_email = request.user.email
+                        #print(grab_user_by_email)
+                        user = Profile.objects.exclude(is_active=False).get(Q(email=grab_user_by_email))
+                        if user:
+                            #print(user)
+                            context['latestEventUser'] = user
+                    else:
+                        grab_user_by_email = with_out_attendee[0]['attendees'][0]['email']
+                        #print(grab_user_by_email)
+                        user = Profile.objects.exclude(is_active=False).get(Q(email=grab_user_by_email))
+                        if user:
+                            #print(user)
+                            context['latestEventUser'] = user
 
         if request.method=="POST":
             if 'editProfileForm' in request.POST:
@@ -228,7 +238,7 @@ def index(request):
         context['contactForm'] = contact_form
         if request.method=="POST":
             if 'contactForm' in request.POST:
-                print('contact form')
+                #print('Contact form')
                 contact_form = ContactForm(request.POST)
                 if contact_form.is_valid():
                     contact_form.save()
@@ -320,7 +330,7 @@ def messagesInbox(request):
 
 @login_required
 def documents(request):
-    context={}
+    context = {}
     context['nmenu'] = 'documents'
     edit_profile_form = UserProfileForm(instance=request.user)
     context['editProfileForm'] = edit_profile_form
@@ -332,7 +342,6 @@ def documents(request):
                 edit_profile_form= UserProfileForm(instance=request.user)
                 context['editProfileForm'] = edit_profile_form
                 context['isPost'] = False
-
             else:
                 context['isPost'] = True
                 context['editProfileForm'] = edit_profile_form
@@ -341,7 +350,7 @@ def documents(request):
 
 @login_required
 def medications(request):
-    context={}  
+    context = {}  
     context['nmenu'] = 'medications'
     context['medicationForm'] = MedicationForm()
     context['medications'] = Medications.objects.filter(user=request.user)
@@ -355,7 +364,6 @@ def medications(request):
                 edit_profile_form = UserProfileForm(instance=request.user)
                 context['editProfileForm'] = edit_profile_form
                 context['isPost'] = False
-
             else:
                 context['isPost'] = True
                 context['editProfileForm'] = edit_profile_form
@@ -366,7 +374,7 @@ def medications(request):
 def adminControls(request):
     if request.user.is_staff is not True:
         return redirect('home')
-    context={}
+    context = {}
     context['nmenu'] = 'adminControls'
     # Only admins needs to know inactive users
     context['allInactiveDoctors'] = Profile.objects.filter(Q(is_active=False)&Q(is_doctor=True))
@@ -388,7 +396,7 @@ def adminControls(request):
 
 @login_required
 def bookAppointment(request):
-    # Make a checks to see if it's a user and not doctor, add a check for if it has request.user.refresh_token(Todo)
+    # Make a checks to see if it's a user and not doctor, add a check for if it has request.user.refresh_token (Todo)
     if request.user.is_staff is True or request.user.is_doctor is True:
         return redirect('home')
     context = {}
@@ -397,7 +405,7 @@ def bookAppointment(request):
     # Make sure I get active doctors and doctors who have a refresh_token
     book_appointment.fields['doctors'].queryset = Profile.objects.filter(Q(is_active=True)&Q(is_doctor=True)&~Q(refresh_token=""))
     context['bookAppointment'] = book_appointment
-    edit_profile_form= UserProfileForm(instance=request.user)
+    edit_profile_form = UserProfileForm(instance=request.user)
     context['editProfileForm'] = edit_profile_form
     if request.method=="POST":
         if 'editProfileForm' in request.POST:
@@ -444,7 +452,7 @@ def bookAppointment(request):
 def addAppointment(request,username,start):
     #print('Add appointment')
     #print(request.user)
-    doctor = Profile.objects.get(username=username)
+    doctor = Profile.objects.exclude(is_active=False).get(username=username)
     if doctor:
         #print(doctor)
         #print(start)
@@ -462,9 +470,10 @@ def addAppointment(request,username,start):
         # print(len(events_per_day))
         # Check if time_slot is in results
         if len(events_per_day)>=1:
-            messages.error(request,'Booked',extra_tags='bookAppointment')
+            messages.error(request,'Already Booked',extra_tags='bookAppointment')
         elif time_slot >= today:
             add_appointment(request.user,doctor,start)
+            messages.error(request,'Completed Booking',extra_tags='bookAppointment')
         else:
             messages.error(request,'Booking failed',extra_tags='bookAppointment')
     else:
