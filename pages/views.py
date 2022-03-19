@@ -463,7 +463,7 @@ def addAppointment(request,username,start):
         #print(type(today),type(time_slot))
         #print(time_slot>=today)
 
-        # Make a certain time before appointment let's say 1 hour before
+        # Make a certain time before appointment let's say 1 hour before?
         # What if the doctor added events between the page reload?
         results = get_events(doctor.refresh_token,is_book_appointment=True)
         events_per_day = list(filter(lambda x: datetime.strptime(x['start']['dateTime'], '%Y-%m-%dT%H:%M:%S%z') == time_slot, results))

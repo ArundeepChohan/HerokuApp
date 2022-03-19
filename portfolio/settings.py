@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     #'axes',
+    'celery',
     'social_django', 
     'formtools',
     'phonenumber_field',
@@ -234,13 +235,20 @@ if DEBUG:
     EMAIL_HOST_USER = ''
     EMAIL_HOST_PASSWORD = ''
 else:
-    # Twilio SendGrid
+    # Twilio SendGrid remove this and the api key from heroku .env and dashboard
     EMAIL_HOST = 'smtp.sendgrid.net'
     EMAIL_PORT = 587
     EMAIL_USE_TLS = True
     EMAIL_HOST_USER = 'apikey'
     EMAIL_HOST_PASSWORD = config('SENDGRID_API_KEY')
 
+# CELERY STUFF
+#BROKER_URL = 'redis://:pff45dd62cc31ee17220489332246a399421b13ff24f4e4084103a0f8da20f4fe@ec2-54-204-205-229.compute-1.amazonaws.com:12880'
+#CELERY_RESULT_BACKEND = 'redis://:pff45dd62cc31ee17220489332246a399421b13ff24f4e4084103a0f8da20f4fe@ec2-54-204-205-229.compute-1.amazonaws.com:12880'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'America/Vancouver'
 
 # This should always be last
 import django_heroku
