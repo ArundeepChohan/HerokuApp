@@ -1,4 +1,2 @@
-web: gunicorn portfolio.wsgi
-worker: celery -A portfolio worker -l info 
-beat: celery -A portfolio beat -l info 
+web: gunicorn portfolio.wsgi 
 release: python manage.py migrate
