@@ -142,7 +142,6 @@ def get_events(refresh_token,is_book_appointment=False):
     """
     return events
 
-# Make a check to see if time slot is not booked.
 def add_appointment(user,doctor,start_time):
     credentials = get_token_refresh(doctor.refresh_token)
     #print(start_time)

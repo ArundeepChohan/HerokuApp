@@ -22,8 +22,12 @@
                         </div>
                         
                     </div>
-                    {% if request.user.refresh_token != "" %}                  
-                        <p>{{latestEventUser}}</p>
+                    {% if request.user.refresh_token != "" %}  
+                        {% if latestEventUser %}                
+                            <p>{{latestEventUser}}</p>
+                        {% else %}
+                            <p>Author</p>
+                        {% endif %}
                     {% else %}
                         <p>Author</p>
                     {% endif %}  

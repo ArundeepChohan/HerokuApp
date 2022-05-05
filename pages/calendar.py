@@ -43,7 +43,7 @@ class Calendar(HTMLCalendar):
 					time_occupied = False
 					converted_time = datetime.strptime(time, '%Y-%m-%dT%H:%M:%S%z')
 					# Checks if can book the time if it's past current time.
-					if converted_time>=time_zone.localize(self.time):
+					if converted_time>=self.time:
 						for event in events_per_day:
 							converted_start = datetime.strptime(event['start']['dateTime'], '%Y-%m-%dT%H:%M:%S%z')
 							#print(converted_time,converted_start)

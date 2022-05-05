@@ -156,7 +156,16 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     #'django.contrib.staticfiles.finders.AppDirectoriesFinder',    #causes verbose duplicate notifications in django 1.9
 )
-# Todo:Add a postgresql for prod settings using Amazon RDS Management Console
+
+EMAIL_BACKEND = 'django_ses.SESBackend'
+EMAIL_USE_TLS = True  
+EMAIL_HOST = 'email-smtp.us-east-1.amazonaws.com'  
+EMAIL_HOST_USER = ''  
+EMAIL_HOST_PASSWORD = ''  
+EMAIL_PORT = 587
+
+
+# Add a postgresql for prod settings using Amazon RDS Management Console (ToDo)
 
 DATABASES = {
     'default': {
@@ -225,22 +234,6 @@ SESSION_COOKIE_AGE = 60  # change expired session
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_SAVE_EVERY_REQUEST = True 
 """
-
-if DEBUG:
-    # Shows up in the console for emails instead of sending them for local development
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-    EMAIL_HOST = 'localhost'
-    EMAIL_PORT = 587
-    EMAIL_USE_TLS = False
-    EMAIL_HOST_USER = ''
-    EMAIL_HOST_PASSWORD = ''
-else:
-    # Twilio SendGrid remove this and the api key from heroku .env and dashboard
-    EMAIL_HOST = 'smtp.sendgrid.net'
-    EMAIL_PORT = 587
-    EMAIL_USE_TLS = True
-    EMAIL_HOST_USER = 'apikey'
-    EMAIL_HOST_PASSWORD = config('SENDGRID_API_KEY')
 
 # CELERY STUFF
 CELERY_ACCEPT_CONTENT = ['application/json']

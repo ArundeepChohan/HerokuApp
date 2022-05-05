@@ -1,3 +1,4 @@
+from django.http import BadHeaderError
 from django.shortcuts import redirect, render
 from pages.calendar import Calendar
 from .forms import BookAppointmentForm, ContactForm, MedicationForm, MessageForm, SignUpForm, UserProfileForm, Verify
@@ -13,7 +14,7 @@ from django.utils.safestring import mark_safe
 from django.core.files.storage import FileSystemStorage
 import os
 from django.conf import settings
-from datetime import date, datetime
+from datetime import datetime
 import pytz
 from django.views.decorators.http import require_http_methods
 from django.core.mail import send_mail
@@ -113,10 +114,11 @@ def send(request):
 @login_required
 @require_http_methods(['POST'])
 def delete(request,message_id):
-    #Only remove the message if both people want it removed or if the send and receiver are the same person
+    # Only remove the message if both people want it removed or if the sender and receiver are the same person
+    # This is a hard delete so if you want to recover it it's not going to happen
+
     data_to_be_deleted = Messages.objects.get(id = message_id)
-    
-    if data_to_be_deleted.sender ==request.user and data_to_be_deleted.receiver==request.user:
+    if data_to_be_deleted.sender==request.user and data_to_be_deleted.receiver==request.user:
         data_to_be_deleted.delete()
         return redirect('messagesInbox')
     else:
@@ -157,8 +159,8 @@ def addMed(request):
 def index(request):
     context = {}
     context['nmenu'] = 'home'
-    tz = 'America/Vancouver'
-    time_zone = pytz.timezone(tz)
+    tz = pytz.timezone('America/Vancouver')
+    today = datetime.now(tz)
     if request.user.is_authenticated:
         # Filter messages by if the user deleted from their view
         inbox = Messages.objects.filter(Q(sender=request.user)&Q(sender_deleted=False) | Q(receiver=request.user)&Q(receiver_deleted=False)).order_by("-time", "read")
@@ -183,7 +185,7 @@ def index(request):
                 emails = [x.email for x in Profile.objects.exclude(Q(username=request.user)|Q(is_active=False))]   
                 #print(emails)
                 #print("------------")           
-                after_date = [x for x in results if datetime.strptime(x['start']['dateTime'], '%Y-%m-%dT%H:%M:%S%z') >=time_zone.localize(datetime.now())]
+                after_date = [x for x in results if datetime.strptime(x['start']['dateTime'], '%Y-%m-%dT%H:%M:%S%z') >=today]
                 #print(after_date)
                 #print("---------------")
                 with_out_attendee = []
@@ -244,8 +246,10 @@ def index(request):
                     contact_form.save()
                     email_subject = f'New contact {contact_form.cleaned_data["email"]}: {contact_form.cleaned_data["subject"]}'
                     email_message = contact_form.cleaned_data['message']
-                    send_mail(email_subject, email_message,'arundeepchohan2009@hotmail.com',['arundeepchohan2009@hotmail.com'])
-  
+                    try:
+                        send_mail(email_subject, email_message,'arundeepchohan2009@hotmail.com',['arundeepchohan2009@hotmail.com'])
+                    except BadHeaderError: 
+                        print('bad')
     return render(request, 'home.html', context)
 
 @login_required
@@ -255,9 +259,10 @@ def calendar(request):
     context = {}  
     context['nmenu'] = 'calendar'
     results = get_events(request.user.refresh_token,is_book_appointment=False)
-    d = datetime.now()
-    #print(d)
-    cal = Calendar(d.year, d.month,d.day,d,request.user)
+    tz = pytz.timezone('America/Vancouver')
+    today = datetime.now(tz)
+    #print(today)
+    cal = Calendar(today.year, today.month,today.day,today,request.user)
     html_cal = cal.formatmonth(request,results, withyear=True,is_book_appointment=False)
     #print(mark_safe(html_cal))
     context['personalCalendar'] = mark_safe(html_cal)
@@ -421,8 +426,9 @@ def bookAppointment(request):
                 context['editProfileForm'] = edit_profile_form
 
         if 'bookAppointment' in request.POST:
-            d = datetime.now()
-            #print(d)
+            tz = pytz.timezone('America/Vancouver')
+            today = datetime.now(tz)
+            #print(today)
             book_appointment = BookAppointmentForm(request.POST)
             if book_appointment.is_valid():
                 #print(request.POST['doctors'])
@@ -437,7 +443,7 @@ def bookAppointment(request):
                         #print(user,user.refresh_token)
                         #results = test_calendar()
                         results = get_events(user.refresh_token,is_book_appointment=True)
-                        cal = Calendar(d.year,d.month,d.day,d,user.username)
+                        cal = Calendar(today.year,today.month,today.day,today,user.username)
                         html_cal = cal.formatmonth(request,results,withyear=True,is_book_appointment=True)
                         context['calendar'] = mark_safe(html_cal)
                 except IndexError:
