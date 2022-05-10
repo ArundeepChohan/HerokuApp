@@ -23,7 +23,9 @@ Medical website that allows users to get quality healthcare services from reliab
 
 Prerequisites: Able to run Python + Django + Setup Google .
 
-Installing: Download all files and set up an .env file, with all the necessary variables. 
+Installing: Download all files and set up an .env file, with all the necessary variables.
+
+Useful Links:
 
 • https://blog.benhammond.tech/connecting-google-cal-api-and-django
 
