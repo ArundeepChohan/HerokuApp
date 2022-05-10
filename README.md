@@ -1,8 +1,6 @@
 # HerokuApp
 This is a medical site hosted on Herokuapp using Django
 
-AWS (SES, S3), Google (Calendar API), OAuth2, Django, Heroku, Python, SQLite, PostgreSQL, Celery, Redis
-
 Medical website that allows users to get quality healthcare services from reliable professionals at the comfort of their own home.
 
 • Dashboard that displays the last unread message along with the count, the latest event in the month, and the last medication added.
@@ -22,3 +20,16 @@ Medical website that allows users to get quality healthcare services from reliab
 • Removes users along with disabling all their messages and removing their files from AWS after 30 days using Celery.
 
 • Messages self using AWS SES for contact.
+
+Prerequisites: Able to run Python + Django + Setup Google .
+
+Installing: Download all files and set up an .env file, with all the necessary variables. 
+
+• https://blog.benhammond.tech/connecting-google-cal-api-and-django
+
+• https://simpleisbetterthancomplex.com/tutorial/2017/08/01/how-to-setup-amazon-s3-in-a-django-project.html
+
+Built With: AWS (SES, S3), Google (Calendar API), OAuth2, Django, Heroku, Python, SQLite, PostgreSQL, Celery, Redis
+
+Authors: Arundeep Chohan
+
