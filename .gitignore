@@ -239,3 +239,5 @@ cython_debug/
 google-credentials.json
 # Stores OAuth client access
 credentials.json
+# Stores AWS SES creds
+smtpCreds.csv
