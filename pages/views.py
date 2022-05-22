@@ -246,8 +246,9 @@ def index(request):
                     contact_form.save()
                     email_subject = f'New contact {contact_form.cleaned_data["email"]}: {contact_form.cleaned_data["subject"]}'
                     email_message = contact_form.cleaned_data['message']
+                    print(email_subject,email_message)
                     try:
-                        send_mail(email_subject, email_message,'arundeepchohan2009@hotmail.com',['arundeepchohan2009@hotmail.com'])
+                        send_mail(email_subject, email_message,settings.VERIFIED_IDENTITY,[settings.VERIFIED_IDENTITY])
                     except BadHeaderError: 
                         print('bad')
     return render(request, 'home.html', context)
