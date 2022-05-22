@@ -157,11 +157,12 @@ STATICFILES_FINDERS = (
     #'django.contrib.staticfiles.finders.AppDirectoriesFinder',    #causes verbose duplicate notifications in django 1.9
 )
 
-EMAIL_BACKEND = 'django_ses.SESBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_USE_TLS = True  
-EMAIL_HOST = 'email-smtp.us-east-1.amazonaws.com'  
-EMAIL_HOST_USER = ''  
-EMAIL_HOST_PASSWORD = ''  
+
+EMAIL_HOST = 'email-smtp.us-west-2.amazonaws.com'  
+EMAIL_HOST_USER =  config('SMTP_USER')
+EMAIL_HOST_PASSWORD =  config('SMTP_PW')
 EMAIL_PORT = 587
 
 

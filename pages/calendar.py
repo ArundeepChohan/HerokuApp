@@ -22,10 +22,12 @@ class Calendar(HTMLCalendar):
 			# list(filter(lambda x: datetime.strptime(x['start']['dateTime'], '%Y-%m-%dT%H:%M:%S%z').day == day, events))
 			# list(filter(lambda x: datetime.strptime(x['start']['date'], '%Y-%m-%d').day == day , events))
 			events_per_day = list(filter(lambda x: datetime.strptime(x['start']['dateTime'], '%Y-%m-%dT%H:%M:%S%z').day == day and datetime.strptime(x['start']['dateTime'], '%Y-%m-%dT%H:%M:%S%z').month == self.month and datetime.strptime(x['start']['dateTime'], '%Y-%m-%dT%H:%M:%S%z').year == self.year, events))
+			
 			start = datetime(self.year,self.month,day)
 			tz = 'America/Vancouver'
 			time_zone = pytz.timezone(tz)
 			start = time_zone.localize(start)
+
 			# Modify this to get user's time slots later on. Starts at 7 am then goes for the next 10 hours.
 			start += relativedelta(hours=7)
 			end = start + relativedelta(hours=10)
