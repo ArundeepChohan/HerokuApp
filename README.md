@@ -1,5 +1,5 @@
 # HerokuApp
-This is a medical site hosted on Herokuapp using Django
+This is a medical site hosted on Heroku using Django
 
 Medical website that allows users to get quality healthcare services from reliable professionals at the comfort of their own home.
 
